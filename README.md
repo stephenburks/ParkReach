@@ -2,8 +2,12 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Purpose
 
-Proof of concept for agentic squads. 
+Proof of concept for agentic squads.
 Based upon: https://github.com/bradygaster/squad
+
+Setup:
+* npm install @bradygaster/squad-cli --save-dev
+* npx squad init
 
 ## Getting Started
 
