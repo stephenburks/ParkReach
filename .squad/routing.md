@@ -6,13 +6,15 @@ How to decide who handles what.
 
 | Work Type | Route To | Examples |
 |-----------|----------|----------|
-| {domain 1} | {Name} | {example tasks} |
-| {domain 2} | {Name} | {example tasks} |
-| {domain 3} | {Name} | {example tasks} |
-| Code review | {Name} | Review PRs, check quality, suggest improvements |
-| Testing | {Name} | Write tests, find edge cases, verify fixes |
-| Scope & priorities | {Name} | What to build next, trade-offs, decisions |
-| Session logging | Scribe | Automatic — never needs routing |
+| Architecture / system design | Fred | Module boundaries, data flow, API contracts, ADRs |
+| React / Next.js UI | Daphne | Components, pages, layouts, client state, accessibility |
+| Node.js / API / backend | Velma | Route Handlers, Server Actions, DB, integrations |
+| Testing / QA | Shaggy | Unit tests, integration tests, Playwright e2e |
+| Accessibility / ADA / WCAG audits | Shaggy | a11y audits, axe scans, keyboard/screen reader passes, WCAG compliance gating |
+| Code review / quality gate | Scooby | PR reviews, standards, cross-agent review coordination |
+| Issue triage | Fred | Incoming `squad`-labeled issues, assignment |
+| Session logging | Scrappy | Automatic — never needs routing |
+| Cross-session memory | Hex Girls | Automatic — surfaces prior context |
 
 ## Issue Routing
 
@@ -31,9 +33,9 @@ How to decide who handles what.
 ## Rules
 
 1. **Eager by default** — spawn all agents who could usefully start work, including anticipatory downstream work.
-2. **Scribe always runs** after substantial work, always as `mode: "background"`. Never blocks.
+2. **Scrappy always runs** after substantial work, always as `mode: "background"`. Never blocks.
 3. **Quick facts → coordinator answers directly.** Don't spawn an agent for "what port does the server run on?"
 4. **When two agents could handle it**, pick the one whose domain is the primary concern.
 5. **"Team, ..." → fan-out.** Spawn all relevant agents in parallel as `mode: "background"`.
-6. **Anticipate downstream work.** If a feature is being built, spawn the tester to write test cases from requirements simultaneously.
+6. **Anticipate downstream work.** If a feature is being built, spawn the tester to write test cases from requirements simultaneously — and Shaggy in parallel for an accessibility pass on any UI change.
 7. **Issue-labeled work** — when a `squad:{member}` label is applied to an issue, route to that member. The Lead handles all `squad` (base label) triage.

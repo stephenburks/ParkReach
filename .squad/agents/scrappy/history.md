@@ -5,7 +5,7 @@
 
 ## Core Context
 
-Agent Ralph initialized and ready for work.
+Agent Scrappy (Scribe role, formerly "scribe") initialized and ready for work.
 
 ## Recent Updates
 

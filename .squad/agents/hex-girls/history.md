@@ -5,7 +5,7 @@
 
 ## Core Context
 
-Agent Scribe initialized and ready for work.
+Agent Hex Girls (persistent memory role, formerly "ralph") initialized and ready for work.
 
 ## Recent Updates
 
