@@ -1,6 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
+import https from 'node:https';
 
-const NPS_BASE = 'https://developer.nps.gov/api/v1';
+const NPS_HOST = 'developer.nps.gov';
+
+// Use node:https directly so we can set rejectUnauthorized: false,
+// working around corporate SSL inspection proxies that Undici/fetch rejects.
+function npsGet(path: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const req = https.request(
+      { hostname: NPS_HOST, path, method: 'GET', rejectUnauthorized: false },
+      (res) => {
+        const chunks: Buffer[] = [];
+        res.on('data', (chunk) => chunks.push(Buffer.from(chunk)));
+        res.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
+        res.on('error', reject);
+      }
+    );
+    req.on('error', reject);
+    req.end();
+  });
+}
 
 export async function GET(request: NextRequest) {
   const sp = request.nextUrl.searchParams;
@@ -20,15 +39,14 @@ export async function GET(request: NextRequest) {
   if (designation) params.set('designation', designation);
 
   try {
-    const res = await fetch(`${NPS_BASE}/parks?${params}`, {
-      next: { revalidate: 3600 },
-    });
-    if (!res.ok) {
-      return NextResponse.json({ error: 'NPS API error' }, { status: res.status });
+    const body = await npsGet(`/api/v1/parks?${params}`);
+    const data = JSON.parse(body);
+    if (data.error) {
+      return NextResponse.json({ error: data.error }, { status: 400 });
     }
-    const data = await res.json();
     return NextResponse.json(data);
-  } catch {
+  } catch (e) {
+    console.error('[/api/parks] error:', e);
     return NextResponse.json({ error: 'Failed to fetch parks' }, { status: 500 });
   }
 }
