@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "squad": "node --loader ./tools/esm-patch.mjs ./node_modules/.bin/squad"
   },
   "dependencies": {
     "@varlock/nextjs-integration": "latest",
