@@ -1,6 +1,6 @@
 # Squad Team
 
-> jrny-agentic-squad-poc — Mystery Inc. edition
+> ParkReach — Mystery Inc. edition
 
 ## Coordinator
 
@@ -27,6 +27,6 @@
 
 ## Project Context
 
-- **Project:** jrny-agentic-squad-poc
+- **Project:** ParkReach
 - **Stack:** React, Next.js (App Router), Node.js, TypeScript
 - **Created:** 2026-04-10
