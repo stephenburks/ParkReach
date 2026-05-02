@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C \"/Users/steeb/Documents/Code Projects/Accessible Parks\" status)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:varlock.dev)"
+    ]
+  }
+}
