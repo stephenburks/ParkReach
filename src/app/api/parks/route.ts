@@ -3,12 +3,10 @@ import https from 'node:https';
 
 const NPS_HOST = 'developer.nps.gov';
 
-// Use node:https directly so we can set rejectUnauthorized: false,
-// working around corporate SSL inspection proxies that Undici/fetch rejects.
 function npsGet(path: string): Promise<string> {
   return new Promise((resolve, reject) => {
     const req = https.request(
-      { hostname: NPS_HOST, path, method: 'GET', rejectUnauthorized: false },
+      { hostname: NPS_HOST, path, method: 'GET' },
       (res) => {
         const chunks: Buffer[] = [];
         res.on('data', (chunk) => chunks.push(Buffer.from(chunk)));

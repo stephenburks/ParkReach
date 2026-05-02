@@ -7,14 +7,14 @@ project should read this file first.
 
 ## Current Status
 
-**Active phase:** Not started — ready to begin Phase 0
-**Last updated:** 2026-05-01
+**Active phase:** Phase 1 — Database and Auth Backend
+**Last updated:** 2026-05-02
 
 ---
 
 ## Phase Checklist
 
-- [ ] **Phase 0** — Setup and Dependencies (ShadCN, Supabase clients, bundle analyzer, middleware)
+- [x] **Phase 0** — Setup and Dependencies (ShadCN, Supabase clients, bundle analyzer, middleware)
 - [ ] **Phase 1** — Database and Auth Backend (migrations, TypeScript types, callback route)
 - [ ] **Phase 2** — Auth UI (login/verify/error pages, AuthContext, AuthButton)
 - [ ] **Phase 3** — Dark Mode and Profile (useDarkMode, CSS variables, profile page, useParkSaves)
@@ -58,6 +58,16 @@ Record any decisions made during implementation that aren't obvious from the cod
 - Created `docs/SPEC.md`, `docs/SETUP.md`, `docs/FUTURE_FEATURES.md`, `AGENTS.md`
 - Created `.github/copilot-instructions.md` for Copilot context
 - **Ready to start Phase 0**
+
+### 2026-05-02
+- Invoked Mystery Inc. squad (Fred, Daphne, Velma, Shaggy, Scooby) for Phase 0
+- **Daphne**: Initialized ShadCN (slate, CSS variables), created robots.ts, sitemap.ts stubs
+- **Velma**: Installed Supabase/SSR, Google Maps packages, bundle analyzer; created middleware.ts, supabase client/server helpers
+- **Shaggy**: Verified npm install passes, identified build failure (expected - Supabase not set up yet)
+- **Scooby**: Code review - flagged middleware error handling, fixed
+- **Fixes applied**: Added try/catch to middleware.ts auth refresh
+- **Blockers**: Build fails until Supabase is set up (Phase 1)
+- **Next**: Phase 1 - Database and Auth Backend
 
 ---
 
