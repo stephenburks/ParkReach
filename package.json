@@ -9,11 +9,12 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@varlock/bitwarden-plugin": "^1.0.0",
+    "@varlock/nextjs-integration": "latest",
     "next": "16.2.3",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "varlock": "latest",
-    "@varlock/nextjs-integration": "latest"
+    "varlock": "latest"
   },
   "devDependencies": {
     "@bradygaster/squad-cli": "^0.9.1",
