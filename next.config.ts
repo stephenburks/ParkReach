@@ -1,14 +1,15 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
+import { varlockNextConfigPlugin } from '@varlock/nextjs-integration/plugin';
 
 const nextConfig: NextConfig = {
-  images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: '**.nps.gov',
-      },
-    ],
-  },
+	images: {
+		remotePatterns: [
+			{
+				protocol: 'https',
+				hostname: '**.nps.gov',
+			},
+		],
+	},
 };
 
-export default nextConfig;
+export default varlockNextConfigPlugin()(nextConfig);

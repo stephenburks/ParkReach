@@ -30,8 +30,9 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files — schema is safe to commit, actual values are not
 .env*
+!.env.schema
 
 # vercel
 .vercel
