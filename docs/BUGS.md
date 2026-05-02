@@ -161,8 +161,26 @@ NPS API has rate limits and costs. Currently fetching from API on each request. 
 Map view using react-leaflet is buggy - markers don't load, icons missing, or blank map in Next.js.
 
 **Proposed fix:**
-- Disable map view for now
-- Revisit with simpler map solution (static map image, Google Maps, or use NPS GeoJSON data from nationalparkservice/data)
+- Replace with simple interactive map using Google Maps or static map images
+- Map should show park locations as selectable markers/layers
+- Users can click markers to view park details
+- Keep it simple: one map with clickable dots, not full-leaflet implementation
+
+---
+
+### [Improvement] Add minimal list view
+
+**Status:** open
+**Phase:** Phase 4
+**Priority:** medium
+
+Add a minimal/card list view option for the explorer - shows parks in a more compact format.
+
+**Proposed fix:**
+- Implement ParkCardMinimal component
+- Show in list format (compact rows with name, state, designation)
+- Toggle between card and list view
+- Use existing ParkCardMinimal component already created
 
 ---
 
