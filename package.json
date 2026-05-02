@@ -9,8 +9,8 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@varlock/bitwarden-plugin": "^1.0.0",
     "@varlock/nextjs-integration": "latest",
+    "@varlock/pass-plugin": "^1.0.0",
     "next": "16.2.3",
     "react": "19.2.4",
     "react-dom": "19.2.4",
