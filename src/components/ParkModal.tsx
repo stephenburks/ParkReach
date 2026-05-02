@@ -47,7 +47,7 @@ export default function ParkModal({ park, onClose }: Props) {
       />
 
       {/* Panel */}
-      <div className="relative w-full sm:max-w-2xl bg-park-cream rounded-t-3xl sm:rounded-2xl shadow-2xl max-h-[92vh] overflow-y-auto z-10">
+      <div className="relative w-full sm:max-w-2xl bg-park-cream dark:bg-stone-800 rounded-t-3xl sm:rounded-2xl shadow-2xl max-h-[92vh] overflow-y-auto z-10">
         {/* Hero */}
         <div className="relative h-64 sm:h-72 bg-gradient-to-br from-park-forest to-park-sage rounded-t-3xl sm:rounded-t-2xl overflow-hidden flex-shrink-0">
           {image?.url && (
@@ -87,18 +87,18 @@ export default function ParkModal({ park, onClose }: Props) {
 
         {/* Body */}
         <div className="p-6 space-y-6">
-          <p className="text-stone-700 leading-relaxed">{park.description}</p>
+          <p className="text-stone-700 dark:text-stone-300 leading-relaxed">{park.description}</p>
 
           {topActivities.length > 0 && (
             <section>
-              <h3 className="font-semibold text-park-bark text-sm uppercase tracking-wider mb-3 flex items-center gap-2">
+              <h3 className="font-semibold text-park-bark dark:text-park-cream text-sm uppercase tracking-wider mb-3 flex items-center gap-2">
                 <span aria-hidden="true">🥾</span> Activities
               </h3>
               <div className="flex flex-wrap gap-2">
                 {topActivities.map((a) => (
                   <span
                     key={a.id}
-                    className="bg-park-sage/15 text-park-bark text-xs px-3 py-1.5 rounded-full border border-park-sage/30 font-medium"
+                    className="bg-park-sage/15 dark:bg-park-sage/25 text-park-bark dark:text-park-cream text-xs px-3 py-1.5 rounded-full border border-park-sage/30 font-medium"
                   >
                     {a.name}
                   </span>
@@ -109,24 +109,24 @@ export default function ParkModal({ park, onClose }: Props) {
 
           {hasHours && (
             <section>
-              <h3 className="font-semibold text-park-bark text-sm uppercase tracking-wider mb-3 flex items-center gap-2">
+              <h3 className="font-semibold text-park-bark dark:text-park-cream text-sm uppercase tracking-wider mb-3 flex items-center gap-2">
                 <span aria-hidden="true">🕐</span> Operating Hours
               </h3>
               {park.operatingHours.slice(0, 1).map((h, i) => (
-                <div key={i} className="bg-white rounded-xl p-4 shadow-sm">
+                <div key={i} className="bg-white dark:bg-stone-700 rounded-xl p-4 shadow-sm">
                   {h.name && (
-                    <p className="text-sm font-semibold text-park-bark mb-2">{h.name}</p>
+                    <p className="text-sm font-semibold text-park-bark dark:text-park-cream mb-2">{h.name}</p>
                   )}
                   <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
                     {DAY_ORDER.map((day) => (
                       <div key={day} className="flex justify-between text-sm">
-                        <span className="text-stone-500 capitalize">{day}</span>
-                        <span className="text-park-bark font-medium">{h.standardHours[day] || 'Closed'}</span>
+                        <span className="text-stone-500 dark:text-stone-400 capitalize">{day}</span>
+                        <span className="text-park-bark dark:text-park-cream font-medium">{h.standardHours[day] || 'Closed'}</span>
                       </div>
                     ))}
                   </div>
                   {h.description && (
-                    <p className="text-xs text-stone-500 mt-3 pt-3 border-t border-stone-100 leading-relaxed">
+                    <p className="text-xs text-stone-500 dark:text-stone-400 mt-3 pt-3 border-t border-stone-100 dark:border-stone-600 leading-relaxed">
                       {h.description}
                     </p>
                   )}
@@ -137,19 +137,19 @@ export default function ParkModal({ park, onClose }: Props) {
 
           {hasFees ? (
             <section>
-              <h3 className="font-semibold text-park-bark text-sm uppercase tracking-wider mb-3 flex items-center gap-2">
+              <h3 className="font-semibold text-park-bark dark:text-park-cream text-sm uppercase tracking-wider mb-3 flex items-center gap-2">
                 <span aria-hidden="true">🎟️</span> Entrance Fees
               </h3>
               <div className="space-y-2">
                 {park.entranceFees.map((fee, i) => (
-                  <div key={i} className="bg-white rounded-xl p-4 flex justify-between items-start shadow-sm gap-4">
+                  <div key={i} className="bg-white dark:bg-stone-700 rounded-xl p-4 flex justify-between items-start shadow-sm gap-4">
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-park-bark">{fee.title}</p>
+                      <p className="text-sm font-semibold text-park-bark dark:text-park-cream">{fee.title}</p>
                       {fee.description && (
-                        <p className="text-xs text-stone-500 mt-0.5 leading-relaxed">{fee.description}</p>
+                        <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5 leading-relaxed">{fee.description}</p>
                       )}
                     </div>
-                    <span className="text-park-forest font-bold text-lg flex-shrink-0">
+                    <span className="text-park-sage font-bold text-lg flex-shrink-0">
                       {fee.cost === '0.00' ? 'Free' : `$${fee.cost}`}
                     </span>
                   </div>
@@ -157,21 +157,21 @@ export default function ParkModal({ park, onClose }: Props) {
               </div>
             </section>
           ) : (
-            <div className="bg-park-sage/10 border border-park-sage/30 rounded-xl p-4 flex items-center gap-3">
+            <div className="bg-park-sage/10 border border-park-sage/30 dark:border-park-sage/50 rounded-xl p-4 flex items-center gap-3">
               <span className="text-2xl" aria-hidden="true">🆓</span>
               <div>
-                <p className="font-semibold text-park-bark text-sm">Free to Visit</p>
-                <p className="text-xs text-stone-500">No entrance fee for this park</p>
+                <p className="font-semibold text-park-bark dark:text-park-cream text-sm">Free to Visit</p>
+                <p className="text-xs text-stone-500 dark:text-stone-400">No entrance fee for this park</p>
               </div>
             </div>
           )}
 
           {park.weatherInfo && (
             <section>
-              <h3 className="font-semibold text-park-bark text-sm uppercase tracking-wider mb-2 flex items-center gap-2">
+              <h3 className="font-semibold text-park-bark dark:text-park-cream text-sm uppercase tracking-wider mb-2 flex items-center gap-2">
                 <span aria-hidden="true">🌤️</span> Weather
               </h3>
-              <p className="text-sm text-stone-600 leading-relaxed">{park.weatherInfo}</p>
+              <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">{park.weatherInfo}</p>
             </section>
           )}
 

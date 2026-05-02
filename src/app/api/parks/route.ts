@@ -24,6 +24,7 @@ export async function GET(request: NextRequest) {
   const q = sp.get('q') || '';
   const stateCode = sp.get('stateCode') || '';
   const designation = sp.get('designation') || '';
+  const designationCode = sp.get('designationCode') || '';
   const limit = sp.get('limit') || '50';
   const start = sp.get('start') || '0';
 
@@ -35,6 +36,7 @@ export async function GET(request: NextRequest) {
   if (q) params.set('q', q);
   if (stateCode) params.set('stateCode', stateCode);
   if (designation) params.set('designation', designation);
+  if (designationCode) params.set('designationCode', designationCode);
 
   try {
     const body = await npsGet(`/api/v1/parks?${params}`);

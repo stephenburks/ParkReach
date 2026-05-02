@@ -15,7 +15,7 @@ export default function ParkCard({ park, onClick }: Props) {
   return (
     <article
       onClick={onClick}
-      className="group cursor-pointer bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-stone-100 flex flex-col"
+      className="group cursor-pointer bg-white dark:bg-stone-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-stone-100 dark:border-stone-700 flex flex-col"
     >
       <div className="relative h-52 overflow-hidden bg-gradient-to-br from-park-forest to-park-sage flex-shrink-0">
         {image?.url ? (
@@ -41,19 +41,19 @@ export default function ParkCard({ park, onClick }: Props) {
       </div>
 
       <div className="p-5 flex flex-col flex-1">
-        <h3 className="font-bold text-park-bark text-base leading-snug mb-1.5 group-hover:text-park-forest transition-colors">
+        <h3 className="font-bold text-park-bark dark:text-park-cream text-base leading-snug mb-1.5 group-hover:text-park-forest transition-colors">
           {park.fullName}
         </h3>
         {stateList && (
-          <p className="text-xs text-park-stone mb-3 flex items-center gap-1">
+          <p className="text-xs text-park-stone dark:text-stone-400 mb-3 flex items-center gap-1">
             <span aria-hidden="true">📍</span>
             {stateList}
           </p>
         )}
-        <p className="text-sm text-stone-600 leading-relaxed line-clamp-3 flex-1">
+        <p className="text-sm text-stone-600 dark:text-stone-300 leading-relaxed line-clamp-3 flex-1">
           {park.description}
         </p>
-        <p className="text-xs text-park-sage font-medium mt-3 group-hover:text-park-forest transition-colors">
+        <p className="text-xs text-park-sage dark:text-park-sage font-medium mt-3 group-hover:text-park-forest transition-colors">
           View details →
         </p>
       </div>

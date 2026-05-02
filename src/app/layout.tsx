@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { AuthProvider } from "@/context/AuthContext";
+import { DarkModeProvider } from "@/components/DarkModeProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,11 +25,26 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                var dark = localStorage.getItem('darkMode');
+                if (dark === 'true' || (!dark && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                  document.documentElement.classList.add('dark');
+                }
+              })();
+            `,
+          }}
+        />
+      </head>
+      <body className={`${geistSans.variable} ${geistMono.variable} min-h-full flex flex-col antialiased`}>
+        <DarkModeProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </DarkModeProvider>
+      </body>
     </html>
   );
 }

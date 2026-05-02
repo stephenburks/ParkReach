@@ -1,0 +1,11 @@
+{
+  "varlock": {
+    "preventLeaks": false,
+    "redactLogs": false
+  },
+  "config": {
+    "NEXT_PUBLIC_SUPABASE_URL": {
+      "isSensitive": false
+    }
+  }
+}

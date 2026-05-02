@@ -7,7 +7,7 @@ project should read this file first.
 
 ## Current Status
 
-**Active phase:** Phase 1 — Database and Auth Backend
+**Active phase:** Phase 3 — Dark Mode and Profile
 **Last updated:** 2026-05-02
 
 ---
@@ -15,9 +15,9 @@ project should read this file first.
 ## Phase Checklist
 
 - [x] **Phase 0** — Setup and Dependencies (ShadCN, Supabase clients, bundle analyzer, middleware)
-- [ ] **Phase 1** — Database and Auth Backend (migrations, TypeScript types, callback route)
-- [ ] **Phase 2** — Auth UI (login/verify/error pages, AuthContext, AuthButton)
-- [ ] **Phase 3** — Dark Mode and Profile (useDarkMode, CSS variables, profile page, useParkSaves)
+- [x] **Phase 1** — Database and Auth Backend (migrations, TypeScript types, callback route)
+- [x] **Phase 2** — Auth UI (login/verify/error pages, AuthContext, AuthButton)
+- [x] **Phase 3** — Dark Mode and Profile (useDarkMode, CSS variables, profile page, useParkSaves)
 - [ ] **Phase 4** — Explorer Views (ViewToggle, ParkCardMinimal, ParkMap, accessibility filter)
 - [ ] **Phase 5** — Park Detail and Save Actions (detail page, weather, distance, save buttons)
 - [ ] **Phase 6** — Park of the Day (ParkOfTheDay RSC, hero section)
@@ -68,6 +68,25 @@ Record any decisions made during implementation that aren't obvious from the cod
 - **Fixes applied**: Added try/catch to middleware.ts auth refresh
 - **Blockers**: Build fails until Supabase is set up (Phase 1)
 - **Next**: Phase 1 - Database and Auth Backend
+
+### 2026-05-02 (Evening)
+- Supabase project created and credentials stored in pass
+- Created `.env.schema` with Supabase URL and anon key
+- Created `supabase/migrations/001_initial.sql` with profiles + park_saves tables + RLS
+- Created `src/types/supabase.ts` with TypeScript types
+- Created `/api/auth/callback` route
+- **Blocker**: Need to run migration in Supabase SQL Editor
+- **Next**: Phase 2 - Auth UI
+
+### 2026-05-02 (Evening)
+- Migration applied in Supabase SQL Editor
+- Created auth pages: login, verify, error
+- Created AuthContext, AuthButton components
+- Updated root layout with AuthProvider
+- Created auth callback route
+- Fixed varlock config for Supabase URL exposure
+- **Phase 2 complete**
+- **Next**: Phase 3 - Dark Mode and Profile
 
 ---
 
