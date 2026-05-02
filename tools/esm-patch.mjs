@@ -13,7 +13,9 @@ const pkgRoot = join(dirname(require.resolve('vscode-jsonrpc')), '..', '..');
 const nodeJsUrl = pathToFileURL(join(pkgRoot, 'node.js')).href;
 
 export async function resolve(specifier, context, nextResolve) {
-	if (specifier === 'vscode-jsonrpc/node') {
+	// session.js uses bare 'vscode-jsonrpc/node', client.js uses 'vscode-jsonrpc/node.js'
+	// both fail against the exports map — short-circuit both to the absolute file URL
+	if (specifier === 'vscode-jsonrpc/node' || specifier === 'vscode-jsonrpc/node.js') {
 		return { shortCircuit: true, url: nodeJsUrl };
 	}
 	return nextResolve(specifier, context);
