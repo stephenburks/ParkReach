@@ -37,6 +37,7 @@ export default function Home() {
   const [search, setSearch] = useState('');
   const [stateCode, setStateCode] = useState('');
   const [designation, setDesignation] = useState('All');
+  const [accessibility, setAccessibility] = useState('');
   const [selectedPark, setSelectedPark] = useState<Park | null>(null);
   const [start, setStart] = useState(0);
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -147,6 +148,8 @@ export default function Home() {
         onStateChange={setStateCode}
         designation={designation}
         onDesignationChange={setDesignation}
+        accessibility={accessibility}
+        onAccessibilityChange={setAccessibility}
       />
 
       {/* Main content */}

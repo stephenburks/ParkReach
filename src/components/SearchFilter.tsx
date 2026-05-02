@@ -84,7 +84,18 @@ interface Props {
   onStateChange: (v: string) => void;
   designation: string;
   onDesignationChange: (v: string) => void;
+  accessibility: string;
+  onAccessibilityChange: (v: string) => void;
 }
+
+const ACCESSIBILITY_OPTIONS = [
+  { value: '', label: 'All Accessibility' },
+  { value: 'wheelchair', label: 'Wheelchair Accessible' },
+  { value: 'audio', label: 'Audio Tour' },
+  { value: 'video', label: 'Video Tour' },
+  { value: 'braille', label: 'Braille' },
+  { value: 'sign_language', label: 'Sign Language' },
+];
 
 export default function SearchFilter({
   search,
@@ -93,6 +104,8 @@ export default function SearchFilter({
   onStateChange,
   designation,
   onDesignationChange,
+  accessibility,
+  onAccessibilityChange,
 }: Props) {
   return (
     <div className="sticky top-0 z-40 bg-park-cream/95 dark:bg-park-bark/95 backdrop-blur-md border-b border-stone-200 dark:border-stone-700 shadow-sm">
@@ -114,15 +127,26 @@ export default function SearchFilter({
               className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-800 text-park-bark dark:text-park-cream placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-none focus:ring-2 focus:ring-park-sage focus:border-transparent text-sm shadow-sm"
             />
           </div>
-          <select
+<select
             value={stateCode}
             onChange={(e) => onStateChange(e.target.value)}
             className="sm:w-52 px-3.5 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-800 text-park-bark dark:text-park-cream focus:outline-none focus:ring-2 focus:ring-park-sage focus:border-transparent text-sm shadow-sm appearance-none cursor-pointer"
           >
-            <option value="">All States &amp; Territories</option>
+            <option value="">All States & Territories</option>
             {US_STATES.map((s) => (
               <option key={s.code} value={s.code}>
                 {s.name}
+              </option>
+            ))}
+          </select>
+          <select
+            value={accessibility}
+            onChange={(e) => onAccessibilityChange(e.target.value)}
+            className="sm:w-48 px-3.5 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-800 text-park-bark dark:text-park-cream focus:outline-none focus:ring-2 focus:ring-park-sage focus:border-transparent text-sm shadow-sm appearance-none cursor-pointer"
+          >
+            {ACCESSIBILITY_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
               </option>
             ))}
           </select>

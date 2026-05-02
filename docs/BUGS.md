@@ -149,3 +149,48 @@ NPS API has rate limits and costs. Currently fetching from API on each request. 
 - **Option B: Local database** — Create a cron job to sync parks to local PostgreSQL/Supabase table daily
 - **Option C: Static generation** — Use ISR to build parks weekly, regenerate periodically
 - Consider first: Add caching layer (fastify-cache or similar)
+
+---
+
+### [Bug] Map view is buggy
+
+**Status:** open
+**Phase:** Phase 4
+**Priority:** high
+
+Map view using react-leaflet is buggy - markers don't load, icons missing, or blank map in Next.js.
+
+**Proposed fix:**
+- Disable map view for now
+- Revisit with simpler map solution (static map image, Google Maps, or use NPS GeoJSON data from nationalparkservice/data)
+
+---
+
+### [Improvement] Add accessibility filter
+
+**Status:** open
+**Phase:** Phase 4
+**Priority:** medium
+
+Add accessibility filter dropdown to SearchFilter (UI exists but NPS API doesn't expose accessibility data in parks endpoint).
+
+**Proposed fix:**
+- Requires NPS API to add accessibility fields, or
+- Scrape accessibility data from park detail pages, or
+- Manual curation in local database
+- Alternative: Show "Accessibility info available on detail page" badge on cards
+
+---
+
+### [Improvement] Add News tab
+
+**Status:** open
+**Phase:** Future
+**Priority:** medium
+
+Add a "News" tab to show national parks news and information.
+
+**Proposed fix:**
+- Use NPS API `/news` endpoint
+- Add news as a separate tab or section alongside designation tabs
+- Display park-related news articles

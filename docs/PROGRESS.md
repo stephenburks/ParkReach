@@ -18,7 +18,7 @@ project should read this file first.
 - [x] **Phase 1** — Database and Auth Backend (migrations, TypeScript types, callback route)
 - [x] **Phase 2** — Auth UI (login/verify/error pages, AuthContext, AuthButton)
 - [x] **Phase 3** — Dark Mode and Profile (useDarkMode, CSS variables, profile page, useParkSaves)
-- [ ] **Phase 4** — Explorer Views (ViewToggle, ParkCardMinimal, ParkMap, accessibility filter)
+- [x] **Phase 4** — Explorer Views (ViewToggle, ParkCardMinimal, ParkMap, accessibility filter)
 - [ ] **Phase 5** — Park Detail and Save Actions (detail page, weather, distance, save buttons)
 - [ ] **Phase 6** — Park of the Day (ParkOfTheDay RSC, hero section)
 - [ ] **Phase 7** — SEO and Sitemap (generateMetadata, sitemap.ts, robots.ts, JSON-LD)
