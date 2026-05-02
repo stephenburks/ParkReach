@@ -24,3 +24,4 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - **ShadCN + Tailwind.** Use ShadCN components for UI elements. Use Tailwind utilities for layout and one-offs. Do not reach for custom CSS unless Tailwind genuinely cannot cover it.
 - **Server Components by default.** Only add `'use client'` when the component needs browser APIs, event handlers, or React state. Keep data fetching in RSCs.
 - **URL-driven state.** View mode (`?view=`), filters, and search query live in URL params so they are shareable and bookmarkable.
+- **Commit messages** — conventional format (`type(scope): message`), concise, no co-author or tool attribution lines.

@@ -19,7 +19,7 @@ Next.js 16 (App Router) · TypeScript (strict) · Tailwind CSS v4 · ShadCN · S
 - ShadCN for UI components, Tailwind utilities for layout and one-offs.
 - URL-driven state for view mode, filters, and search.
 - Placeholder domain is `parkreach.app` until a real domain is confirmed.
-- Commits use conventional format: `type(scope): message`
+- Commits use conventional format: `type(scope): message` — concise, no co-author or tool attribution lines
 
 ## Code Style
 - Tabs for indentation
