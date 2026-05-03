@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useCallback } from 'react';
-import { Park } from '@/types/park';
-import ParkCard from '@/components/ParkCard';
-import ParkModal from '@/components/ParkModal';
-import SearchFilter from '@/components/SearchFilter';
-import { AuthButton } from '@/components/AuthButton';
-import { AuthModal } from '@/components/AuthModal';
-import { DarkModeToggle } from '@/components/DarkModeToggle';
-import { useParks } from '@/hooks/useParks';
+import { useState, useEffect, useCallback } from "react";
+import { Park } from "@/types/park";
+import ParkCard from "@/components/ParkCard";
+import ParkModal from "@/components/ParkModal";
+import SearchFilter from "@/components/SearchFilter";
+import { AuthButton } from "@/components/AuthButton";
+import { AuthModal } from "@/components/AuthModal";
+import { DarkModeToggle } from "@/components/DarkModeToggle";
+import { useParks } from "@/hooks/useParks";
 
 function SkeletonCard() {
   return (
@@ -28,21 +28,24 @@ function SkeletonCard() {
 }
 
 function formatPlaceType(desig: string): string {
-  if (desig === 'All') return 'places';
-  const label = desig.replace(/^National /, '');
-  return label + (label.endsWith('s') ? '' : 's');
+  if (desig === "All") return "Places";
+  const label = desig.replace(/^National /, "");
+  return label + (label.endsWith("s") ? "" : "s");
 }
 
 export default function Home() {
-  const [search, setSearch] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [stateCode, setStateCode] = useState('');
-  const [designation, setDesignation] = useState('All');
-  const [accessibility, setAccessibility] = useState('');
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [stateCode, setStateCode] = useState("");
+  const [designation, setDesignation] = useState("All");
+  const [accessibility, setAccessibility] = useState("");
   const [selectedPark, setSelectedPark] = useState<Park | null>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
 
-  const handleSelectPark = useCallback((park: Park) => setSelectedPark(park), []);
+  const handleSelectPark = useCallback(
+    (park: Park) => setSelectedPark(park),
+    [],
+  );
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(search), 300);
@@ -59,7 +62,7 @@ export default function Home() {
   } = useParks(debouncedSearch, stateCode, designation);
 
   const parks = data?.pages.flatMap((p) => p.data) ?? [];
-  const total = parseInt(data?.pages[0]?.total ?? '0', 10);
+  const total = parseInt(data?.pages[0]?.total ?? "0", 10);
 
   return (
     <div className="min-h-screen bg-park-cream dark:bg-park-bark">
@@ -68,11 +71,16 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-full bg-white/15 flex items-center justify-center text-3xl flex-shrink-0" aria-hidden="true">
+              <div
+                className="w-14 h-14 rounded-full bg-white/15 flex items-center justify-center text-3xl flex-shrink-0"
+                aria-hidden="true"
+              >
                 🏕️
               </div>
               <div>
-                <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">National Parks Explorer</h1>
+                <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
+                  National Parks Explorer
+                </h1>
                 <p className="text-park-cream/70 mt-1 text-sm sm:text-base">
                   Discover America&apos;s natural and cultural treasures
                 </p>
@@ -105,15 +113,19 @@ export default function Home() {
           <p className="text-sm text-park-stone dark:text-stone-400 mb-6">
             {total > 0
               ? `Showing ${parks.length} of ${total} ${formatPlaceType(designation)}`
-              : 'No places found — try a different search'}
+              : "No places found — try a different search"}
           </p>
         )}
 
         {/* Error state */}
         {error && (
           <div className="text-center py-16">
-            <p className="text-5xl mb-4" aria-hidden="true">⛺</p>
-            <p className="text-park-bark dark:text-park-cream font-semibold text-lg mb-2">Something went wrong</p>
+            <p className="text-5xl mb-4" aria-hidden="true">
+              ⛺
+            </p>
+            <p className="text-park-bark dark:text-park-cream font-semibold text-lg mb-2">
+              Something went wrong
+            </p>
             <p className="text-stone-500 text-sm">{error.message}</p>
           </div>
         )}
@@ -121,7 +133,9 @@ export default function Home() {
         {/* Grid */}
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Array.from({ length: 9 }).map((_, i) => <SkeletonCard key={i} />)}
+            {Array.from({ length: 9 }).map((_, i) => (
+              <SkeletonCard key={i} />
+            ))}
           </div>
         ) : parks.length > 0 ? (
           <>
@@ -143,16 +157,24 @@ export default function Home() {
                   disabled={isFetchingNextPage}
                   className="px-8 py-3 bg-park-forest hover:bg-park-bark text-white font-semibold rounded-full transition-colors disabled:opacity-60 disabled:cursor-not-allowed text-sm shadow-sm"
                 >
-                  {isFetchingNextPage ? 'Loading…' : `Load More Parks (${total - parks.length} remaining)`}
+                  {isFetchingNextPage
+                    ? "Loading…"
+                    : `Load More Parks (${total - parks.length} remaining)`}
                 </button>
               </div>
             )}
           </>
         ) : !error ? (
           <div className="text-center py-16">
-            <p className="text-5xl mb-4" aria-hidden="true">🔭</p>
-            <p className="text-park-bark dark:text-park-cream font-semibold text-lg mb-2">No places found</p>
-            <p className="text-stone-500 text-sm">Try adjusting your search or filters</p>
+            <p className="text-5xl mb-4" aria-hidden="true">
+              🔭
+            </p>
+            <p className="text-park-bark dark:text-park-cream font-semibold text-lg mb-2">
+              No places found
+            </p>
+            <p className="text-stone-500 text-sm">
+              Try adjusting your search or filters
+            </p>
           </div>
         ) : null}
       </main>
@@ -163,14 +185,22 @@ export default function Home() {
       )}
 
       {/* Auth modal */}
-      <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+      />
 
       {/* Footer */}
       <footer className="mt-16 border-t border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center">
           <p className="text-xs text-park-stone dark:text-stone-400">
-            Data provided by the{' '}
-            <a href="https://www.nps.gov/subjects/developer/index.htm" target="_blank" rel="noopener noreferrer" className="text-park-forest hover:underline font-medium">
+            Data provided by the{" "}
+            <a
+              href="https://www.nps.gov/subjects/developer/index.htm"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-park-forest hover:underline font-medium"
+            >
               National Park Service API
             </a>
           </p>
