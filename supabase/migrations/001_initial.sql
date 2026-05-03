@@ -41,7 +41,9 @@ CREATE POLICY "Users can insert own profile" ON profiles
 
 -- Park saves: full access for own user
 CREATE POLICY "Users can manage own park saves" ON park_saves
-    FOR ALL USING (auth.uid() = user_id);
+    FOR ALL
+    USING (auth.uid() = user_id)
+    WITH CHECK (auth.uid() = user_id);
 
 -- Trigger: auto-create profile on user signup
 CREATE OR REPLACE FUNCTION public.handle_new_user()
@@ -51,7 +53,7 @@ BEGIN
     VALUES (NEW.id, NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'avatar_url');
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp;
 
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
