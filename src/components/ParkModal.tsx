@@ -70,6 +70,13 @@ export default function ParkModal({ park, onClose }: Props) {
             ✕
           </button>
 
+          <a
+            href={`/parks/${park.parkCode}`}
+            className="absolute top-4 left-4 bg-black/40 hover:bg-black/70 text-white rounded-full px-4 h-10 flex items-center justify-center transition-colors text-sm font-medium"
+          >
+            Full Page →
+          </a>
+
           <div className="absolute bottom-4 left-5 right-16">
             {park.designation && (
               <span className="bg-park-forest/90 text-white text-xs font-semibold px-2.5 py-1 rounded-full mb-2 inline-block">
