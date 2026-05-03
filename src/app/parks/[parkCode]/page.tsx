@@ -50,7 +50,7 @@ async function getAmenities(parkCode: string): Promise<string | null> {
 
     // Don't unwrap - the data is already in correct format [{name:..., categories:..., parks:...}, ...]
     console.log('[DEBUG] final amenities length:', amenities.length);
-    console.log('[DEBUG] first amenity sample:', JSON.stringify(amenities[0]).slice(0, 200));
+    console.log('[DEBUG] first 3 amenities:', JSON.stringify(amenities.slice(0, 3)));
 
     const accessibilityAmenities: string[] = [];
 
