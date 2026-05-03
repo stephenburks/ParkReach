@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Heart, HeartOff } from 'lucide-react';
+import { Heart } from 'lucide-react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { useSaves } from '@/hooks/useParkSaves';
 
@@ -18,15 +19,21 @@ export function WishlistButton({ parkCode, minimal = false }: Props) {
   const handleClick = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     if (!isAuthenticated) {
-      alert('Please sign in to save parks to your wishlist');
+      toast.info('Sign in to save parks to your wishlist');
       return;
     }
-    
+
     setIsLoading(true);
-    await toggleWishlist(parkCode);
+    const ok = await toggleWishlist(parkCode);
     setIsLoading(false);
+
+    if (ok) {
+      toast.success(wishlisted ? 'Removed from wishlist' : 'Added to wishlist');
+    } else {
+      toast.error('Something went wrong — please try again');
+    }
   };
 
   if (minimal) {
@@ -39,11 +46,7 @@ export function WishlistButton({ parkCode, minimal = false }: Props) {
         className="h-8 w-8 p-0 rounded-full hover:bg-red-50"
         aria-label={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
       >
-        {wishlisted ? (
-          <Heart className="h-4 w-4 fill-current text-red-500" />
-        ) : (
-          <Heart className="h-4 w-4 text-gray-600" />
-        )}
+        <Heart className={`h-4 w-4 ${wishlisted ? 'fill-current text-red-500' : 'text-gray-600'}`} />
       </Button>
     );
   }

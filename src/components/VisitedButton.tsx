@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { MapPin, CheckCircle } from 'lucide-react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { useSaves } from '@/hooks/useParkSaves';
 
@@ -18,15 +19,21 @@ export function VisitedButton({ parkCode, minimal = false }: Props) {
   const handleClick = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     if (!isAuthenticated) {
-      alert('Please sign in to mark parks as visited');
+      toast.info('Sign in to mark parks as visited');
       return;
     }
-    
+
     setIsLoading(true);
-    await toggleVisited(parkCode);
+    const ok = await toggleVisited(parkCode);
     setIsLoading(false);
+
+    if (ok) {
+      toast.success(visited ? 'Removed from visited' : 'Marked as visited');
+    } else {
+      toast.error('Something went wrong — please try again');
+    }
   };
 
   if (minimal) {

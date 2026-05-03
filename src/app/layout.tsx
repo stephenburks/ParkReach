@@ -5,6 +5,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { SavesProvider } from "@/context/SavesContext";
 import { QueryProvider } from "@/components/QueryProvider";
 import { DarkModeProvider } from "@/components/DarkModeProvider";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -48,6 +49,7 @@ export default function RootLayout({
             <AuthProvider>
               <SavesProvider>{children}</SavesProvider>
             </AuthProvider>
+            <Toaster />
           </DarkModeProvider>
         </QueryProvider>
       </body>
