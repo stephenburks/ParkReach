@@ -1,7 +1,6 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
 import { Heart } from 'lucide-react';
 import { Park } from '@/types/park';
 import { WishlistButton } from './WishlistButton';
@@ -9,7 +8,7 @@ import { VisitedButton } from './VisitedButton';
 
 interface Props {
   park: Park;
-  onClick?: () => void;
+  onClick: () => void;
 }
 
 export default function ParkCard({ park, onClick }: Props) {
@@ -52,12 +51,10 @@ export default function ParkCard({ park, onClick }: Props) {
         )}
       </div>
 
-      <div className="p-5 flex flex-col flex-1">
-        <Link href={`/parks/${park.parkCode}`} onClick={onClick}>
-          <h3 className="font-bold text-park-bark dark:text-park-cream text-base leading-snug mb-1.5 group-hover:text-park-forest transition-colors">
-            {park.fullName}
-          </h3>
-        </Link>
+      <div className="p-5 flex flex-col flex-1" onClick={onClick}>
+        <h3 className="font-bold text-park-bark dark:text-park-cream text-base leading-snug mb-1.5 group-hover:text-park-forest transition-colors">
+          {park.fullName}
+        </h3>
         {stateList && (
           <p className="text-xs text-park-stone dark:text-stone-400 mb-3 flex items-center gap-1">
             <span aria-hidden="true">📍</span>
@@ -67,9 +64,9 @@ export default function ParkCard({ park, onClick }: Props) {
         <p className="text-sm text-stone-600 dark:text-stone-300 leading-relaxed line-clamp-3 flex-1">
           {park.description}
         </p>
-        <Link href={`/parks/${park.parkCode}`} onClick={onClick} className="text-xs text-park-sage dark:text-park-sage font-medium mt-3 group-hover:text-park-forest transition-colors">
+        <p className="text-xs text-park-sage dark:text-park-sage font-medium mt-3 group-hover:text-park-forest transition-colors">
           View details →
-        </Link>
+        </p>
       </div>
     </article>
   );
