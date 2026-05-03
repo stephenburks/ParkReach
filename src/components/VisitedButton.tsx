@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { MapPin, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useSaves } from '@/hooks/useParkSaves';
 
 interface Props {
   parkCode: string;
@@ -11,15 +10,16 @@ interface Props {
 }
 
 export function VisitedButton({ parkCode, minimal = false }: Props) {
-  const { isVisited, toggleVisited, loading } = useSaves();
+  const [visited, setVisited] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const visited = isVisited(parkCode);
 
   const handleClick = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    
+    // Toggle local state for UI feedback
     setIsLoading(true);
-    await toggleVisited(parkCode);
+    setVisited(!visited);
     setIsLoading(false);
   };
 
@@ -29,14 +29,14 @@ export function VisitedButton({ parkCode, minimal = false }: Props) {
         variant="ghost"
         size="sm"
         onClick={handleClick}
-        disabled={loading || isLoading}
-        className="h-8 w-8 p-0 rounded-full"
+        disabled={isLoading}
+        className="h-8 w-8 p-0 rounded-full hover:bg-green-50"
         aria-label={visited ? 'Mark as not visited' : 'Mark as visited'}
       >
         {visited ? (
           <CheckCircle className="h-4 w-4 fill-current text-green-500" />
         ) : (
-          <MapPin className="h-4 w-4" />
+          <MapPin className="h-4 w-4 text-gray-600" />
         )}
       </Button>
     );
@@ -46,7 +46,7 @@ export function VisitedButton({ parkCode, minimal = false }: Props) {
     <Button
       variant={visited ? 'default' : 'outline'}
       onClick={handleClick}
-      disabled={loading || isLoading}
+      disabled={isLoading}
       className={visited ? 'bg-park-forest text-white' : ''}
     >
       <MapPin className={`h-4 w-4 mr-2 ${visited ? 'fill-current' : ''}`} />
