@@ -44,8 +44,8 @@ async function getAmenities(parkCode: string): Promise<string | null> {
     console.log('[DEBUG] data.data length:', data.data?.length);
     console.log('[DEBUG] first item type:', typeof data.data?.[0]);
 
-    // The NPS parksplaces endpoint returns amenities as direct array
-    let amenities = data.data || [];
+    // The NPS parksplaces endpoint returns data.data as [[{amenity1}, {amenity2}, ...]]
+    let amenities = data.data?.[0] || [];
     console.log('[DEBUG] initial amenities length:', amenities.length);
 
     // Don't unwrap - the data is already in correct format [{name:..., categories:..., parks:...}, ...]
