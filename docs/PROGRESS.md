@@ -1,6 +1,6 @@
 # ParkReach — Progress
 
-Last updated: 2026-05-03
+Last updated: 2026-05-03 (Phase 2 started)
 
 The core product is built. All major features exist in code.
 
@@ -46,6 +46,12 @@ The core product is built. All major features exist in code.
 
 - Wishlist and visited sections with park name resolution
 - Dark mode persisted to Supabase for auth'd users, localStorage for anon
+- `generateMetadata` with noindex (profile split into server wrapper + `ProfileContent` client component)
+- `loading.tsx` route-level skeleton
+
+**Park Detail**
+
+- `loading.tsx` route-level skeleton
 
 **Accessibility baseline**
 
@@ -55,14 +61,21 @@ The core product is built. All major features exist in code.
 
 ---
 
-## Backlog — Housekeeping
+---
 
-| #   | What                                                       | Notes                                                                                    |
-| --- | ---------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| 1   | Merge `.squad/decisions/inbox/` into `.squad/decisions.md` | Four decision notes pending merge (Scrappy). All describe decisions already implemented. |
-| 2   | `generateMetadata` on profile page                         | Minimal — `title: 'My Profile \| ParkReach'` + `noindex`.                                |
-| 3   | `loading.tsx` for park detail and profile routes           | Improves perceived performance. Low effort.                                              |
+## Phase 2 — Polish & Pre-Launch
+
+| #   | What                          | Status      | Notes                                              |
+| --- | ----------------------------- | ----------- | -------------------------------------------------- |
+| 1   | Decisions inbox merged        | ✅ Done      | 8 decisions now in `.squad/decisions.md`           |
+| 2   | `generateMetadata` on profile | ✅ Done      | Server wrapper + noindex                           |
+| 3   | `loading.tsx` skeletons       | ✅ Done      | Park detail + profile                              |
+| 4   | Content Security Policy       | ✅ Done        | Nonce-based CSP in `proxy.ts`; `x-nonce` forwarded to RSC |
+| 5   | Test coverage                 | 🔄 In progress | 24 tests: utils, ParkCardMinimal, /api/parks; Playwright e2e pending |
+| 6   | Accessibility audit           | ⬜ Not started | axe-core scan + manual keyboard walkthrough        |
+| 7   | OG image generation           | ⬜ Not started | `parks/[parkCode]/opengraph-image.tsx`             |
+| 8   | Map marker clustering         | ⬜ Not started | `@googlemaps/markerclusterer`                      |
 
 ---
 
-See `docs/FUTURE_FEATURES.md` for everything that's intentionally deferred.
+See `docs/FUTURE_FEATURES.md` for Phase 3 features and blocked items.
