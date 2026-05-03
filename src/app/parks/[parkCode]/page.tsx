@@ -71,7 +71,7 @@ export default async function ParkDetailPage({ params }: Props) {
 
         <div className="relative h-72 sm:h-96">
           {image?.url ? (
-            <Image src={image.url} alt={image.altText || park.fullName} fill className="object-cover" unoptimized priority />
+            <Image src={image.url} alt={image.altText || park.fullName} fill className="object-cover" priority />
           ) : (
             <div className="flex items-center justify-center h-full bg-park-forest">
               <span className="text-9xl opacity-20">🏔️</span>
