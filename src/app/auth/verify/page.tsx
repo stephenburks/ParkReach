@@ -1,18 +1,13 @@
 'use client'
 
 import { Send } from 'lucide-react'
-import { createBrowserClient } from '@supabase/ssr'
+import { createClient } from '@/lib/supabase/client'
 
 export default function VerifyPage() {
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
-
   const handleResend = async () => {
     const email = new URLSearchParams(window.location.search).get('email')
     if (email) {
-      await supabase.auth.signInWithOtp({ email })
+      await createClient().auth.signInWithOtp({ email })
       alert('Magic link sent!')
     }
   }

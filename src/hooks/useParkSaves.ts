@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { createBrowserClient } from '@supabase/ssr';
+import { createClient } from '@/lib/supabase/client';
 import { useAuth } from '@/context/AuthContext';
 
 type ParkSave = {
@@ -17,11 +17,7 @@ export function useSaves() {
   const [saves, setSaves] = useState<ParkSave[]>([])
   const [loading, setLoading] = useState(true)
   const { user } = useAuth()
-
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
+  const supabase = createClient()
 
   const fetchSaves = useCallback(async () => {
     if (!user) {
@@ -38,7 +34,7 @@ export function useSaves() {
       setSaves(data)
     }
     setLoading(false)
-  }, [supabase, user])
+  }, [user])
 
   useEffect(() => {
     fetchSaves()

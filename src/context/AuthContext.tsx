@@ -1,11 +1,9 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState } from 'react'
-import {
-  createBrowserClient,
-} from '@supabase/ssr'
+import { createClient } from '@/lib/supabase/client'
 
-type AuthClient = ReturnType<typeof createBrowserClient>
+type AuthClient = ReturnType<typeof createClient>
 
 type User = {
   id: string
@@ -30,12 +28,7 @@ const AuthContext = createContext<AuthContextType>({
 })
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [supabase] = useState(() =>
-    createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    )
-  )
+  const [supabase] = useState(createClient)
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
 
