@@ -137,7 +137,7 @@ export default async function ParkDetailPage({ params }: Props) {
             <p className="text-stone-700 dark:text-stone-300 leading-relaxed">{park.description}</p>
           </section>
 
-          {park.accessibility && (
+          {(amenitiesAccessibility || park.accessibility) && (
             <AccessibilityInfo accessibility={amenitiesAccessibility || park.accessibility} />
           )}
 
