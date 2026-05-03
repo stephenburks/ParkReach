@@ -60,21 +60,21 @@ const US_STATES = [
 ];
 
 const DESIGNATIONS = [
-  'All',
-  'National Parks',
-  'National Monuments',
-  'National Historic Parks',
-  'National Recreation Areas',
-  'National Seashores',
-  'National Battlefields',
-  'National Memorials',
-  'National Preserves',
-  'National Historic Sites',
+  "All",
+  "National Parks",
+  "National Monuments",
+  "National Historical Parks",
+  "National Recreation Areas",
+  "National Seashores",
+  "National Battlefields",
+  "National Memorials",
+  "National Preserves",
+  "National Historic Sites",
 ];
 
 function formatDesignationLabel(desig: string): string {
-  if (desig === 'All') return 'All';
-  return desig.replace(/^National /, '');
+  if (desig === "All") return "All";
+  return desig.replace(/^National /, "");
 }
 
 interface Props {
@@ -89,12 +89,12 @@ interface Props {
 }
 
 const ACCESSIBILITY_OPTIONS = [
-  { value: '', label: 'All Accessibility' },
-  { value: 'wheelchair', label: 'Wheelchair Accessible' },
-  { value: 'audio', label: 'Audio Tour' },
-  { value: 'video', label: 'Video Tour' },
-  { value: 'braille', label: 'Braille' },
-  { value: 'sign_language', label: 'Sign Language' },
+  { value: "", label: "All Accessibility" },
+  { value: "wheelchair", label: "Wheelchair Accessible" },
+  { value: "audio", label: "Audio Tour" },
+  { value: "video", label: "Video Tour" },
+  { value: "braille", label: "Braille" },
+  { value: "sign_language", label: "Sign Language" },
 ];
 
 export default function SearchFilter({
@@ -127,7 +127,7 @@ export default function SearchFilter({
               className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-800 text-park-bark dark:text-park-cream placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-none focus:ring-2 focus:ring-park-sage focus:border-transparent text-sm shadow-sm"
             />
           </div>
-<select
+          <select
             value={stateCode}
             onChange={(e) => onStateChange(e.target.value)}
             className="sm:w-52 px-3.5 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-800 text-park-bark dark:text-park-cream focus:outline-none focus:ring-2 focus:ring-park-sage focus:border-transparent text-sm shadow-sm appearance-none cursor-pointer"
