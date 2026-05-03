@@ -44,9 +44,15 @@ The `/parks` endpoint does not include accessibility amenity detail. The park de
 
 ---
 
-### 8. Map library — `@vis.gl/react-google-maps`
+### 8. Map library — `@vis.gl/react-google-maps` + `@googlemaps/markerclusterer`
 
-Google Maps integration uses `@vis.gl/react-google-maps` (not Leaflet, not `@react-google-maps/api`). `ParkMap` is lazy-loaded via `next/dynamic` with `ssr: false` so the Maps JS bundle only loads when the user switches to map view. Clustering is deferred — ~470 markers at zoom 4 are manageable without it.
+Google Maps integration uses `@vis.gl/react-google-maps`. `ParkMap` is lazy-loaded via `next/dynamic` with `ssr: false`. Clustering is implemented via `@googlemaps/markerclusterer` using a `ClusteredPins` inner component that calls `useMap()` to access the Google Maps instance — this pattern is required because `useMap()` only works inside `<APIProvider>`.
+
+---
+
+### 9. WCAG 4.1.2 fixes — form label gaps (Phase 2 audit)
+
+All `<input>` and `<select>` elements in `SearchFilter` and `AuthModal` now have associated `<label>` elements (visually hidden with `sr-only`). Designation filter buttons have `aria-pressed`. The `ParkCard` hover overlay uses `group-focus-within:opacity-100` so save buttons are reachable by keyboard. `text-stone-400` replaced with `text-stone-500` in `AuthModal` light-mode text (contrast ratio 2.52:1 → 4.79:1). The hero title overlay in `ParkModal` has `pointer-events-none` (display-only, was intercepting clicks on save buttons below).
 
 ---
 

@@ -158,7 +158,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                     <span className="w-full border-t border-stone-200 dark:border-stone-600" />
                   </div>
                   <div className="relative flex justify-center text-xs">
-                    <span className="bg-white dark:bg-stone-800 px-2 text-stone-400">or sign in with email</span>
+                    <span className="bg-white dark:bg-stone-800 px-2 text-stone-500">or sign in with email</span>
                   </div>
                 </div>
 
@@ -187,7 +187,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                 </form>
               </div>
 
-              <p className="text-xs text-stone-400 dark:text-stone-500 mt-6">
+              <p className="text-xs text-stone-500 dark:text-stone-400 mt-6">
                 {"Don't have an account? It'll be created automatically"}
               </p>
             </>

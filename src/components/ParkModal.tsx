@@ -113,7 +113,7 @@ export default function ParkModal({ park, onClose }: Props) {
             Full Page →
           </a>
 
-          <div className="absolute bottom-4 left-5 right-16">
+          <div className="absolute bottom-4 left-5 right-16 pointer-events-none">
             {park.designation && (
               <span className="bg-park-forest/90 text-white text-xs font-semibold px-2.5 py-1 rounded-full mb-2 inline-block">
                 {park.designation}
