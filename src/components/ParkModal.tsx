@@ -1,8 +1,7 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { Park } from '@/types/park';
 import { WishlistButton } from '@/components/WishlistButton';
 import { VisitedButton } from '@/components/VisitedButton';
@@ -22,18 +21,52 @@ export default function ParkModal({ park, onClose }: Props) {
   const hasFees = park.entranceFees.length > 0;
   const hasHours = park.operatingHours.length > 0;
   const stateList = park.states.split(',').join(' · ');
+  const modalRef = useRef<HTMLDivElement>(null);
+  const closeBtnRef = useRef<HTMLButtonElement>(null);
+
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      onClose();
+      return;
+    }
+
+    if (e.key !== 'Tab' || !modalRef.current) return;
+
+    const focusable = Array.from(
+      modalRef.current.querySelectorAll<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+      ),
+    ).filter((el): el is HTMLElement => !el.hasAttribute('disabled') && el.offsetParent !== null);
+
+    if (focusable.length === 0) return;
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    if (e.shiftKey) {
+      if (document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      }
+    } else {
+      if (document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+  }, [onClose]);
 
   useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    document.addEventListener('keydown', handleKey);
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    document.addEventListener('keydown', handleKeyDown);
     document.body.style.overflow = 'hidden';
+    closeBtnRef.current?.focus();
     return () => {
-      document.removeEventListener('keydown', handleKey);
+      document.removeEventListener('keydown', handleKeyDown);
       document.body.style.overflow = '';
+      previouslyFocused?.focus();
     };
-  }, [onClose]);
+  }, [handleKeyDown]);
 
   return (
     <div
@@ -50,7 +83,7 @@ export default function ParkModal({ park, onClose }: Props) {
       />
 
       {/* Panel */}
-      <div className="relative w-full sm:max-w-2xl bg-park-cream dark:bg-stone-800 rounded-t-3xl sm:rounded-2xl shadow-2xl max-h-[92vh] overflow-y-auto z-10">
+      <div ref={modalRef} className="relative w-full sm:max-w-2xl bg-park-cream dark:bg-stone-800 rounded-t-3xl sm:rounded-2xl shadow-2xl max-h-[92vh] overflow-y-auto z-10">
         {/* Hero */}
         <div className="relative h-64 sm:h-72 bg-gradient-to-br from-park-forest to-park-sage rounded-t-3xl sm:rounded-t-2xl overflow-hidden flex-shrink-0">
           {image?.url && (
@@ -65,6 +98,7 @@ export default function ParkModal({ park, onClose }: Props) {
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
 
           <button
+            ref={closeBtnRef}
             onClick={onClose}
             className="absolute top-4 right-4 bg-black/40 hover:bg-black/70 text-white rounded-full w-10 h-10 flex items-center justify-center transition-colors text-lg font-medium"
             aria-label="Close modal"
@@ -89,7 +123,7 @@ export default function ParkModal({ park, onClose }: Props) {
               {park.fullName}
             </h2>
             {stateList && (
-              <p className="text-white/80 text-sm mt-1">📍 {stateList}</p>
+              <p className="text-white/80 text-sm mt-1"><span aria-hidden="true">📍</span> {stateList}</p>
             )}
           </div>
         </div>

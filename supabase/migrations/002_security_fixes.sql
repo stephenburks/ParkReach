@@ -1,3 +1,8 @@
+-- DEPRECATED: This migration is redundant.
+-- All fixes here (WITH CHECK on park_saves policy, SET search_path on handle_new_user)
+-- are already present in 001_initial.sql. Safe to delete.
+-- Kept for historical reference only.
+
 -- Security fixes for park_saves RLS and handle_new_user trigger
 
 -- Fix 1: Add WITH CHECK to park_saves policy so INSERT/UPDATE

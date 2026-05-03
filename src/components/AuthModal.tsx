@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import { useAuth } from '@/context/AuthContext'
 import { createClient } from '@/lib/supabase/client'
 import { X, Mail, Loader2 } from 'lucide-react'
@@ -18,25 +18,63 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
   const [loading, setLoading] = useState(false)
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const emailInputRef = useRef<HTMLInputElement>(null)
+  const modalRef = useRef<HTMLDivElement>(null)
+  const triggerRef = useRef<HTMLElement | null>(null)
+
+  const handleClose = useCallback(() => {
+    setEmail('')
+    setMagicLinkSent(false)
+    onClose()
+  }, [onClose])
+
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (e.key === 'Escape' && isOpen) {
+      handleClose()
+      return
+    }
+
+    if (e.key !== 'Tab' || !modalRef.current) return
+
+    const focusable = Array.from(
+      modalRef.current.querySelectorAll<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+      ),
+    ).filter((el) => !el.hasAttribute('disabled') && el.offsetParent !== null)
+
+    if (focusable.length === 0) return
+
+    const first = focusable[0]
+    const last = focusable[focusable.length - 1]
+
+    if (e.shiftKey) {
+      if (document.activeElement === first) {
+        e.preventDefault()
+        last.focus()
+      }
+    } else {
+      if (document.activeElement === last) {
+        e.preventDefault()
+        first.focus()
+      }
+    }
+  }, [isOpen, handleClose])
 
   useEffect(() => {
     if (isOpen) {
+      triggerRef.current = document.activeElement as HTMLElement | null
       closeButtonRef.current?.focus()
+      document.body.style.overflow = 'hidden'
+      document.addEventListener('keydown', handleKeyDown)
     } else {
-      setEmail('')
-      setMagicLinkSent(false)
+      document.body.style.overflow = ''
+      document.removeEventListener('keydown', handleKeyDown)
+      triggerRef.current?.focus()
     }
-  }, [isOpen])
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
-        onClose()
-      }
+    return () => {
+      document.body.style.overflow = ''
+      document.removeEventListener('keydown', handleKeyDown)
     }
-    document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [isOpen, onClose])
+  }, [isOpen, handleKeyDown])
 
   const handleMagicLink = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -65,17 +103,17 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/50"
-        onClick={onClose}
+        onClick={handleClose}
         aria-hidden="true"
       />
 
       {/* Modal */}
-      <div className="relative bg-white dark:bg-stone-800 rounded-2xl shadow-2xl max-w-md w-full mx-4 p-8 animate-in fade-in zoom-in-95 duration-200">
+      <div ref={modalRef} className="relative bg-white dark:bg-stone-800 rounded-2xl shadow-2xl max-w-md w-full mx-4 p-8 animate-in fade-in zoom-in-95 duration-200">
         <Button
           ref={closeButtonRef}
           variant="ghost"
           size="sm"
-          onClick={onClose}
+        onClick={handleClose}
           className="absolute top-4 right-4"
           aria-label="Close sign in dialog"
         >

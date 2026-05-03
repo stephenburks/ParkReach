@@ -45,7 +45,7 @@ async function getAmenities(parkCode: string): Promise<string | null> {
     console.log('[DEBUG] first item type:', typeof data.data?.[0]);
 
     // NPS parksplaces returns: { data: [{name, categories, parks}, ...] }
-    let amenities = data.data || [];
+    const amenities = data.data || [];
     console.log('[DEBUG] initial amenities length:', amenities.length);
 
     // Don't unwrap - the data is already in correct format [{name:..., categories:..., parks:...}, ...]
@@ -137,7 +137,7 @@ export default async function ParkDetailPage({ params }: Props) {
             <Image src={image.url} alt={image.altText || park.fullName} fill className="object-cover" priority />
           ) : (
             <div className="flex items-center justify-center h-full bg-park-forest">
-              <span className="text-9xl opacity-20">🏔️</span>
+              <span className="text-9xl opacity-20" aria-hidden="true">🏔️</span>
             </div>
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />

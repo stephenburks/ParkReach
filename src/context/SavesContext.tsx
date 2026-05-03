@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState, useCallback } from 'react'
+import { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useAuth } from '@/context/AuthContext'
 
@@ -37,26 +37,24 @@ export function SavesProvider({ children }: { children: React.ReactNode }) {
 	const [saves, setSaves] = useState<ParkSave[]>([])
 	const [loading, setLoading] = useState(true)
 	const { user } = useAuth()
-	const supabase = createClient()
+	const supabase = useMemo(() => createClient(), [])
 
 	const fetchSaves = useCallback(async () => {
-		if (!user) {
-			setSaves([])
-			setLoading(false)
-			return
-		}
+		if (!user) return []
 
 		const { data, error } = await supabase
 			.from('park_saves')
 			.select('id, user_id, park_code, wishlisted, visited, created_at')
 			.eq('user_id', user.id)
 
-		if (!error && data) setSaves(data)
-		setLoading(false)
-	}, [user])
+		return error ? [] : (data ?? [])
+	}, [user, supabase])
 
 	useEffect(() => {
-		fetchSaves()
+		fetchSaves().then((result) => {
+			setSaves(result)
+			setLoading(false)
+		})
 	}, [fetchSaves])
 
 	const toggleFlag = async (parkCode: string, field: 'wishlisted' | 'visited'): Promise<boolean> => {

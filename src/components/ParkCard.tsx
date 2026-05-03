@@ -1,6 +1,6 @@
 'use client';
 
-import { memo } from 'react';
+import { memo, type KeyboardEvent } from 'react';
 import Image from 'next/image';
 import { Park } from '@/types/park';
 import { WishlistButton } from './WishlistButton';
@@ -9,6 +9,13 @@ import { VisitedButton } from './VisitedButton';
 interface Props {
   park: Park;
   onSelect: (park: Park) => void;
+}
+
+function handleCardKeyDown(e: KeyboardEvent<HTMLDivElement>, onSelect: () => void) {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    onSelect();
+  }
 }
 
 function ParkCard({ park, onSelect }: Props) {
@@ -50,7 +57,13 @@ function ParkCard({ park, onSelect }: Props) {
         )}
       </div>
 
-      <div className="p-5 flex flex-col flex-1" onClick={() => onSelect(park)}>
+      <div
+        className="p-5 flex flex-col flex-1 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-park-forest"
+        role="button"
+        tabIndex={0}
+        onClick={() => onSelect(park)}
+        onKeyDown={(e) => handleCardKeyDown(e, () => onSelect(park))}
+      >
         <h3 className="font-bold text-park-bark dark:text-park-cream text-base leading-snug mb-1.5 group-hover:text-park-forest transition-colors">
           {park.fullName}
         </h3>

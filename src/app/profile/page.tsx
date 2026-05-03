@@ -7,6 +7,29 @@ import { useParksByCode } from '@/hooks/useParksByCode'
 import { AuthButton } from '@/components/AuthButton'
 import { AuthModal } from '@/components/AuthModal'
 import Link from 'next/link'
+import { Park } from '@/types/park'
+
+interface ParkRowProps {
+  parkCode: string
+  parkByCode: Record<string, Park | undefined>
+}
+
+function ParkRow({ parkCode, parkByCode }: ParkRowProps) {
+  const park = parkByCode[parkCode]
+  return (
+    <Link
+      href={`/parks/${parkCode}`}
+      className="block p-4 bg-white dark:bg-stone-800 rounded-lg hover:bg-stone-50 dark:hover:bg-stone-700 transition-colors"
+    >
+      <p className="font-medium text-park-bark dark:text-park-cream leading-snug">
+        {park?.fullName ?? parkCode}
+      </p>
+      {park?.designation && (
+        <p className="text-xs text-park-stone dark:text-stone-400 mt-0.5">{park.designation}</p>
+      )}
+    </Link>
+  )
+}
 
 export default function ProfilePage() {
   const { user, loading: authLoading } = useAuth()
@@ -54,23 +77,6 @@ export default function ProfilePage() {
   const wishlisted = saves.filter((s) => s.wishlisted)
   const visited = saves.filter((s) => s.visited)
 
-  const ParkRow = ({ parkCode }: { parkCode: string }) => {
-    const park = parkByCode[parkCode]
-    return (
-      <Link
-        href={`/parks/${parkCode}`}
-        className="block p-4 bg-white dark:bg-stone-800 rounded-lg hover:bg-stone-50 dark:hover:bg-stone-700 transition-colors"
-      >
-        <p className="font-medium text-park-bark dark:text-park-cream leading-snug">
-          {park?.fullName ?? parkCode}
-        </p>
-        {park?.designation && (
-          <p className="text-xs text-park-stone dark:text-stone-400 mt-0.5">{park.designation}</p>
-        )}
-      </Link>
-    )
-  }
-
   return (
     <div className="min-h-screen bg-park-cream dark:bg-park-bark p-8">
       <header className="max-w-4xl mx-auto mb-8">
@@ -83,7 +89,7 @@ export default function ProfilePage() {
         {wishlisted.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {wishlisted.map((save) => (
-              <ParkRow key={save.id} parkCode={save.park_code} />
+              <ParkRow key={save.id} parkCode={save.park_code} parkByCode={parkByCode} />
             ))}
           </div>
         ) : (
@@ -99,7 +105,7 @@ export default function ProfilePage() {
         {visited.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {visited.map((save) => (
-              <ParkRow key={save.id} parkCode={save.park_code} />
+              <ParkRow key={save.id} parkCode={save.park_code} parkByCode={parkByCode} />
             ))}
           </div>
         ) : (

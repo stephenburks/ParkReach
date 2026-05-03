@@ -78,8 +78,8 @@ export default function Home() {
                 🏕️
               </div>
               <div>
-                <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
-                  National Parks Explorer
+                  <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
+                  ParkReach
                 </h1>
                 <p className="text-park-cream/70 mt-1 text-sm sm:text-base">
                   Discover America&apos;s natural and cultural treasures
@@ -107,10 +107,10 @@ export default function Home() {
       />
 
       {/* Main content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main id="main-content" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Results count */}
         {!isLoading && !error && (
-          <p className="text-sm text-park-stone dark:text-stone-400 mb-6">
+          <p className="text-sm text-park-stone dark:text-stone-400 mb-6" aria-live="polite">
             {total > 0
               ? `Showing ${parks.length} of ${total} ${formatPlaceType(designation)}`
               : "No places found — try a different search"}
@@ -139,15 +139,16 @@ export default function Home() {
           </div>
         ) : parks.length > 0 ? (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" role="list">
               {parks.map((park) => (
-                <ParkCard
-                  key={park.id}
-                  park={park}
-                  onSelect={handleSelectPark}
-                />
+                <li key={park.id}>
+                  <ParkCard
+                    park={park}
+                    onSelect={handleSelectPark}
+                  />
+                </li>
               ))}
-            </div>
+            </ul>
 
             {/* Load more */}
             {hasNextPage && (
@@ -155,7 +156,7 @@ export default function Home() {
                 <button
                   onClick={() => fetchNextPage()}
                   disabled={isFetchingNextPage}
-                  className="px-8 py-3 bg-park-forest hover:bg-park-bark text-white font-semibold rounded-full transition-colors disabled:opacity-60 disabled:cursor-not-allowed text-sm shadow-sm"
+                  className="px-8 py-3 bg-park-forest hover:bg-park-bark text-white font-semibold rounded-full transition-colors disabled:opacity-60 disabled:cursor-not-allowed text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-park-forest focus-visible:ring-offset-2"
                 >
                   {isFetchingNextPage
                     ? "Loading…"

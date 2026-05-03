@@ -4,7 +4,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import type { User } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/client'
 
-type AuthClient = ReturnType<typeof createClient>
+type AuthClient = NonNullable<ReturnType<typeof createClient>>
 
 type AuthContextType = {
   supabase: AuthClient | null
@@ -23,11 +23,16 @@ const AuthContext = createContext<AuthContextType>({
 })
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [supabase] = useState(createClient)
+  const [supabase] = useState(() => createClient() ?? null)
   const [user, setUser] = useState<User | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(() => supabase !== null)
 
   useEffect(() => {
+    if (!supabase) {
+      setLoading(false)
+      return
+    }
+
     const getUser = async () => {
       const {
         data: { user },
@@ -49,6 +54,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [supabase])
 
   const signIn = useCallback(() => {
+    if (!supabase) return
     supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
@@ -58,6 +64,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [supabase])
 
   const signOut = useCallback(async () => {
+    if (!supabase) return
     await supabase.auth.signOut()
   }, [supabase])
 

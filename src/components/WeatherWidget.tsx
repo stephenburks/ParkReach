@@ -1,7 +1,7 @@
 'use client';
 
-import { CloudSun, Thermometer, Wind } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { CloudSun } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 
 interface Props {
   parkCode: string;
@@ -15,16 +15,13 @@ interface WeatherData {
 }
 
 export function WeatherWidget({ parkCode }: Props) {
-  const [weather, setWeather] = useState<WeatherData | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch(`/api/weather/${parkCode}`)
-      .then((res) => res.json())
-      .then(setWeather)
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, [parkCode]);
+  const { data: weather, isLoading: loading } = useQuery({
+    queryKey: ['weather', parkCode],
+    queryFn: async () => {
+      const res = await fetch(`/api/weather/${parkCode}`);
+      return res.json() as Promise<WeatherData>;
+    },
+  });
 
   if (loading) {
     return (

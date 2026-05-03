@@ -1,7 +1,7 @@
 'use client';
 
-import { Car, MapPin } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { Car } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 
 interface Props {
   parkCode: string;
@@ -17,22 +17,16 @@ interface DistanceData {
 }
 
 export function DistanceBadge({ parkCode, latitude, longitude }: Props) {
-  const [distance, setDistance] = useState<DistanceData | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!latitude || !longitude) {
-      setLoading(false);
-      return;
-    }
-
-    const params = new URLSearchParams({ lat: latitude, lon: longitude });
-    fetch(`/api/distance/${parkCode}?${params}`)
-      .then((res) => res.json())
-      .then(setDistance)
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, [parkCode, latitude, longitude]);
+  const { data: distance, isLoading: loading } = useQuery({
+    queryKey: ['distance', parkCode, latitude, longitude],
+    queryFn: async () => {
+      if (!latitude || !longitude) return null;
+      const params = new URLSearchParams({ lat: latitude, lon: longitude });
+      const res = await fetch(`/api/distance/${parkCode}?${params}`);
+      return res.json() as Promise<DistanceData>;
+    },
+    enabled: !!(latitude && longitude),
+  });
 
   if (!latitude || !longitude) return null;
 

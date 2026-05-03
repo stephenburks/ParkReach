@@ -63,7 +63,7 @@ export async function ParkOfTheDay() {
 
 				<div className="absolute inset-0 flex flex-col justify-end p-6 sm:p-10 max-w-4xl">
 					<span className="inline-flex items-center gap-1.5 text-xs font-semibold text-white/90 bg-park-forest/80 backdrop-blur-sm px-3 py-1 rounded-full w-fit mb-3">
-						🌄 Park of the Day
+						<span aria-hidden="true">🌄</span> Park of the Day
 					</span>
 					<h2 className="text-2xl sm:text-4xl font-bold text-white leading-tight mb-1">
 						{park.fullName}
