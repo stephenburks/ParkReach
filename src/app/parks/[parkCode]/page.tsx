@@ -62,35 +62,6 @@ async function getAmenities(parkCode: string): Promise<string | null> {
     return null;
   }
 }
-    console.log('[DEBUG] corrected amenities count:', amenities.length, 'first name:', amenities[0]?.name);
-    console.log('[DEBUG] total amenities count:', amenities.length);
-
-    const accessibilityAmenities: string[] = [];
-
-    console.log('[DEBUG] All amenity names:', amenities.map((a: { name: string }) => a.name).join(' | '));
-
-    for (const amenity of amenities) {
-      if (amenity.name && amenity.name.toLowerCase().includes('accessible')) {
-        console.log('[DEBUG] found accessible amenity:', amenity.name);
-        const parkWithPlace = amenity.parks?.find((p: { parkCode: string }) => p.parkCode === parkCode);
-        console.log('[DEBUG] parkWithPlace:', !!parkWithPlace);
-        if (parkWithPlace?.places?.length > 0) {
-          const placeNames = parkWithPlace.places.map((p: { title: string }) => p.title).join(', ');
-          console.log('[DEBUG] places:', placeNames);
-          accessibilityAmenities.push(`${amenity.name}: ${placeNames}`);
-        }
-      }
-    }
-
-    console.log('[DEBUG] accessibilityAmenities:', accessibilityAmenities);
-
-    if (accessibilityAmenities.length === 0) return null;
-    return accessibilityAmenities.join('\n\n');
-  } catch (e) {
-    console.log('[DEBUG] getAmenities error:', e);
-    return null;
-  }
-}
 
 export async function generateMetadata({ params }: Props) {
   const { parkCode } = await params;
