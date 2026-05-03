@@ -11,7 +11,7 @@ async function getParks(): Promise<ParkData[]> {
 	try {
 		const res = await fetch('https://developer.nps.gov/api/v1/parks?limit=500&fields=parkCode,fullName', {
 			headers: {
-				Authorization: process.env.NPS_API_KEY ?? '',
+				'X-Api-Key': process.env.NPS_API_KEY ?? '',
 			},
 			next: { revalidate: 86400 },
 		})
