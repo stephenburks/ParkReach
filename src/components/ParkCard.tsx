@@ -40,8 +40,8 @@ function ParkCard({ park, onSelect }: Props) {
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
         
-        {/* Action buttons overlay */}
-        <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+        {/* Action buttons overlay — visible on hover OR when a button inside receives focus */}
+        <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
           <div className="bg-white/90 dark:bg-stone-800/90 rounded-full p-1.5" onClick={(e) => e.stopPropagation()}>
             <WishlistButton parkCode={park.parkCode} minimal />
           </div>

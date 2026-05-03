@@ -113,6 +113,7 @@ export default function SearchFilter({
         {/* Search + State row */}
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
+            <label htmlFor="park-search" className="sr-only">Search parks</label>
             <span
               className="absolute left-3.5 top-1/2 -translate-y-1/2 text-park-stone dark:text-stone-400 text-sm"
               aria-hidden="true"
@@ -120,6 +121,7 @@ export default function SearchFilter({
               🔍
             </span>
             <input
+              id="park-search"
               type="search"
               value={search}
               onChange={(e) => onSearchChange(e.target.value)}
@@ -127,7 +129,9 @@ export default function SearchFilter({
               className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-800 text-park-bark dark:text-park-cream placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-none focus:ring-2 focus:ring-park-sage focus:border-transparent text-sm shadow-sm"
             />
           </div>
+          <label htmlFor="park-state" className="sr-only">Filter by state or territory</label>
           <select
+            id="park-state"
             value={stateCode}
             onChange={(e) => onStateChange(e.target.value)}
             className="sm:w-52 px-3.5 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-800 text-park-bark dark:text-park-cream focus:outline-none focus:ring-2 focus:ring-park-sage focus:border-transparent text-sm shadow-sm appearance-none cursor-pointer"
@@ -139,7 +143,9 @@ export default function SearchFilter({
               </option>
             ))}
           </select>
+          <label htmlFor="park-accessibility" className="sr-only">Filter by accessibility feature</label>
           <select
+            id="park-accessibility"
             value={accessibility}
             onChange={(e) => onAccessibilityChange(e.target.value)}
             className="sm:w-48 px-3.5 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-800 text-park-bark dark:text-park-cream focus:outline-none focus:ring-2 focus:ring-park-sage focus:border-transparent text-sm shadow-sm appearance-none cursor-pointer"
@@ -153,11 +159,12 @@ export default function SearchFilter({
         </div>
 
         {/* Designation tabs */}
-        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+        <div role="group" aria-label="Filter by designation" className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
           {DESIGNATIONS.map((d) => (
             <button
               key={d}
               onClick={() => onDesignationChange(d)}
+              aria-pressed={designation === d}
               className={`flex-shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors whitespace-nowrap ${
                 designation === d
                   ? 'bg-park-forest text-white shadow-sm'

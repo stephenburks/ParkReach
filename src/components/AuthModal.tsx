@@ -163,8 +163,10 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                 </div>
 
                 <form onSubmit={handleMagicLink} className="space-y-3">
+                  <label htmlFor="auth-email" className="sr-only">Email address</label>
                   <input
                     ref={emailInputRef}
+                    id="auth-email"
                     type="email"
                     placeholder="your@email.com"
                     value={email}

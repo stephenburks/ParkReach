@@ -102,7 +102,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: park.fullName,
       description,
       url: canonicalUrl,
-      images: park.images?.[0]?.url ? [park.images[0].url] : [],
+      // opengraph-image.tsx generates the OG image — no static images needed here
     },
   };
 }

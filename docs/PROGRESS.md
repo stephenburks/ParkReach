@@ -72,9 +72,9 @@ The core product is built. All major features exist in code.
 | 3   | `loading.tsx` skeletons       | ✅ Done      | Park detail + profile                              |
 | 4   | Content Security Policy       | ✅ Done        | Nonce-based CSP in `proxy.ts`; `x-nonce` forwarded to RSC |
 | 5   | Test coverage                 | 🔄 In progress | 24 tests: utils, ParkCardMinimal, /api/parks; Playwright e2e pending |
-| 6   | Accessibility audit           | ⬜ Not started | axe-core scan + manual keyboard walkthrough        |
-| 7   | OG image generation           | ⬜ Not started | `parks/[parkCode]/opengraph-image.tsx`             |
-| 8   | Map marker clustering         | ⬜ Not started | `@googlemaps/markerclusterer`                      |
+| 6   | Accessibility audit           | ✅ Done        | 7 violations fixed; axe tests added; findings in decisions inbox |
+| 7   | OG image generation           | ✅ Done        | `opengraph-image.tsx` — edge runtime, branded template |
+| 8   | Map marker clustering         | ✅ Done        | `@googlemaps/markerclusterer` via `ClusteredPins` inner component |
 
 ---
 
