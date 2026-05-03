@@ -1,15 +1,14 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { Park, NpsApiResponse } from '@/types/park';
+import { useState, useEffect } from 'react';
+import { Park } from '@/types/park';
 import ParkCard from '@/components/ParkCard';
 import ParkModal from '@/components/ParkModal';
 import SearchFilter from '@/components/SearchFilter';
 import { AuthButton } from '@/components/AuthButton';
 import { AuthModal } from '@/components/AuthModal';
 import { DarkModeToggle } from '@/components/DarkModeToggle';
-
-const LIMIT = 24;
+import { useParks } from '@/hooks/useParks';
 
 function SkeletonCard() {
   return (
@@ -28,92 +27,37 @@ function SkeletonCard() {
   );
 }
 
+function formatPlaceType(desig: string): string {
+  if (desig === 'All') return 'places';
+  const label = desig.replace(/^National /, '');
+  return label + (label.endsWith('s') ? '' : 's');
+}
+
 export default function Home() {
-  const [parks, setParks] = useState<Park[]>([]);
-  const [total, setTotal] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [stateCode, setStateCode] = useState('');
   const [designation, setDesignation] = useState('All');
   const [accessibility, setAccessibility] = useState('');
   const [selectedPark, setSelectedPark] = useState<Park | null>(null);
-  const [start, setStart] = useState(0);
   const [showAuthModal, setShowAuthModal] = useState(false);
 
-  const fetchParks = useCallback(async (
-    q: string,
-    state: string,
-    desig: string,
-    startAt: number,
-    append: boolean
-  ) => {
-    if (append) setLoadingMore(true);
-    else setLoading(true);
-    setError(null);
-
-    try {
-      // Fetch all parks and filter on client-side for accurate designation filtering
-      const fetchParams = new URLSearchParams({ limit: '500', start: '0' });
-      if (q) fetchParams.set('q', q);
-      if (state) fetchParams.set('stateCode', state);
-
-      const res = await fetch(`/api/parks?${fetchParams}`);
-      if (!res.ok) throw new Error('Failed to load parks');
-      let data: NpsApiResponse = await res.json();
-
-      // Filter by designation client-side - exact match
-      if (desig && desig !== 'All') {
-        // Convert display format to API format: "National Parks" -> "National Park"
-        const apiDesig = desig.replace(/s$/, '');  // Remove trailing 's'
-        const filter = apiDesig.toLowerCase();
-        
-        const filtered = data.data.filter((p) => 
-          p.designation && p.designation.toLowerCase() === filter
-        );
-        data = {
-          ...data,
-          data: filtered,
-          total: String(filtered.length),
-        };
-      }
-
-      const sliced = data.data.slice(0, LIMIT);
-      
-      if (append) {
-        setParks((prev) => [...prev, ...sliced]);
-      } else {
-        setParks(sliced);
-      }
-      setTotal(parseInt(data.total, 10));
-      setStart(startAt);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Something went wrong');
-    } finally {
-      setLoading(false);
-      setLoadingMore(false);
-    }
-  }, []);
-
   useEffect(() => {
-    const timer = setTimeout(() => {
-      fetchParks(search, stateCode, designation, 0, false);
-    }, 300);
+    const timer = setTimeout(() => setDebouncedSearch(search), 300);
     return () => clearTimeout(timer);
-  }, [search, stateCode, designation, fetchParks]);
+  }, [search]);
 
-  const handleLoadMore = () => {
-    fetchParks(search, stateCode, designation, start + LIMIT, true);
-  };
+  const {
+    data,
+    isLoading,
+    isFetchingNextPage,
+    error,
+    fetchNextPage,
+    hasNextPage,
+  } = useParks(debouncedSearch, stateCode, designation);
 
-  const hasMore = parks.length < total;
-
-  function formatPlaceType(desig: string): string {
-    if (desig === 'All') return 'places';
-    const label = desig.replace(/^National /, '');
-    return label + (label.endsWith('s') ? '' : 's');
-  }
+  const parks = data?.pages.flatMap((p) => p.data) ?? [];
+  const total = parseInt(data?.pages[0]?.total ?? '0', 10);
 
   return (
     <div className="min-h-screen bg-park-cream dark:bg-park-bark">
@@ -155,7 +99,7 @@ export default function Home() {
       {/* Main content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Results count */}
-        {!loading && !error && (
+        {!isLoading && !error && (
           <p className="text-sm text-park-stone dark:text-stone-400 mb-6">
             {total > 0
               ? `Showing ${parks.length} of ${total} ${formatPlaceType(designation)}`
@@ -168,12 +112,12 @@ export default function Home() {
           <div className="text-center py-16">
             <p className="text-5xl mb-4" aria-hidden="true">⛺</p>
             <p className="text-park-bark dark:text-park-cream font-semibold text-lg mb-2">Something went wrong</p>
-            <p className="text-stone-500 text-sm">{error}</p>
+            <p className="text-stone-500 text-sm">{error.message}</p>
           </div>
         )}
 
         {/* Grid */}
-        {loading ? (
+        {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {Array.from({ length: 9 }).map((_, i) => <SkeletonCard key={i} />)}
           </div>
@@ -190,14 +134,14 @@ export default function Home() {
             </div>
 
             {/* Load more */}
-            {hasMore && (
+            {hasNextPage && (
               <div className="flex justify-center mt-10">
                 <button
-                  onClick={handleLoadMore}
-                  disabled={loadingMore}
+                  onClick={() => fetchNextPage()}
+                  disabled={isFetchingNextPage}
                   className="px-8 py-3 bg-park-forest hover:bg-park-bark text-white font-semibold rounded-full transition-colors disabled:opacity-60 disabled:cursor-not-allowed text-sm shadow-sm"
                 >
-                  {loadingMore ? 'Loading…' : `Load More Parks (${total - parks.length} remaining)`}
+                  {isFetchingNextPage ? 'Loading…' : `Load More Parks (${total - parks.length} remaining)`}
                 </button>
               </div>
             )}

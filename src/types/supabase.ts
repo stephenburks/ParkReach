@@ -34,6 +34,7 @@ export type Database = {
           default_view?: string
           created_at?: string
         }
+        Relationships: []
       }
       park_saves: {
         Row: {
@@ -60,6 +61,7 @@ export type Database = {
           visited?: boolean
           created_at?: string
         }
+        Relationships: []
       }
     }
     Views: {

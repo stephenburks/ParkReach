@@ -66,9 +66,10 @@ export function SavesProvider({ children }: { children: React.ReactNode }) {
 
 		if (existing) {
 			const newValue = !existing[field]
+			const patch = field === 'wishlisted' ? { wishlisted: newValue } : { visited: newValue }
 			const { error } = await supabase
 				.from('park_saves')
-				.update({ [field]: newValue })
+				.update(patch)
 				.eq('id', existing.id)
 			if (!error) {
 				setSaves((prev) =>
@@ -78,11 +79,11 @@ export function SavesProvider({ children }: { children: React.ReactNode }) {
 			return !error
 		}
 
-		const { data, error } = await supabase
-			.from('park_saves')
-			.insert({ user_id: user.id, park_code: parkCode, [field]: true })
-			.select()
-			.single()
+		const row =
+			field === 'wishlisted'
+				? { user_id: user.id, park_code: parkCode, wishlisted: true }
+				: { user_id: user.id, park_code: parkCode, visited: true }
+		const { data, error } = await supabase.from('park_saves').insert(row).select().single()
 		if (!error && data) setSaves((prev) => [...prev, data])
 		return !error
 	}

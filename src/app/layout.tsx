@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 import { SavesProvider } from "@/context/SavesContext";
+import { QueryProvider } from "@/components/QueryProvider";
 import { DarkModeProvider } from "@/components/DarkModeProvider";
 
 const geistSans = Geist({
@@ -42,11 +43,13 @@ export default function RootLayout({
         />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} min-h-full flex flex-col antialiased`}>
-        <DarkModeProvider>
-          <AuthProvider>
-            <SavesProvider>{children}</SavesProvider>
-          </AuthProvider>
-        </DarkModeProvider>
+        <QueryProvider>
+          <DarkModeProvider>
+            <AuthProvider>
+              <SavesProvider>{children}</SavesProvider>
+            </AuthProvider>
+          </DarkModeProvider>
+        </QueryProvider>
       </body>
     </html>
   );
