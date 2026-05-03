@@ -1,17 +1,17 @@
 'use client';
 
+import { memo } from 'react';
 import Image from 'next/image';
-import { Heart } from 'lucide-react';
 import { Park } from '@/types/park';
 import { WishlistButton } from './WishlistButton';
 import { VisitedButton } from './VisitedButton';
 
 interface Props {
   park: Park;
-  onClick: () => void;
+  onSelect: (park: Park) => void;
 }
 
-export default function ParkCard({ park, onClick }: Props) {
+function ParkCard({ park, onSelect }: Props) {
   const image = park.images[0];
   const stateList = park.states.split(',').join(' · ');
 
@@ -51,7 +51,7 @@ export default function ParkCard({ park, onClick }: Props) {
         )}
       </div>
 
-      <div className="p-5 flex flex-col flex-1" onClick={onClick}>
+      <div className="p-5 flex flex-col flex-1" onClick={() => onSelect(park)}>
         <h3 className="font-bold text-park-bark dark:text-park-cream text-base leading-snug mb-1.5 group-hover:text-park-forest transition-colors">
           {park.fullName}
         </h3>
@@ -71,3 +71,5 @@ export default function ParkCard({ park, onClick }: Props) {
     </article>
   );
 }
+
+export default memo(ParkCard)

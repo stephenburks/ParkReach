@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 
 type AuthClient = ReturnType<typeof createClient>
@@ -53,21 +53,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe()
   }, [supabase])
 
-  const signIn = () => {
+  const signIn = useCallback(() => {
     supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: `${location.origin}/api/auth/callback`,
       },
     })
-  }
+  }, [supabase])
 
-  const signOut = async () => {
+  const signOut = useCallback(async () => {
     await supabase.auth.signOut()
-  }
+  }, [supabase])
+
+  const value = useMemo(
+    () => ({ supabase, user, signIn, signOut, loading }),
+    [supabase, user, signIn, signOut, loading]
+  )
 
   return (
-    <AuthContext.Provider value={{ supabase, user, signIn, signOut, loading }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   )

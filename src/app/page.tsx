@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Park } from '@/types/park';
 import ParkCard from '@/components/ParkCard';
 import ParkModal from '@/components/ParkModal';
@@ -41,6 +41,8 @@ export default function Home() {
   const [accessibility, setAccessibility] = useState('');
   const [selectedPark, setSelectedPark] = useState<Park | null>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
+
+  const handleSelectPark = useCallback((park: Park) => setSelectedPark(park), []);
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(search), 300);
@@ -128,7 +130,7 @@ export default function Home() {
                 <ParkCard
                   key={park.id}
                   park={park}
-                  onClick={() => setSelectedPark(park)}
+                  onSelect={handleSelectPark}
                 />
               ))}
             </div>

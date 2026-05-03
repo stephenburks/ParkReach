@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 
 type DarkModeContextType = {
   isDark: boolean
@@ -32,10 +32,12 @@ export function DarkModeProvider({ children }: { children: React.ReactNode }) {
     document.documentElement.classList.toggle('dark', isDark)
   }, [isDark, mounted])
 
-  const toggle = () => setIsDark((prev) => !prev)
+  const toggle = useCallback(() => setIsDark((prev) => !prev), [])
+
+  const value = useMemo(() => ({ isDark, toggle }), [isDark, toggle])
 
   return (
-    <DarkModeContext.Provider value={{ isDark, toggle }}>
+    <DarkModeContext.Provider value={value}>
       {children}
     </DarkModeContext.Provider>
   )
