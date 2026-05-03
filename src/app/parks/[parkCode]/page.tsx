@@ -26,6 +26,37 @@ async function getPark(parkCode: string): Promise<Park | null> {
   return data.data?.[0] || null;
 }
 
+async function getAmenities(parkCode: string): Promise<string | null> {
+  const apiKey = process.env.NPS_API_KEY;
+  if (!apiKey) return null;
+
+  try {
+    const res = await fetch(
+      `https://developer.nps.gov/api/v1/amenities/parksplaces?parkCode=${parkCode}`,
+      { headers: { 'X-Api-Key': apiKey }, next: { revalidate: 3600 } }
+    );
+
+    if (!res.ok) return null;
+    const data = await res.json();
+
+    const places = data.data || [];
+    if (places.length === 0) return null;
+
+    const accessibilityInfo: string[] = [];
+
+    for (const place of places) {
+      if (place.accessibility) {
+        accessibilityInfo.push(`${place.name}: ${place.accessibility}`);
+      }
+    }
+
+    if (accessibilityInfo.length === 0) return null;
+    return accessibilityInfo.join('\n\n');
+  } catch {
+    return null;
+  }
+}
+
 export async function generateMetadata({ params }: Props) {
   const { parkCode } = await params;
   const park = await getPark(parkCode);
@@ -55,6 +86,7 @@ export default async function ParkDetailPage({ params }: Props) {
 
   const image = park.images[0];
   const states = park.states.split(',').join(', ');
+  const amenitiesAccessibility = await getAmenities(parkCode);
 
   return (
     <DarkModeProvider>
@@ -106,7 +138,7 @@ export default async function ParkDetailPage({ params }: Props) {
           </section>
 
           {park.accessibility && (
-            <AccessibilityInfo accessibility={park.accessibility} />
+            <AccessibilityInfo accessibility={amenitiesAccessibility || park.accessibility} />
           )}
 
           {park.weatherInfo && (
