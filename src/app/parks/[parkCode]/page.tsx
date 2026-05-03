@@ -6,6 +6,7 @@ import { DarkModeProvider } from '@/components/DarkModeProvider';
 import { DarkModeToggle } from '@/components/DarkModeToggle';
 import { WishlistButton } from '@/components/WishlistButton';
 import { VisitedButton } from '@/components/VisitedButton';
+import { AccessibilityInfo } from '@/components/AccessibilityInfo';
 
 interface Props {
   params: Promise<{ parkCode: string }>;
@@ -16,7 +17,7 @@ async function getPark(parkCode: string): Promise<Park | null> {
   if (!apiKey) return null;
 
   const res = await fetch(
-    `https://developer.nps.gov/api/v1/parks?parkCode=${parkCode}&fields=images,operatingHours,entranceFees,entrancePasses,activities,topics,directionsUrl,weatherInfo`,
+    `https://developer.nps.gov/api/v1/parks?parkCode=${parkCode}&fields=images,operatingHours,entranceFees,entrancePasses,activities,topics,directionsUrl,weatherInfo,accessibility`,
     { headers: { 'X-Api-Key': apiKey }, next: { revalidate: 3600 } }
   );
 
@@ -103,6 +104,10 @@ export default async function ParkDetailPage({ params }: Props) {
             <h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">About</h2>
             <p className="text-stone-700 dark:text-stone-300 leading-relaxed">{park.description}</p>
           </section>
+
+          {park.accessibility && (
+            <AccessibilityInfo accessibility={park.accessibility} />
+          )}
 
           {park.weatherInfo && (
             <section>
