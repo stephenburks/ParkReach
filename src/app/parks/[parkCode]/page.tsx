@@ -32,7 +32,7 @@ async function getAmenities(parkCode: string): Promise<string | null> {
 
   try {
     const res = await fetch(
-      `https://developer.nps.gov/api/v1/amenities/parksplaces?parkCode=${parkCode}`,
+      `https://developer.nps.gov/api/v1/amenities/parksplaces?parkCode=${parkCode}&limit=100`,
       { headers: { 'X-Api-Key': apiKey }, next: { revalidate: 3600 } }
     );
 
@@ -47,7 +47,11 @@ async function getAmenities(parkCode: string): Promise<string | null> {
     const accessibilityAmenities: string[] = [];
 
     for (const amenity of amenities) {
-      if (amenity.name && amenity.name.toLowerCase().includes('accessible')) {
+      const isAccessibilityRelated = 
+        (amenity.name && amenity.name.toLowerCase().includes('accessible')) ||
+        (amenity.categories && amenity.categories.includes('Accessibility'));
+
+      if (isAccessibilityRelated) {
         const parkWithPlace = amenity.parks?.find((p: { parkCode: string }) => p.parkCode === parkCode);
         if (parkWithPlace?.places?.length > 0) {
           const placeNames = parkWithPlace.places.map((p: { title: string }) => p.title).join(', ');
