@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { Park } from '@/types/park';
 import { WishlistButton } from '@/components/WishlistButton';
 import { VisitedButton } from '@/components/VisitedButton';
+import { AddToTripButton } from '@/components/AddToTripButton';
 
 interface Props {
   park: Park;
@@ -135,6 +136,7 @@ export default function ParkModal({ park, onClose }: Props) {
             <WishlistButton parkCode={park.parkCode} />
             <VisitedButton parkCode={park.parkCode} />
           </div>
+          <AddToTripButton parkCode={park.parkCode} />
 
           <p className="text-stone-700 dark:text-stone-300 leading-relaxed">{park.description}</p>
 

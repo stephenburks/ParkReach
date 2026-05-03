@@ -9,6 +9,54 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      trips: {
+        Row: {
+          id: string
+          user_id: string
+          name: string
+          description: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          name: string
+          description?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          name?: string
+          description?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
+      trip_parks: {
+        Row: {
+          id: string
+          trip_id: string
+          park_code: string
+          notes: string | null
+          added_at: string
+        }
+        Insert: {
+          id?: string
+          trip_id: string
+          park_code: string
+          notes?: string | null
+          added_at?: string
+        }
+        Update: {
+          id?: string
+          trip_id?: string
+          park_code?: string
+          notes?: string | null
+          added_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           id: string
@@ -78,6 +126,8 @@ export type Database = {
 
 export type Tables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]
 export type Profiles = Tables<'profiles'>
+export type Trip = Database['public']['Tables']['trips']['Row']
+export type TripPark = Database['public']['Tables']['trip_parks']['Row']
 export type ParkSaves = Tables<'park_saves'>
 
 export type InsertProfiles = Database['public']['Tables']['profiles']['Insert']

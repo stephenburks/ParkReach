@@ -56,6 +56,24 @@ All `<input>` and `<select>` elements in `SearchFilter` and `AuthModal` now have
 
 ---
 
+### 10. Trip planning schema — `trips` + `trip_parks`, no parks cache
+
+`trips` has `user_id`, `name`, `description`. `trip_parks` has `trip_id` + `park_code` (NPS string) with a unique constraint. No park details are stored — NPS API remains the source of truth. RLS on both tables: owner policy uses `auth.uid() = user_id` on trips, and a correlated subquery on trip_parks.
+
+---
+
+### 11. Default view persistence — RSC prop + fire-and-forget update
+
+`page.tsx` RSC reads `profiles.default_view` server-side (via `createClient()` from `@/lib/supabase/server`) and passes it as `defaultView` prop to `ExplorerClient`. This avoids a flash of the wrong view during client hydration. When the user toggles the view, `ExplorerClient` calls `supabase.from('profiles').update(...)` via the `supabase` instance from `useAuth()` — fire-and-forget, no await, since the URL param update already reflects the change immediately.
+
+---
+
+### 12. `useTrips` loads all trips + trip_parks for the user upfront
+
+The `useTrips` hook fetches all trips first, then all trip_parks in a second query (using `.in('trip_id', [...ids])`). Both queries are lightweight for typical usage. This lets components (AddToTripButton, TripContent) filter locally without additional fetches. If a user has zero trips, the second query is skipped.
+
+---
+
 ## Governance
 
 - All meaningful architectural changes require a decision note here.

@@ -1,6 +1,6 @@
 # ParkReach — Progress
 
-Last updated: 2026-05-03 (Phase 2 started)
+Last updated: 2026-05-03 (Phase 3 complete)
 
 The core product is built. All major features exist in code.
 
@@ -78,4 +78,14 @@ The core product is built. All major features exist in code.
 
 ---
 
-See `docs/FUTURE_FEATURES.md` for Phase 3 features and blocked items.
+---
+
+## Phase 3 — New Features
+
+| #   | What                        | Status   | Notes                                                                 |
+| --- | --------------------------- | -------- | --------------------------------------------------------------------- |
+| 1   | User Display Name & Avatar  | ✅ Done   | `useProfile` hook; avatar_url (Next Image) or initials fallback       |
+| 2   | Default View Preference     | ✅ Done   | RSC reads `profiles.default_view`, passed to `ExplorerClient` as prop; persisted on change |
+| 3   | Trip Planning               | ✅ Done   | `trips`+`trip_parks` tables (migration 003), `useTrips` hook, `AddToTripButton` in ParkModal, `/trips/[tripId]` detail page, profile trips section |
+
+See `docs/FUTURE_FEATURES.md` for blocked items.

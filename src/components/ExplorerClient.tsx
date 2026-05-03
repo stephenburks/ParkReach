@@ -2,7 +2,7 @@
 
 import type { ComponentType } from "react";
 import dynamic from "next/dynamic";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import {
   useQueryState,
   parseAsString,
@@ -16,6 +16,7 @@ import ParkModal from "@/components/ParkModal";
 import SearchFilter from "@/components/SearchFilter";
 import { useParks } from "@/hooks/useParks";
 import { ViewToggle } from "@/components/ViewToggle";
+import { useAuth } from "@/context/AuthContext";
 
 interface ParkMapProps {
   parks: Park[];
@@ -35,6 +36,7 @@ const ParkMap = dynamic(
 ) as ComponentType<ParkMapProps>;
 
 const VIEW_OPTIONS = ["cards", "minimal", "map"] as const;
+type ViewOption = typeof VIEW_OPTIONS[number];
 
 function SkeletonCard() {
   return (
@@ -59,7 +61,12 @@ function formatPlaceType(desig: string): string {
   return label + (label.endsWith("s") ? "" : "s");
 }
 
-export function ExplorerClient() {
+interface ExplorerClientProps {
+  defaultView?: string;
+}
+
+export function ExplorerClient({ defaultView = "cards" }: ExplorerClientProps) {
+  const { supabase, user } = useAuth();
   const [search, setSearch] = useQueryState(
     "q",
     parseAsString
@@ -78,9 +85,25 @@ export function ExplorerClient() {
     "acc",
     parseAsString.withDefault(""),
   );
-  const [view, setView] = useQueryState(
-    "view",
-    parseAsStringLiteral(VIEW_OPTIONS).withDefault("cards"),
+
+  const safeDefault: ViewOption = VIEW_OPTIONS.includes(defaultView as ViewOption)
+    ? (defaultView as ViewOption)
+    : "cards";
+  const viewParser = useMemo(
+    () => parseAsStringLiteral(VIEW_OPTIONS).withDefault(safeDefault),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [safeDefault],
+  );
+  const [view, setViewParam] = useQueryState("view", viewParser);
+
+  const setView = useCallback(
+    (newView: ViewOption) => {
+      setViewParam(newView);
+      if (supabase && user) {
+        supabase.from("profiles").update({ default_view: newView }).eq("id", user.id);
+      }
+    },
+    [setViewParam, supabase, user],
   );
 
   const [selectedPark, setSelectedPark] = useQueryState("park");
