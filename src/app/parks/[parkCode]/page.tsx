@@ -43,7 +43,11 @@ async function getAmenities(parkCode: string): Promise<string | null> {
 
     console.log('[DEBUG] raw data sample:', JSON.stringify(data.data?.[0]).slice(0, 500));
 
-    const amenities = data.data || [];
+    let amenities = data.data || [];
+    if (amenities.length > 0 && Array.isArray(amenities[0])) {
+      amenities = amenities[0];
+    }
+    console.log('[DEBUG] corrected amenities count:', amenities.length, 'first name:', amenities[0]?.name);
     console.log('[DEBUG] total amenities count:', amenities.length);
 
     const accessibilityAmenities: string[] = [];
