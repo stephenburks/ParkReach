@@ -46,6 +46,8 @@ async function getAmenities(parkCode: string): Promise<string | null> {
 
     const accessibilityAmenities: string[] = [];
 
+    console.log('[DEBUG] All amenity names:', amenities.map((a: { name: string }) => a.name).join(' | '));
+
     for (const amenity of amenities) {
       if (amenity.name && amenity.name.toLowerCase().includes('accessible')) {
         console.log('[DEBUG] found accessible amenity:', amenity.name);
