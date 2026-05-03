@@ -1,11 +1,15 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
+import { Heart } from 'lucide-react';
 import { Park } from '@/types/park';
+import { WishlistButton } from './WishlistButton';
+import { VisitedButton } from './VisitedButton';
 
 interface Props {
   park: Park;
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 export default function ParkCard({ park, onClick }: Props) {
@@ -13,10 +17,7 @@ export default function ParkCard({ park, onClick }: Props) {
   const stateList = park.states.split(',').join(' · ');
 
   return (
-    <article
-      onClick={onClick}
-      className="group cursor-pointer bg-white dark:bg-stone-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-stone-100 dark:border-stone-700 flex flex-col"
-    >
+    <article className="group relative bg-white dark:bg-stone-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-stone-100 dark:border-stone-700 flex flex-col">
       <div className="relative h-52 overflow-hidden bg-gradient-to-br from-park-forest to-park-sage flex-shrink-0">
         {image?.url ? (
           <Image
@@ -33,6 +34,17 @@ export default function ParkCard({ park, onClick }: Props) {
           </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+        
+        {/* Action buttons overlay */}
+        <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="bg-white/90 dark:bg-stone-800/90 rounded-full p-1.5" onClick={(e) => e.stopPropagation()}>
+            <WishlistButton parkCode={park.parkCode} minimal />
+          </div>
+          <div className="bg-white/90 dark:bg-stone-800/90 rounded-full p-1.5" onClick={(e) => e.stopPropagation()}>
+            <VisitedButton parkCode={park.parkCode} minimal />
+          </div>
+        </div>
+
         {park.designation && (
           <span className="absolute bottom-3 left-3 bg-park-forest/90 backdrop-blur-sm text-white text-xs font-semibold px-2.5 py-1 rounded-full">
             {park.designation}
@@ -41,9 +53,11 @@ export default function ParkCard({ park, onClick }: Props) {
       </div>
 
       <div className="p-5 flex flex-col flex-1">
-        <h3 className="font-bold text-park-bark dark:text-park-cream text-base leading-snug mb-1.5 group-hover:text-park-forest transition-colors">
-          {park.fullName}
-        </h3>
+        <Link href={`/parks/${park.parkCode}`} onClick={onClick}>
+          <h3 className="font-bold text-park-bark dark:text-park-cream text-base leading-snug mb-1.5 group-hover:text-park-forest transition-colors">
+            {park.fullName}
+          </h3>
+        </Link>
         {stateList && (
           <p className="text-xs text-park-stone dark:text-stone-400 mb-3 flex items-center gap-1">
             <span aria-hidden="true">📍</span>
@@ -53,9 +67,9 @@ export default function ParkCard({ park, onClick }: Props) {
         <p className="text-sm text-stone-600 dark:text-stone-300 leading-relaxed line-clamp-3 flex-1">
           {park.description}
         </p>
-        <p className="text-xs text-park-sage dark:text-park-sage font-medium mt-3 group-hover:text-park-forest transition-colors">
+        <Link href={`/parks/${park.parkCode}`} onClick={onClick} className="text-xs text-park-sage dark:text-park-sage font-medium mt-3 group-hover:text-park-forest transition-colors">
           View details →
-        </p>
+        </Link>
       </div>
     </article>
   );
