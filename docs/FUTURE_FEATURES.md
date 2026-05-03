@@ -1,57 +1,84 @@
-# Future Features
+# ParkReach — Future Features
 
-Features deferred from the initial build. Pick these up once the relevant prerequisite is met.
-
----
-
-## Apple Sign In
-
-**Blocked by:** Paid Apple Developer account ($99/year)
-
-**What's needed:**
-1. Enroll at https://developer.apple.com
-2. Create an App ID and a Services ID for ParkReach
-3. Register the production domain under the Services ID
-4. Add the Services ID and private key to Supabase Auth → Apple provider settings
-5. Add Apple's redirect URI (`https://parkreach.app/api/auth/callback`) to the Services ID
-
-**Where to wire it in:** `src/app/auth/login/page.tsx` — there is a TODO comment marking the exact location. Add a "Continue with Apple" button using `supabase.auth.signInWithOAuth({ provider: 'apple' })`.
-
-**Notes:** Apple Sign In requires HTTPS and a real domain — it will not work on `localhost` without a tunnel (e.g. ngrok). Test on staging before production.
+Intentionally deferred. Don't implement these during v1. Pick them up in a second pass once the app is live and stable.
 
 ---
 
-## Passkeys (WebAuthn)
+## Phase 2 — Polish & Improvements
 
-**Blocked by:** Supabase WebAuthn support reaching GA
+Things that would make the existing product better but aren't blocking launch.
 
-**What's needed:**
-- Monitor https://github.com/supabase/supabase/issues for passkey/WebAuthn GA announcement
-- Once available, add a "Use a passkey" button to `src/app/auth/login/page.tsx` (TODO comment marks the location)
-- No schema changes needed — Supabase manages WebAuthn credentials internally
+### Accessibility Audit
 
----
+Run a formal axe-core scan and manual keyboard walkthrough. Resolve any critical/serious WCAG 2.1 AA violations. Document findings in `.squad/decisions/`.
 
-## OG Image Generation
+### Map Marker Clustering
 
-**Priority:** Low
+Add `@googlemaps/markerclusterer` to group pins at low zoom levels. Currently ~470 individual markers render fine at the default zoom, but clustering would improve the experience when zoomed out. Revisit after user testing.
 
-Dynamically generated Open Graph images for park detail pages using Next.js `ImageResponse`. Would use the park's hero image + name + designation overlaid on a branded template.
+### Test Coverage
+
+Only one test file exists (`ParkCard.test.tsx`). Add unit tests for hooks and utilities, integration tests for API routes, and at least one Playwright e2e test for the core save flow.
+
+### OG Image Generation
+
+Dynamic Open Graph images for park detail pages using Next.js `ImageResponse`. Park hero image + name + designation on a branded template.
 
 **Where:** `src/app/parks/[parkCode]/opengraph-image.tsx`
 
----
+### `loading.tsx` Skeletons
 
-## Admin-Curated Park of the Day
-
-**Priority:** Low
-
-Replace the deterministic algorithm with an admin-picked park, stored in Supabase. Requires an admin UI or a simple Supabase dashboard edit. Only worth building if the project gets regular users.
+Add route-level loading skeletons for park detail and profile pages. Currently missing — the pages just show nothing while data loads.
 
 ---
 
-## Trip Planning
+## Phase 3 — New Features
 
-**Priority:** Medium (post-launch)
+Meaningful additions that require new infrastructure or design work.
 
-Allow users to group wishlisted parks into named trips, add notes and target dates. Requires a `trips` and `trip_parks` table in Supabase.
+### Trip Planning
+
+Group wishlisted parks into named trips with notes and target dates.
+
+**Requires:** New `trips` and `trip_parks` tables in Supabase, trip creation UI, trip detail page.
+
+### Default View Preference
+
+Let users set their preferred view (cards / minimal / map) in their profile. The `default_view` column already exists in the `profiles` table — it just isn't wired to the `?view=` URL param yet.
+
+### User Display Name & Avatar
+
+The `profiles` table has `display_name` and `avatar_url` columns populated from Google OAuth on signup. Surface these on the profile page instead of just showing the email address.
+
+---
+
+## Blocked — External Dependencies
+
+These can't be built until an external blocker is resolved.
+
+### Apple Sign In
+
+**Blocked by:** Paid Apple Developer account ($99/year)
+
+When unblocked:
+
+1. Enroll at https://developer.apple.com, create an App ID and Services ID
+2. Register `parkreach.app` under the Services ID
+3. Add the Services ID + private key to Supabase Auth → Apple provider
+4. Add a "Continue with Apple" button to `src/app/auth/login/page.tsx` using `supabase.auth.signInWithOAuth({ provider: 'apple' })`
+
+Note: Apple Sign In requires HTTPS + real domain. Won't work on localhost without a tunnel.
+
+### Passkeys (WebAuthn)
+
+**Blocked by:** Supabase WebAuthn reaching GA
+
+Monitor https://github.com/supabase/supabase/issues. No schema changes needed when it lands — Supabase manages credentials internally. Add a "Use a passkey" button to the login page.
+
+---
+
+## Intentionally Not Building
+
+### Admin-Curated Park of the Day
+
+The deterministic algorithm works fine. An admin UI to hand-pick the daily park only makes sense with a regular user base. Revisit if the project grows.

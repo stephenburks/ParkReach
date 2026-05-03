@@ -1,104 +1,86 @@
-# ParkReach — Progress Tracker
+# ParkReach — Progress
 
-Update this file at the end of every session. Any AI assistant picking up this
-project should read this file first.
+Last updated: 2026-05-03
 
----
-
-## Current Status
-
-**Active phase:** Phase 5 — Park Detail and Save Actions (in progress - NPS amenities API integration for accessibility data not yet working)
-**Last updated:** 2026-05-02
+The core product is built. All major features exist in code. What remains is a small set of wiring gaps and cleanup items before the app is fully functional end-to-end.
 
 ---
 
-## Phase Checklist
+## Done
 
-- [x] **Phase 0** — Setup and Dependencies (ShadCN, Supabase clients, bundle analyzer, middleware)
-- [x] **Phase 1** — Database and Auth Backend (migrations, TypeScript types, callback route)
-- [x] **Phase 2** — Auth UI (login/verify/error pages, AuthContext, AuthButton)
-- [x] **Phase 3** — Dark Mode and Profile (useDarkMode, CSS variables, profile page, useParkSaves)
-- [x] **Phase 4** — Explorer Views (ViewToggle, ParkCardMinimal, ParkMap, accessibility filter)
-- [x] **Phase 5** — Park Detail and Save Actions (detail page, weather, distance, save buttons, AccessibilityInfo component)
-- [ ] **Phase 6** — Park of the Day (ParkOfTheDay RSC, hero section)
-- [ ] **Phase 7** — SEO and Sitemap (generateMetadata, sitemap.ts, robots.ts, JSON-LD)
-- [ ] **Phase 8** — Accessibility Audit (WCAG 2.1 AA pass, Axe, keyboard walkthrough)
+**Infrastructure**
 
----
+- Supabase client/server helpers, all env keys via `pass()`
+- ShadCN + Tailwind v4, nuqs, React Query, Google Maps library
+- `robots.ts`, `sitemap.ts` (dynamic park routes included)
+- DB migration: `profiles` + `park_saves` tables, RLS, auto-create trigger
 
-## External Services Checklist
+**Auth**
 
-- [x] NPS API key — stored in `pass` at `nps/api-key`
-- [ ] Supabase project — see `docs/SETUP.md`
-- [ ] Google Cloud project + API keys — see `docs/SETUP.md`
-- [ ] Production domain — using `parkreach.app` as placeholder
+- Google OAuth sign-in, auth callback route, AuthContext
+- Login / verify / error pages, AuthModal, AuthButton
 
----
+**Explorer**
 
-## Decisions Log
+- Cards / Minimal / Map views with URL-driven state (`nuqs`)
+- Search, state, designation, and accessibility filters
+- ParkCard (keyboard accessible, save buttons), ParkCardMinimal, ParkMap
+- Park of the Day hero (RSC, deterministic by date, cached 24h)
+- Skip link, "Skip map" bypass, `aria-live` results count, focus trap in modal
 
-Record any decisions made during implementation that aren't obvious from the code.
+**Park Detail**
 
-| Date | Decision | Reason |
-|---|---|---|
-| 2026-05-01 | Deferred Apple Sign In | Requires paid Apple Developer account |
-| 2026-05-01 | Deferred passkeys | Supabase WebAuthn support not yet GA |
-| 2026-05-01 | Using `pass` instead of Bitwarden | Bitwarden Secrets Manager requires paid org plan |
-| 2026-05-01 | Placeholder domain: `parkreach.app` | No production domain yet — find/replace when confirmed |
+- Full detail page with `generateMetadata`, OG tags
+- Accessibility info (NPS amenities API), entrance fees, hours, activities
+- WishlistButton, VisitedButton (persisted to Supabase)
+- WeatherWidget + DistanceBadge components (built, not yet wired in — see backlog)
 
----
+**Profile**
 
-## Session Notes
+- Wishlist and visited sections with park name resolution
+- Dark mode persisted to Supabase for auth'd users, localStorage for anon
 
-### 2026-05-01
-- Moved project files from `jrny-agentic-squad-poc/` up to `Accessible Parks/` root
-- Set up varlock + `@varlock/nextjs-integration` for env var security
-- Configured `pass` (GPG) as the secrets backend — NPS API key stored at `nps/api-key`
-- Merged `feature/park-viewer` → `main`
-- Created `docs/SPEC.md`, `docs/SETUP.md`, `docs/FUTURE_FEATURES.md`, `AGENTS.md`
-- Created `.github/copilot-instructions.md` for Copilot context
-- **Ready to start Phase 0**
+**Accessibility baseline**
 
-### 2026-05-02
-- Invoked Mystery Inc. squad (Fred, Daphne, Velma, Shaggy, Scooby) for Phase 0
-- **Daphne**: Initialized ShadCN (slate, CSS variables), created robots.ts, sitemap.ts stubs
-- **Velma**: Installed Supabase/SSR, Google Maps packages, bundle analyzer; created middleware.ts, supabase client/server helpers
-- **Shaggy**: Verified npm install passes, identified build failure (expected - Supabase not set up yet)
-- **Scooby**: Code review - flagged middleware error handling, fixed
-- **Fixes applied**: Added try/catch to middleware.ts auth refresh
-- **Blockers**: Build fails until Supabase is set up (Phase 1)
-- **Next**: Phase 1 - Database and Auth Backend
-
-### 2026-05-02 (Evening)
-- Supabase project created and credentials stored in pass
-- Created `.env.schema` with Supabase URL and anon key
-- Created `supabase/migrations/001_initial.sql` with profiles + park_saves tables + RLS
-- Created `src/types/supabase.ts` with TypeScript types
-- Created `/api/auth/callback` route
-- **Blocker**: Need to run migration in Supabase SQL Editor
-- **Next**: Phase 2 - Auth UI
-
-### 2026-05-02 (Evening)
-- Migration applied in Supabase SQL Editor
-- Created auth pages: login, verify, error
-- Created AuthContext, AuthButton components
-- Updated root layout with AuthProvider
-- Created auth callback route
-- Fixed varlock config for Supabase URL exposure
-- **Phase 2 complete**
-- **Next**: Phase 3 - Dark Mode and Profile
+- `prefers-reduced-motion`, `forced-colors` in CSS
+- Focus rings, `aria-label` on icon buttons, `role="list"` on grids
 
 ---
 
-## How to Update This File
+## Backlog — v1 Completion
 
-At the end of each session, add an entry under Session Notes:
-```
-### YYYY-MM-DD
-- What was completed
-- Any decisions made (add to Decisions Log too)
-- Any blockers discovered
-- Exactly where to pick up next
-```
+These are the remaining items to reach a fully working, shippable state. Nothing here is a new feature — all are gaps or wiring issues in what's already built.
 
-Check off completed phases in the checklist above.
+### Must Fix
+
+| #   | What                                                         | Where                               | Notes                                                                                                                                                                          |
+| --- | ------------------------------------------------------------ | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1   | Add `src/proxy.ts`                                           | new file                            | Next.js 16 renamed `middleware.ts` → `proxy.ts`. Without it, auth session cookies don't refresh between requests. Auth will appear to work but silently break on token expiry. |
+| 2   | Add `src/lib/supabase/middleware.ts`                         | new file                            | Session refresh helper called by `proxy.ts`.                                                                                                                                   |
+| 3   | Wire `WeatherWidget` + `DistanceBadge` into park detail page | `src/app/parks/[parkCode]/page.tsx` | Both components exist and work. They just aren't rendered on the page yet.                                                                                                     |
+| 4   | Remove debug logs from park detail                           | `src/app/parks/[parkCode]/page.tsx` | `getAmenities()` has ~10 `console.log('[DEBUG]...')` calls that need to go before any real use.                                                                                |
+| 5   | Delete `supabase/migrations/002_security_fixes.sql`          | `supabase/migrations/`              | File is self-marked deprecated — all fixes are already in `001_initial.sql`. Keeping it is a maintenance hazard.                                                               |
+
+### Should Do
+
+| #   | What                                         | Where                               | Notes                                                                                                 |
+| --- | -------------------------------------------- | ----------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| 6   | Magic link sign-in                           | `src/app/auth/login/page.tsx`       | Spec calls for email magic link alongside Google OAuth. Currently only Google is wired.               |
+| 7   | `generateMetadata` on home page              | `src/app/page.tsx`                  | Only has static title/description in `layout.tsx`. Needs page-level OG tags and canonical URL.        |
+| 8   | Canonical URLs in `generateMetadata`         | park detail + home page             | Add `alternates.canonical: 'https://parkreach.app/...'` to each page's metadata.                      |
+| 9   | JSON-LD structured data on park detail       | `src/app/parks/[parkCode]/page.tsx` | `TouristAttraction` schema — one `<script type="application/ld+json">` tag in the RSC.                |
+| 10  | Load More for minimal view                   | `src/components/ExplorerClient.tsx` | Cards view has a Load More button; minimal view doesn't. Map view can skip it.                        |
+| 11  | `NEXT_PUBLIC_GOOGLE_MAP_ID` in `.env.schema` | `.env.schema`                       | Missing env var. Needed for styled Google Maps. Add as `pass("parkreach/google-map-id")`.             |
+| 12  | CSP headers in `next.config.ts`              | `next.config.ts`                    | Add Content-Security-Policy allowing Google Maps domains (`maps.googleapis.com`, `maps.gstatic.com`). |
+
+### Housekeeping
+
+| #   | What                                                       | Notes                                                                                                 |
+| --- | ---------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ---------------------- |
+| 13  | Merge `.squad/decisions/inbox/` into `.squad/decisions.md` | Four decision notes are pending merge (Scrappy). All describe decisions that are already implemented. |
+| 14  | `generateMetadata` on profile page                         | Minimal — just `title: 'My Profile                                                                    | ParkReach'`+`noindex`. |
+| 15  | `loading.tsx` for park detail and profile routes           | Improves perceived performance. Low effort.                                                           |
+
+---
+
+See `docs/FUTURE_FEATURES.md` for everything that's intentionally deferred.
