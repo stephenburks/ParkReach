@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MapPin, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -11,14 +11,35 @@ interface Props {
 
 export function VisitedButton({ parkCode, minimal = false }: Props) {
   const [visited, setVisited] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('visited');
+    if (saved) {
+      const list = JSON.parse(saved);
+      setVisited(list.includes(parkCode));
+    }
+    setIsLoading(false);
+  }, [parkCode]);
 
   const handleClick = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     
-    // Toggle local state for UI feedback
     setIsLoading(true);
+    
+    const saved = localStorage.getItem('visited');
+    let list = saved ? JSON.parse(saved) : [];
+    
+    if (visited) {
+      list = list.filter((code: string) => code !== parkCode);
+    } else {
+      if (!list.includes(parkCode)) {
+        list.push(parkCode);
+      }
+    }
+    
+    localStorage.setItem('visited', JSON.stringify(list));
     setVisited(!visited);
     setIsLoading(false);
   };

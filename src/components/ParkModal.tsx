@@ -2,7 +2,10 @@
 
 import { useEffect } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Park } from '@/types/park';
+import { WishlistButton } from '@/components/WishlistButton';
+import { VisitedButton } from '@/components/VisitedButton';
 
 interface Props {
   park: Park;
@@ -94,6 +97,12 @@ export default function ParkModal({ park, onClose }: Props) {
 
         {/* Body */}
         <div className="p-6 space-y-6">
+          {/* Action buttons */}
+          <div className="flex flex-wrap gap-3">
+            <WishlistButton parkCode={park.parkCode} />
+            <VisitedButton parkCode={park.parkCode} />
+          </div>
+
           <p className="text-stone-700 dark:text-stone-300 leading-relaxed">{park.description}</p>
 
           {topActivities.length > 0 && (
