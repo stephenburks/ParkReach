@@ -39,19 +39,23 @@ async function getAmenities(parkCode: string): Promise<string | null> {
     if (!res.ok) return null;
     const data = await res.json();
 
-    const places = data.data || [];
-    if (places.length === 0) return null;
+    const amenities = data.data || [];
+    if (amenities.length === 0) return null;
 
-    const accessibilityInfo: string[] = [];
+    const accessibilityAmenities: string[] = [];
 
-    for (const place of places) {
-      if (place.accessibility) {
-        accessibilityInfo.push(`${place.name}: ${place.accessibility}`);
+    for (const amenity of amenities) {
+      if (amenity.name && amenity.name.toLowerCase().includes('accessible')) {
+        const parkWithPlace = amenity.parks?.find((p: { parkCode: string }) => p.parkCode === parkCode);
+        if (parkWithPlace?.places?.length > 0) {
+          const placeNames = parkWithPlace.places.map((p: { title: string }) => p.title).join(', ');
+          accessibilityAmenities.push(`${amenity.name}: ${placeNames}`);
+        }
       }
     }
 
-    if (accessibilityInfo.length === 0) return null;
-    return accessibilityInfo.join('\n\n');
+    if (accessibilityAmenities.length === 0) return null;
+    return accessibilityAmenities.join('\n\n');
   } catch {
     return null;
   }
