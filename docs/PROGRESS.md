@@ -19,7 +19,7 @@ project should read this file first.
 - [x] **Phase 2** — Auth UI (login/verify/error pages, AuthContext, AuthButton)
 - [x] **Phase 3** — Dark Mode and Profile (useDarkMode, CSS variables, profile page, useParkSaves)
 - [x] **Phase 4** — Explorer Views (ViewToggle, ParkCardMinimal, ParkMap, accessibility filter)
-- [x] **Phase 5** — Park Detail and Save Actions (detail page, weather, distance, save buttons — missing AccessibilityInfo component)
+- [x] **Phase 5** — Park Detail and Save Actions (detail page, weather, distance, save buttons, AccessibilityInfo component with NPS amenities API)
 - [ ] **Phase 6** — Park of the Day (ParkOfTheDay RSC, hero section)
 - [ ] **Phase 7** — SEO and Sitemap (generateMetadata, sitemap.ts, robots.ts, JSON-LD)
 - [ ] **Phase 8** — Accessibility Audit (WCAG 2.1 AA pass, Axe, keyboard walkthrough)
