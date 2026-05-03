@@ -4,7 +4,6 @@ import { notFound } from 'next/navigation';
 import { Park } from '@/types/park';
 import { DarkModeProvider } from '@/components/DarkModeProvider';
 import { DarkModeToggle } from '@/components/DarkModeToggle';
-import { AuthButton } from '@/components/AuthButton';
 import { WishlistButton } from '@/components/WishlistButton';
 import { VisitedButton } from '@/components/VisitedButton';
 
@@ -59,25 +58,20 @@ export default async function ParkDetailPage({ params }: Props) {
   return (
     <DarkModeProvider>
       <div className="min-h-screen bg-park-cream dark:bg-park-bark">
-        {/* Header */}
         <header className="bg-park-forest text-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div className="flex items-center justify-between">
               <Link href="/" className="text-park-cream hover:text-white font-semibold">
                 ← Back to Parks
               </Link>
-              <div className="flex items-center gap-3">
-                <AuthButton onSignInClick={() => {}} />
-                <DarkModeToggle />
-              </div>
+              <DarkModeToggle />
             </div>
           </div>
         </header>
 
-        {/* Hero */}
         <div className="relative h-72 sm:h-96">
           {image?.url ? (
-            <Image src={image.url} alt={image.altText || park.fullName} fill className="object-cover" unoptimized />
+            <Image src={image.url} alt={image.altText || park.fullName} fill className="object-cover" unoptimized priority />
           ) : (
             <div className="flex items-center justify-center h-full bg-park-forest">
               <span className="text-9xl opacity-20">🏔️</span>
@@ -97,7 +91,6 @@ export default async function ParkDetailPage({ params }: Props) {
           </div>
         </div>
 
-        {/* Actions */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-wrap gap-3">
             <WishlistButton parkCode={park.parkCode} />
@@ -105,15 +98,12 @@ export default async function ParkDetailPage({ params }: Props) {
           </div>
         </div>
 
-        {/* Content */}
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 space-y-8">
-          {/* Description */}
           <section>
             <h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">About</h2>
             <p className="text-stone-700 dark:text-stone-300 leading-relaxed">{park.description}</p>
           </section>
 
-          {/* Weather */}
           {park.weatherInfo && (
             <section>
               <h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">Weather</h2>
@@ -121,7 +111,6 @@ export default async function ParkDetailPage({ params }: Props) {
             </section>
           )}
 
-          {/* Directions */}
           {park.directionsInfo && (
             <section>
               <h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">Getting There</h2>
@@ -134,7 +123,6 @@ export default async function ParkDetailPage({ params }: Props) {
             </section>
           )}
 
-          {/* Fees */}
           {park.entranceFees?.length > 0 && (
             <section>
               <h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">Entrance Fees</h2>
@@ -150,12 +138,11 @@ export default async function ParkDetailPage({ params }: Props) {
             </section>
           )}
 
-          {/* Operating Hours */}
           {park.operatingHours?.length > 0 && (
             <section>
               <h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">Hours</h2>
               {park.operatingHours.map((hours, i) => (
-                <div key={i} className="bg-white dark:bg-stone-800 rounded-lg p-4 border border-stone-200 dark:border-stone-700">
+                <div key={i} className="bg-white dark:bg-stone-800 rounded-lg p-4 border border-stone-200 dark:border-stone-700 mb-2">
                   <p className="font-semibold text-park-bark dark:text-park-cream mb-2">{hours.name}</p>
                   {hours.description && <p className="text-stone-600 dark:text-stone-400 mb-2">{hours.description}</p>}
                   {hours.standardHours && (
@@ -173,7 +160,6 @@ export default async function ParkDetailPage({ params }: Props) {
             </section>
           )}
 
-          {/* Activities */}
           {park.activities?.length > 0 && (
             <section>
               <h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">Activities</h2>
@@ -187,7 +173,6 @@ export default async function ParkDetailPage({ params }: Props) {
             </section>
           )}
 
-          {/* Topics */}
           {park.topics?.length > 0 && (
             <section>
               <h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">Topics</h2>
@@ -201,7 +186,6 @@ export default async function ParkDetailPage({ params }: Props) {
             </section>
           )}
 
-          {/* Official Link */}
           {park.url && (
             <section>
               <a href={park.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-6 py-3 bg-park-forest text-white font-semibold rounded-full hover:bg-park-bark transition-colors">
@@ -210,25 +194,6 @@ export default async function ParkDetailPage({ params }: Props) {
             </section>
           )}
         </main>
-
-        {/* JSON-LD */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'TouristAttraction',
-              name: park.fullName,
-              description: park.description,
-              url: park.url,
-              address: {
-                '@type': 'PostalAddress',
-                addressRegion: park.states,
-              },
-              image: image?.url,
-            }),
-          }}
-        />
       </div>
     </DarkModeProvider>
   );
