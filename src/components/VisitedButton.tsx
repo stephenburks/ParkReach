@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { MapPin, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useSaves } from '@/hooks/useParkSaves';
 
 interface Props {
   parkCode: string;
@@ -10,37 +11,21 @@ interface Props {
 }
 
 export function VisitedButton({ parkCode, minimal = false }: Props) {
-  const [visited, setVisited] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const saved = localStorage.getItem('visited');
-    if (saved) {
-      const list = JSON.parse(saved);
-      setVisited(list.includes(parkCode));
-    }
-    setIsLoading(false);
-  }, [parkCode]);
+  const { isVisited, toggleVisited, loading: savesLoading, isAuthenticated } = useSaves();
+  const [isLoading, setIsLoading] = useState(false);
+  const visited = isVisited(parkCode);
 
   const handleClick = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     
-    setIsLoading(true);
-    
-    const saved = localStorage.getItem('visited');
-    let list = saved ? JSON.parse(saved) : [];
-    
-    if (visited) {
-      list = list.filter((code: string) => code !== parkCode);
-    } else {
-      if (!list.includes(parkCode)) {
-        list.push(parkCode);
-      }
+    if (!isAuthenticated) {
+      alert('Please sign in to mark parks as visited');
+      return;
     }
     
-    localStorage.setItem('visited', JSON.stringify(list));
-    setVisited(!visited);
+    setIsLoading(true);
+    await toggleVisited(parkCode);
     setIsLoading(false);
   };
 
@@ -50,7 +35,7 @@ export function VisitedButton({ parkCode, minimal = false }: Props) {
         variant="ghost"
         size="sm"
         onClick={handleClick}
-        disabled={isLoading}
+        disabled={savesLoading || isLoading}
         className="h-8 w-8 p-0 rounded-full hover:bg-green-50"
         aria-label={visited ? 'Mark as not visited' : 'Mark as visited'}
       >
@@ -67,7 +52,7 @@ export function VisitedButton({ parkCode, minimal = false }: Props) {
     <Button
       variant={visited ? 'default' : 'outline'}
       onClick={handleClick}
-      disabled={isLoading}
+      disabled={savesLoading || isLoading}
       className={visited ? 'bg-park-forest text-white' : ''}
     >
       <MapPin className={`h-4 w-4 mr-2 ${visited ? 'fill-current' : ''}`} />

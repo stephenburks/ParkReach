@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Heart, HeartOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useSaves } from '@/hooks/useParkSaves';
 
 interface Props {
   parkCode: string;
@@ -10,37 +11,21 @@ interface Props {
 }
 
 export function WishlistButton({ parkCode, minimal = false }: Props) {
-  const [wishlisted, setWishlisted] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const saved = localStorage.getItem('wishlist');
-    if (saved) {
-      const list = JSON.parse(saved);
-      setWishlisted(list.includes(parkCode));
-    }
-    setIsLoading(false);
-  }, [parkCode]);
+  const { isWishlisted, toggleWishlist, loading: savesLoading, isAuthenticated } = useSaves();
+  const [isLoading, setIsLoading] = useState(false);
+  const wishlisted = isWishlisted(parkCode);
 
   const handleClick = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     
-    setIsLoading(true);
-    
-    const saved = localStorage.getItem('wishlist');
-    let list = saved ? JSON.parse(saved) : [];
-    
-    if (wishlisted) {
-      list = list.filter((code: string) => code !== parkCode);
-    } else {
-      if (!list.includes(parkCode)) {
-        list.push(parkCode);
-      }
+    if (!isAuthenticated) {
+      alert('Please sign in to save parks to your wishlist');
+      return;
     }
     
-    localStorage.setItem('wishlist', JSON.stringify(list));
-    setWishlisted(!wishlisted);
+    setIsLoading(true);
+    await toggleWishlist(parkCode);
     setIsLoading(false);
   };
 
@@ -50,7 +35,7 @@ export function WishlistButton({ parkCode, minimal = false }: Props) {
         variant="ghost"
         size="sm"
         onClick={handleClick}
-        disabled={isLoading}
+        disabled={savesLoading || isLoading}
         className="h-8 w-8 p-0 rounded-full hover:bg-red-50"
         aria-label={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
       >
@@ -67,7 +52,7 @@ export function WishlistButton({ parkCode, minimal = false }: Props) {
     <Button
       variant={wishlisted ? 'default' : 'outline'}
       onClick={handleClick}
-      disabled={isLoading}
+      disabled={savesLoading || isLoading}
       className={wishlisted ? 'bg-park-forest text-white' : ''}
     >
       <Heart className={`h-4 w-4 mr-2 ${wishlisted ? 'fill-current' : ''}`} />

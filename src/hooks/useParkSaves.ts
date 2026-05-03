@@ -1,55 +1,51 @@
-'use client'
+'use client';
 
-import { useEffect, useState } from 'react'
-import { createBrowserClient } from '@supabase/ssr'
+import { useState, useEffect, useCallback } from 'react';
+import { createBrowserClient } from '@supabase/ssr';
+import { useAuth } from '@/context/AuthContext';
 
 type ParkSave = {
-  id: string
-  user_id: string
-  park_code: string
-  wishlisted: boolean
-  visited: boolean
-  created_at: string
+  id: string;
+  user_id: string;
+  park_code: string;
+  wishlisted: boolean;
+  visited: boolean;
+  created_at: string;
 }
 
 export function useSaves() {
   const [saves, setSaves] = useState<ParkSave[]>([])
   const [loading, setLoading] = useState(true)
+  const { user } = useAuth()
 
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )
 
-  useEffect(() => {
-    const fetchSaves = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
-      if (!user) {
-        setLoading(false)
-        return
-      }
-
-      const { data, error } = await supabase
-        .from('park_saves')
-        .select('*')
-        .eq('user_id', user.id)
-
-      if (!error && data) {
-        setSaves(data)
-      }
+  const fetchSaves = useCallback(async () => {
+    if (!user) {
       setLoading(false)
+      return
     }
 
+    const { data, error } = await supabase
+      .from('park_saves')
+      .select('*')
+      .eq('user_id', user.id)
+
+    if (!error && data) {
+      setSaves(data)
+    }
+    setLoading(false)
+  }, [supabase, user])
+
+  useEffect(() => {
     fetchSaves()
-  }, [supabase])
+  }, [fetchSaves])
 
   const toggleWishlist = async (parkCode: string) => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-    if (!user) return
+    if (!user) return false
 
     const existing = saves.find((s) => s.park_code === parkCode)
     if (existing) {
@@ -64,6 +60,7 @@ export function useSaves() {
           )
         )
       }
+      return !error
     } else {
       const { data, error } = await supabase
         .from('park_saves')
@@ -73,14 +70,13 @@ export function useSaves() {
       if (!error && data) {
         setSaves((prev) => [...prev, data])
       }
+      return !error
     }
+    return false
   }
 
   const toggleVisited = async (parkCode: string) => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-    if (!user) return
+    if (!user) return false
 
     const existing = saves.find((s) => s.park_code === parkCode)
     if (existing) {
@@ -95,6 +91,7 @@ export function useSaves() {
           )
         )
       }
+      return !error
     } else {
       const { data, error } = await supabase
         .from('park_saves')
@@ -104,7 +101,9 @@ export function useSaves() {
       if (!error && data) {
         setSaves((prev) => [...prev, data])
       }
+      return !error
     }
+    return false
   }
 
   const isWishlisted = (parkCode: string) =>
@@ -120,5 +119,6 @@ export function useSaves() {
     toggleVisited,
     isWishlisted,
     isVisited,
+    isAuthenticated: !!user,
   }
 }
