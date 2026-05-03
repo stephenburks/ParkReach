@@ -41,6 +41,8 @@ async function getAmenities(parkCode: string): Promise<string | null> {
     if (!res.ok) return null;
     const data = await res.json();
 
+    console.log('[DEBUG] raw data sample:', JSON.stringify(data.data?.[0]).slice(0, 500));
+
     const amenities = data.data || [];
     console.log('[DEBUG] total amenities count:', amenities.length);
 
