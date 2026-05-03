@@ -97,7 +97,7 @@ export function ExplorerClient() {
 
 	const accessibilityFilteredParks = accessibility
 		? parks.filter((p) =>
-				p.accessibility?.toLowerCase().includes(accessibility.toLowerCase()),
+				p.accessibility?.toLowerCase().includes(accessibility.toLowerCase()) ?? false,
 			)
 		: parks
 
