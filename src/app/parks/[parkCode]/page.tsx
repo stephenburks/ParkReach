@@ -39,23 +39,38 @@ async function getAmenities(parkCode: string): Promise<string | null> {
     if (!res.ok) return null;
     const data = await res.json();
 
+    // The NPS parksplaces endpoint returns data wrapped in an extra array
     let amenities = data.data || [];
-    if (amenities.length > 0 && Array.isArray(amenities[0])) {
+    // Unwrap: data is [[{amenity1}, {amenity2}, ...]]
+    if (amenities.length > 0 && Array.isArray(amenities[0]) && Array.isArray(amenities[0][0])) {
       amenities = amenities[0];
+    }
+    // Also handle case where it's already [{amenity1}, ...]
+    if (amenities.length > 0 && !Array.isArray(amenities[0]) && !amenities[0].parks) {
+      // This is the /amenities format, not /amenities/parksplaces
+      // Need to fetch different endpoint
     }
 
     const accessibilityAmenities: string[] = [];
 
     for (const amenity of amenities) {
+      const name = amenity.name || '';
+      const categories = amenity.categories || [];
+      const parks = amenity.parks || [];
+
       const isAccessibilityRelated = 
-        (amenity.name && amenity.name.toLowerCase().includes('accessible')) ||
-        (amenity.categories && amenity.categories.includes('Accessibility'));
+        name.toLowerCase().includes('accessible') ||
+        categories.includes('Accessibility');
 
       if (isAccessibilityRelated) {
-        const parkWithPlace = amenity.parks?.find((p: { parkCode: string }) => p.parkCode === parkCode);
-        if (parkWithPlace?.places?.length > 0) {
-          const placeNames = parkWithPlace.places.map((p: { title: string }) => p.title).join(', ');
-          accessibilityAmenities.push(`${amenity.name}: ${placeNames}`);
+        // Find the park in the parks array
+        const parkData = parks.find((p: { parkCode: string }) => p.parkCode === parkCode);
+        if (parkData?.places && parkData.places.length > 0) {
+          const placeNames = parkData.places.map((p: { title: string }) => p.title).join(', ');
+          accessibilityAmenities.push(`${name}: ${placeNames}`);
+        } else if (parks.length > 0) {
+          // Amenity exists but no specific places listed - still worth showing
+          accessibilityAmenities.push(`${name}`);
         }
       }
     }
