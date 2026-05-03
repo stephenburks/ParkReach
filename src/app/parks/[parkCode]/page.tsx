@@ -28,6 +28,7 @@ async function getPark(parkCode: string): Promise<Park | null> {
 
 async function getAmenities(parkCode: string): Promise<string | null> {
   const apiKey = process.env.NPS_API_KEY;
+  console.log('[DEBUG] getAmenities called, apiKey exists:', !!apiKey);
   if (!apiKey) return null;
 
   try {
@@ -35,28 +36,35 @@ async function getAmenities(parkCode: string): Promise<string | null> {
       `https://developer.nps.gov/api/v1/amenities/parksplaces?parkCode=${parkCode}`,
       { headers: { 'X-Api-Key': apiKey }, next: { revalidate: 3600 } }
     );
+    console.log('[DEBUG] amenities API response status:', res.status);
 
     if (!res.ok) return null;
     const data = await res.json();
 
     const amenities = data.data || [];
-    if (amenities.length === 0) return null;
+    console.log('[DEBUG] total amenities count:', amenities.length);
 
     const accessibilityAmenities: string[] = [];
 
     for (const amenity of amenities) {
       if (amenity.name && amenity.name.toLowerCase().includes('accessible')) {
+        console.log('[DEBUG] found accessible amenity:', amenity.name);
         const parkWithPlace = amenity.parks?.find((p: { parkCode: string }) => p.parkCode === parkCode);
+        console.log('[DEBUG] parkWithPlace:', !!parkWithPlace);
         if (parkWithPlace?.places?.length > 0) {
           const placeNames = parkWithPlace.places.map((p: { title: string }) => p.title).join(', ');
+          console.log('[DEBUG] places:', placeNames);
           accessibilityAmenities.push(`${amenity.name}: ${placeNames}`);
         }
       }
     }
 
+    console.log('[DEBUG] accessibilityAmenities:', accessibilityAmenities);
+
     if (accessibilityAmenities.length === 0) return null;
     return accessibilityAmenities.join('\n\n');
-  } catch {
+  } catch (e) {
+    console.log('[DEBUG] getAmenities error:', e);
     return null;
   }
 }

@@ -3,8 +3,14 @@ interface AccessibilityInfoProps {
 }
 
 export function AccessibilityInfo({ accessibility }: AccessibilityInfoProps) {
+  console.log('[DEBUG] AccessibilityInfo rendered, accessibility:', accessibility ? 'has value' : 'null/empty');
+
   if (!accessibility) {
-    return null;
+    return (
+      <div className="bg-yellow-100 p-4 text-yellow-800">
+        Debug: accessibility prop is falsy
+      </div>
+    );
   }
 
   return (
