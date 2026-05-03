@@ -1,0 +1,115 @@
+'use client'
+
+import { createContext, useContext, useEffect, useState, useCallback } from 'react'
+import { createClient } from '@/lib/supabase/client'
+import { useAuth } from '@/context/AuthContext'
+
+type ParkSave = {
+	id: string
+	user_id: string
+	park_code: string
+	wishlisted: boolean
+	visited: boolean
+	created_at: string
+}
+
+type SavesContextType = {
+	saves: ParkSave[]
+	loading: boolean
+	toggleWishlist: (parkCode: string) => Promise<boolean>
+	toggleVisited: (parkCode: string) => Promise<boolean>
+	isWishlisted: (parkCode: string) => boolean
+	isVisited: (parkCode: string) => boolean
+	isAuthenticated: boolean
+}
+
+const SavesContext = createContext<SavesContextType>({
+	saves: [],
+	loading: true,
+	toggleWishlist: async () => false,
+	toggleVisited: async () => false,
+	isWishlisted: () => false,
+	isVisited: () => false,
+	isAuthenticated: false,
+})
+
+export function SavesProvider({ children }: { children: React.ReactNode }) {
+	const [saves, setSaves] = useState<ParkSave[]>([])
+	const [loading, setLoading] = useState(true)
+	const { user } = useAuth()
+	const supabase = createClient()
+
+	const fetchSaves = useCallback(async () => {
+		if (!user) {
+			setSaves([])
+			setLoading(false)
+			return
+		}
+
+		const { data, error } = await supabase
+			.from('park_saves')
+			.select('id, user_id, park_code, wishlisted, visited, created_at')
+			.eq('user_id', user.id)
+
+		if (!error && data) setSaves(data)
+		setLoading(false)
+	}, [user])
+
+	useEffect(() => {
+		fetchSaves()
+	}, [fetchSaves])
+
+	const toggleFlag = async (parkCode: string, field: 'wishlisted' | 'visited'): Promise<boolean> => {
+		if (!user) return false
+
+		const existing = saves.find((s) => s.park_code === parkCode)
+
+		if (existing) {
+			const newValue = !existing[field]
+			const { error } = await supabase
+				.from('park_saves')
+				.update({ [field]: newValue })
+				.eq('id', existing.id)
+			if (!error) {
+				setSaves((prev) =>
+					prev.map((s) => (s.id === existing.id ? { ...s, [field]: newValue } : s))
+				)
+			}
+			return !error
+		}
+
+		const { data, error } = await supabase
+			.from('park_saves')
+			.insert({ user_id: user.id, park_code: parkCode, [field]: true })
+			.select()
+			.single()
+		if (!error && data) setSaves((prev) => [...prev, data])
+		return !error
+	}
+
+	const isWishlisted = (parkCode: string) =>
+		saves.some((s) => s.park_code === parkCode && s.wishlisted)
+
+	const isVisited = (parkCode: string) =>
+		saves.some((s) => s.park_code === parkCode && s.visited)
+
+	return (
+		<SavesContext.Provider
+			value={{
+				saves,
+				loading,
+				toggleWishlist: (parkCode) => toggleFlag(parkCode, 'wishlisted'),
+				toggleVisited: (parkCode) => toggleFlag(parkCode, 'visited'),
+				isWishlisted,
+				isVisited,
+				isAuthenticated: !!user,
+			}}
+		>
+			{children}
+		</SavesContext.Provider>
+	)
+}
+
+export function useSaves() {
+	return useContext(SavesContext)
+}
