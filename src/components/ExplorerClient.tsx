@@ -1,13 +1,33 @@
 'use client'
 
+import type { ComponentType } from 'react'
+import dynamic from 'next/dynamic'
 import { useCallback } from 'react'
 import { useQueryState, parseAsString, parseAsStringLiteral, debounce } from 'nuqs'
-import { Park } from '@/types/park'
+import type { Park } from '@/types/park'
 import ParkCard from '@/components/ParkCard'
+import ParkCardMinimal from '@/components/ParkCardMinimal'
 import ParkModal from '@/components/ParkModal'
 import SearchFilter from '@/components/SearchFilter'
 import { useParks } from '@/hooks/useParks'
 import { ViewToggle } from '@/components/ViewToggle'
+
+interface ParkMapProps {
+	parks: Park[]
+	onParkSelect: (park: Park) => void
+}
+
+const ParkMap = dynamic(
+	() => import('@/components/ParkMap').then((m) => ({ default: m.ParkMap })),
+	{
+		ssr: false,
+		loading: () => (
+			<div className="h-[600px] flex items-center justify-center bg-stone-100 dark:bg-stone-800 rounded-xl">
+				<p className="text-park-stone">Loading map…</p>
+			</div>
+		),
+	},
+) as ComponentType<ParkMapProps>
 
 const VIEW_OPTIONS = ['cards', 'minimal', 'map'] as const
 
@@ -148,18 +168,27 @@ export function ExplorerClient() {
 							</ul>
 						)}
 						{view === 'minimal' && (
-							<div className="text-center py-16">
-								<p className="text-park-bark dark:text-park-cream font-semibold text-lg mb-2">
-									Minimal view coming soon
-								</p>
-							</div>
+							<ul className="divide-y divide-stone-100 dark:divide-stone-700" role="list">
+								{accessibilityFilteredParks.map((park) => (
+									<li key={park.id}>
+										<ParkCardMinimal park={park} onSelect={handleSelectPark} />
+									</li>
+								))}
+							</ul>
 						)}
 						{view === 'map' && (
-							<div className="text-center py-16">
-								<p className="text-park-bark dark:text-park-cream font-semibold text-lg mb-2">
-									Map view coming soon
-								</p>
-							</div>
+							<>
+								<a
+									href="#main-content"
+									className="text-xs text-park-forest hover:underline mb-2 inline-block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-park-forest"
+								>
+									Skip map, view as list
+								</a>
+								<ParkMap
+									parks={accessibilityFilteredParks}
+									onParkSelect={handleSelectPark}
+								/>
+							</>
 						)}
 
 						{view === 'cards' && hasNextPage && (
