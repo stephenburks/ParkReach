@@ -28,6 +28,7 @@ async function getPark(parkCode: string): Promise<Park | null> {
 
 async function getAmenities(parkCode: string): Promise<string | null> {
   const apiKey = process.env.NPS_API_KEY;
+  console.log('[DEBUG] getAmenities called for parkCode:', parkCode);
   if (!apiKey) return null;
 
   try {
@@ -36,20 +37,20 @@ async function getAmenities(parkCode: string): Promise<string | null> {
       { headers: { 'X-Api-Key': apiKey }, next: { revalidate: 3600 } }
     );
 
+    console.log('[DEBUG] amenities API status:', res.status);
     if (!res.ok) return null;
     const data = await res.json();
+    console.log('[DEBUG] data.data type:', typeof data.data, Array.isArray(data.data) ? 'array' : 'not array');
+    console.log('[DEBUG] data.data length:', data.data?.length);
+    console.log('[DEBUG] first item type:', typeof data.data?.[0]);
 
-    // The NPS parksplaces endpoint returns data wrapped in an extra array
+    // The NPS parksplaces endpoint returns amenities as direct array
     let amenities = data.data || [];
-    // Unwrap: data is [[{amenity1}, {amenity2}, ...]]
-    if (amenities.length > 0 && Array.isArray(amenities[0]) && Array.isArray(amenities[0][0])) {
-      amenities = amenities[0];
-    }
-    // Also handle case where it's already [{amenity1}, ...]
-    if (amenities.length > 0 && !Array.isArray(amenities[0]) && !amenities[0].parks) {
-      // This is the /amenities format, not /amenities/parksplaces
-      // Need to fetch different endpoint
-    }
+    console.log('[DEBUG] initial amenities length:', amenities.length);
+
+    // Don't unwrap - the data is already in correct format [{name:..., categories:..., parks:...}, ...]
+    console.log('[DEBUG] final amenities length:', amenities.length);
+    console.log('[DEBUG] first amenity sample:', JSON.stringify(amenities[0]).slice(0, 200));
 
     const accessibilityAmenities: string[] = [];
 
@@ -63,8 +64,10 @@ async function getAmenities(parkCode: string): Promise<string | null> {
         categories.includes('Accessibility');
 
       if (isAccessibilityRelated) {
+        console.log('[DEBUG] found accessibility amenity:', name, 'parks:', parks.length);
         // Find the park in the parks array
         const parkData = parks.find((p: { parkCode: string }) => p.parkCode === parkCode);
+        console.log('[DEBUG] parkData:', parkData ? 'found' : 'not found');
         if (parkData?.places && parkData.places.length > 0) {
           const placeNames = parkData.places.map((p: { title: string }) => p.title).join(', ');
           accessibilityAmenities.push(`${name}: ${placeNames}`);
@@ -75,9 +78,11 @@ async function getAmenities(parkCode: string): Promise<string | null> {
       }
     }
 
+    console.log('[DEBUG] accessibilityAmenities result:', accessibilityAmenities);
     if (accessibilityAmenities.length === 0) return null;
     return accessibilityAmenities.join('\n\n');
-  } catch {
+  } catch (e) {
+    console.log('[DEBUG] error:', e);
     return null;
   }
 }
