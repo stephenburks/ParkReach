@@ -7,7 +7,7 @@ project should read this file first.
 
 ## Current Status
 
-**Active phase:** Phase 3 — Dark Mode and Profile
+**Active phase:** Phase 6 — Park of the Day
 **Last updated:** 2026-05-02
 
 ---
@@ -19,8 +19,7 @@ project should read this file first.
 - [x] **Phase 2** — Auth UI (login/verify/error pages, AuthContext, AuthButton)
 - [x] **Phase 3** — Dark Mode and Profile (useDarkMode, CSS variables, profile page, useParkSaves)
 - [x] **Phase 4** — Explorer Views (ViewToggle, ParkCardMinimal, ParkMap, accessibility filter)
-- [x] **Phase 5** — Park Detail and Save Actions (detail page, weather, distance, save buttons)
-- [ ] **Phase 6** — Park of the Day (ParkOfTheDay RSC, hero section)
+- [x] **Phase 5** — Park Detail and Save Actions (detail page, weather, distance, save buttons — missing AccessibilityInfo component)
 - [ ] **Phase 6** — Park of the Day (ParkOfTheDay RSC, hero section)
 - [ ] **Phase 7** — SEO and Sitemap (generateMetadata, sitemap.ts, robots.ts, JSON-LD)
 - [ ] **Phase 8** — Accessibility Audit (WCAG 2.1 AA pass, Axe, keyboard walkthrough)
