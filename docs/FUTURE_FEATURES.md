@@ -12,6 +12,10 @@ Things that would make the existing product better but aren't blocking launch.
 
 Run a formal axe-core scan and manual keyboard walkthrough. Resolve any critical/serious WCAG 2.1 AA violations. Document findings in `.squad/decisions/`.
 
+### Content Security Policy
+
+Add a proper CSP header to `next.config.ts`. Must use Next.js nonces (see the [Next.js CSP guide](https://nextjs.org/docs/app/guides/content-security-policy)) — a static string CSP blocks Next.js's own JS chunks. Domains to allow: `maps.googleapis.com`, `maps.gstatic.com`, `*.supabase.co`, `developer.nps.gov`, `api.weather.gov`.
+
 ### Map Marker Clustering
 
 Add `@googlemaps/markerclusterer` to group pins at low zoom levels. Currently ~470 individual markers render fine at the default zoom, but clustering would improve the experience when zoomed out. Revisit after user testing.
