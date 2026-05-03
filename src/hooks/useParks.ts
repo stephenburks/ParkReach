@@ -3,6 +3,8 @@ import type { NpsApiResponse } from '@/types/park'
 
 export const PARKS_LIMIT = 24
 
+// NPS API does not support filtering by designation — convert display label
+// to singular form for client-side comparison only.
 function toApiDesignation(display: string): string {
 	if (!display || display === 'All') return ''
 	return display.replace(/s$/, '') // "National Parks" → "National Park"
@@ -14,10 +16,26 @@ async function fetchParkPage(
 	designation: string,
 	start: number
 ): Promise<NpsApiResponse> {
+	if (designation) {
+		// NPS API ignores the designation param, so fetch a large batch and filter
+		// client-side. Individual designation types have at most ~70 parks.
+		const params = new URLSearchParams({ limit: '500', start: '0' })
+		if (q) params.set('q', q)
+		if (stateCode) params.set('stateCode', stateCode)
+
+		const res = await fetch(`/api/parks?${params}`)
+		if (!res.ok) throw new Error('Failed to load parks')
+		const data: NpsApiResponse = await res.json()
+
+		const filtered = data.data.filter(
+			(p) => p.designation?.toLowerCase() === designation.toLowerCase()
+		)
+		return { ...data, data: filtered, total: String(filtered.length) }
+	}
+
 	const params = new URLSearchParams({ limit: String(PARKS_LIMIT), start: String(start) })
 	if (q) params.set('q', q)
 	if (stateCode) params.set('stateCode', stateCode)
-	if (designation) params.set('designation', designation)
 
 	const res = await fetch(`/api/parks?${params}`)
 	if (!res.ok) throw new Error('Failed to load parks')
@@ -32,7 +50,10 @@ export function useParks(search: string, stateCode: string, designation: string)
 		queryFn: ({ pageParam }) =>
 			fetchParkPage(search, stateCode, apiDesignation, pageParam as number),
 		initialPageParam: 0,
+		staleTime: 24 * 60 * 60 * 1000,
 		getNextPageParam: (lastPage, allPages) => {
+			// When designation is filtered, all results come back as a single page
+			if (apiDesignation) return undefined
 			const loaded = allPages.reduce((sum, page) => sum + page.data.length, 0)
 			const total = parseInt(lastPage.total, 10)
 			return loaded < total ? loaded : undefined
