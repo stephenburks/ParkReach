@@ -40,7 +40,7 @@ export function SavesProvider({ children }: { children: React.ReactNode }) {
 	const supabase = useMemo(() => createClient(), [])
 
 	const fetchSaves = useCallback(async () => {
-		if (!user) return []
+		if (!user || !supabase) return []
 
 		const { data, error } = await supabase
 			.from('park_saves')
@@ -58,7 +58,7 @@ export function SavesProvider({ children }: { children: React.ReactNode }) {
 	}, [fetchSaves])
 
 	const toggleFlag = async (parkCode: string, field: 'wishlisted' | 'visited'): Promise<boolean> => {
-		if (!user) return false
+		if (!user || !supabase) return false
 
 		const existing = saves.find((s) => s.park_code === parkCode)
 

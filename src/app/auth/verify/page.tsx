@@ -6,8 +6,9 @@ import { createClient } from '@/lib/supabase/client'
 export default function VerifyPage() {
   const handleResend = async () => {
     const email = new URLSearchParams(window.location.search).get('email')
-    if (email) {
-      await createClient().auth.signInWithOtp({ email })
+    const supabase = createClient()
+    if (email && supabase) {
+      await supabase.auth.signInWithOtp({ email })
       alert('Magic link sent!')
     }
   }

@@ -80,9 +80,12 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
     e.preventDefault()
     if (!email) return
 
+    const supabase = createClient()
+    if (!supabase) return
+
     setLoading(true)
     try {
-      await createClient().auth.signInWithOtp({ email })
+      await supabase.auth.signInWithOtp({ email })
       setMagicLinkSent(true)
     } catch (error) {
       console.error('Magic link error:', error)
