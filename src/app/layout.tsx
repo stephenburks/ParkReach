@@ -7,6 +7,7 @@ import { QueryProvider } from '@/components/QueryProvider';
 import { DarkModeProvider } from '@/components/DarkModeProvider';
 import { Toaster } from '@/components/ui/sonner';
 import { SkipLink } from '@/components/SkipLink';
+import { NuqsAdapter } from '@/nuqs';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -31,15 +32,17 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} min-h-full flex flex-col antialiased`}>
-        <SkipLink />
-        <QueryProvider>
-          <DarkModeProvider>
-            <AuthProvider>
-              <SavesProvider>{children}</SavesProvider>
-            </AuthProvider>
-            <Toaster />
-          </DarkModeProvider>
-        </QueryProvider>
+        <NuqsAdapter>
+          <SkipLink />
+          <QueryProvider>
+            <DarkModeProvider>
+              <AuthProvider>
+                <SavesProvider>{children}</SavesProvider>
+              </AuthProvider>
+              <Toaster />
+            </DarkModeProvider>
+          </QueryProvider>
+        </NuqsAdapter>
       </body>
     </html>
   );
