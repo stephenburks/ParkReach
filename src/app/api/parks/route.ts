@@ -7,6 +7,7 @@ export async function GET(request: NextRequest) {
 	const q = sp.get('q') || ''
 	const stateCode = sp.get('stateCode') || ''
 	const designation = sp.get('designation') || ''
+	const parkCode = sp.get('parkCode') || ''
 	const limit = sp.get('limit') || '24'
 	const start = sp.get('start') || '0'
 
@@ -14,6 +15,7 @@ export async function GET(request: NextRequest) {
 	if (q) params.set('q', q)
 	if (stateCode) params.set('stateCode', stateCode)
 	if (designation) params.set('designation', designation)
+	if (parkCode) params.set('parkCode', parkCode)
 
 	try {
 		const res = await fetch(`${NPS_BASE}?${params}`, {

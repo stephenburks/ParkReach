@@ -1,19 +1,27 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useAuth } from '@/context/AuthContext'
 import { useSaves } from '@/hooks/useParkSaves'
+import { useParksByCode } from '@/hooks/useParksByCode'
 import { AuthButton } from '@/components/AuthButton'
 import { AuthModal } from '@/components/AuthModal'
-import { Park } from '@/types/park'
 import Link from 'next/link'
 
 export default function ProfilePage() {
   const { user, loading: authLoading } = useAuth()
-  const { saves, loading } = useSaves()
+  const { saves, loading: savesLoading } = useSaves()
   const [showAuthModal, setShowAuthModal] = useState(false)
 
-  if (authLoading || loading) {
+  const allCodes = useMemo(() => saves.map((s) => s.park_code), [saves])
+  const { data: parks = [] } = useParksByCode(allCodes)
+
+  const parkByCode = useMemo(
+    () => Object.fromEntries(parks.map((p) => [p.parkCode, p])),
+    [parks]
+  )
+
+  if (authLoading || savesLoading) {
     return (
       <div className="min-h-screen bg-park-cream dark:bg-park-bark p-8">
         <div className="max-w-4xl mx-auto">
@@ -21,7 +29,7 @@ export default function ProfilePage() {
             <div className="h-8 bg-stone-200 dark:bg-stone-700 rounded w-32" />
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="bg-white dark:bg-stone-800 rounded-2xl h-64" />
+                <div key={i} className="bg-white dark:bg-stone-800 rounded-2xl h-24" />
               ))}
             </div>
           </div>
@@ -35,9 +43,7 @@ export default function ProfilePage() {
       <div className="min-h-screen bg-park-cream dark:bg-park-bark flex flex-col items-center justify-center p-4">
         <div className="text-center max-w-md">
           <h1 className="text-2xl font-semibold mb-2">Sign in to view your profile</h1>
-          <p className="text-stone-500 mb-6">
-            Save parks and track visits by signing in
-          </p>
+          <p className="text-stone-500 mb-6">Save parks and track visits by signing in</p>
           <AuthButton onSignInClick={() => setShowAuthModal(true)} />
         </div>
         <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
@@ -48,14 +54,22 @@ export default function ProfilePage() {
   const wishlisted = saves.filter((s) => s.wishlisted)
   const visited = saves.filter((s) => s.visited)
 
-  const ParkRow = ({ parkCode }: { parkCode: string }) => (
-    <Link
-      href={`/parks/${parkCode}`}
-      className="block p-4 bg-white dark:bg-stone-800 rounded-lg hover:bg-stone-50 dark:hover:bg-stone-700 transition-colors"
-    >
-      <span className="font-medium">{parkCode}</span>
-    </Link>
-  )
+  const ParkRow = ({ parkCode }: { parkCode: string }) => {
+    const park = parkByCode[parkCode]
+    return (
+      <Link
+        href={`/parks/${parkCode}`}
+        className="block p-4 bg-white dark:bg-stone-800 rounded-lg hover:bg-stone-50 dark:hover:bg-stone-700 transition-colors"
+      >
+        <p className="font-medium text-park-bark dark:text-park-cream leading-snug">
+          {park?.fullName ?? parkCode}
+        </p>
+        {park?.designation && (
+          <p className="text-xs text-park-stone dark:text-stone-400 mt-0.5">{park.designation}</p>
+        )}
+      </Link>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-park-cream dark:bg-park-bark p-8">
