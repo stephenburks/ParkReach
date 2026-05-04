@@ -10,8 +10,8 @@ export default function ProfileLoading() {
 				<div className="mb-12">
 					<div className="h-7 bg-stone-200 dark:bg-stone-700 rounded w-32 mb-4" />
 					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-						{Array.from({ length: 3 }).map((_, i) => (
-							<div key={i} className="bg-white dark:bg-stone-800 rounded-lg h-16" />
+						{Array.from({ length: 3 }).map((_value, index) => (
+							<div key={index} className="bg-white dark:bg-stone-800 rounded-lg h-16" />
 						))}
 					</div>
 				</div>
@@ -19,8 +19,8 @@ export default function ProfileLoading() {
 				<div>
 					<div className="h-7 bg-stone-200 dark:bg-stone-700 rounded w-28 mb-4" />
 					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-						{Array.from({ length: 3 }).map((_, i) => (
-							<div key={i} className="bg-white dark:bg-stone-800 rounded-lg h-16" />
+						{Array.from({ length: 3 }).map((_value, index) => (
+							<div key={index} className="bg-white dark:bg-stone-800 rounded-lg h-16" />
 						))}
 					</div>
 				</div>

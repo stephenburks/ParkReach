@@ -34,10 +34,6 @@ export interface ParkOperatingHours {
   name: string;
 }
 
-export interface ParkAccessibility {
-  accessibility: string;
-}
-
 export interface Park {
   id: string;
   url: string;

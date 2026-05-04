@@ -2,7 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { Park } from "@/types/park";
+import type { Park } from "@/types/park";
+import { fetchPark } from "@/lib/nps";
 import { DarkModeProvider } from "@/components/DarkModeProvider";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { WishlistButton } from "@/components/WishlistButton";
@@ -15,20 +16,6 @@ const BASE_URL = "https://parkreach.app";
 
 interface Props {
   params: Promise<{ parkCode: string }>;
-}
-
-async function getPark(parkCode: string): Promise<Park | null> {
-  const apiKey = process.env.NPS_API_KEY;
-  if (!apiKey) return null;
-
-  const res = await fetch(
-    `https://developer.nps.gov/api/v1/parks?parkCode=${parkCode}&fields=images,operatingHours,entranceFees,entrancePasses,activities,topics,directionsUrl,weatherInfo,accessibility`,
-    { headers: { "X-Api-Key": apiKey }, next: { revalidate: 3600 } },
-  );
-
-  if (!res.ok) return null;
-  const data = await res.json();
-  return data.data?.[0] ?? null;
 }
 
 async function getAmenities(parkCode: string): Promise<string | null> {
@@ -63,9 +50,9 @@ async function getAmenities(parkCode: string): Promise<string | null> {
         categories.includes("Accessibility");
 
       if (isAccessibilityRelated) {
-        const parkData = parks.find((p) => p.parkCode === parkCode);
+        const parkData = parks.find((park) => park.parkCode === parkCode);
         if (parkData?.places && parkData.places.length > 0) {
-          const placeNames = parkData.places.map((p) => p.title).join(", ");
+          const placeNames = parkData.places.map((place) => place.title).join(", ");
           accessibilityAmenities.push(`${name}: ${placeNames}`);
         } else if (parks.length > 0) {
           accessibilityAmenities.push(name);
@@ -81,9 +68,232 @@ async function getAmenities(parkCode: string): Promise<string | null> {
   }
 }
 
+interface ParkHeroProps {
+  park: Park;
+  states: string;
+}
+
+function ParkHero({ park, states }: ParkHeroProps) {
+  const image = park.images[0];
+  return (
+    <div className="relative h-72 sm:h-96">
+      {image?.url ? (
+        <Image
+          src={image.url}
+          alt={image.altText || park.fullName}
+          fill
+          className="object-cover"
+          priority
+        />
+      ) : (
+        <div className="flex items-center justify-center h-full bg-park-forest">
+          <span className="text-9xl opacity-20" aria-hidden="true">
+            🏔️
+          </span>
+        </div>
+      )}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 p-6">
+        <div className="max-w-7xl mx-auto">
+          {park.designation && (
+            <span className="inline-block bg-park-forest/90 backdrop-blur-sm text-white text-sm font-semibold px-3 py-1 rounded-full mb-2">
+              {park.designation}
+            </span>
+          )}
+          <h1 className="text-3xl sm:text-4xl font-bold text-white">
+            {park.fullName}
+          </h1>
+          <p className="text-park-cream/80 mt-1">{states}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+interface ParkActionsProps {
+  parkCode: string;
+  npsUrl: string;
+}
+
+function ParkActions({ parkCode, npsUrl }: ParkActionsProps) {
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="flex flex-wrap items-center gap-3">
+        <WishlistButton parkCode={parkCode} />
+        <VisitedButton parkCode={parkCode} />
+        {npsUrl && (
+          <a
+            href={npsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-park-forest text-white font-semibold rounded-full hover:bg-park-bark transition-colors text-sm"
+          >
+            Visit Official Website →
+          </a>
+        )}
+      </div>
+    </div>
+  );
+}
+
+interface ParkInfoGridProps {
+  park: Park;
+  amenitiesAccessibility: string | null;
+}
+
+function ParkInfoGrid({ park, amenitiesAccessibility }: ParkInfoGridProps) {
+  return (
+    <div className="space-y-8">
+      <section>
+        <h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">
+          About
+        </h2>
+        <p className="text-stone-700 dark:text-stone-300 leading-relaxed">
+          {park.description}
+        </p>
+      </section>
+
+      <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex-1">
+          <WeatherWidget parkCode={park.parkCode} />
+        </div>
+        <DistanceBadge
+          parkCode={park.parkCode}
+          latitude={park.latitude}
+          longitude={park.longitude}
+        />
+      </div>
+
+      {(amenitiesAccessibility || park.accessibility) && (
+        <AccessibilityInfo
+          accessibility={amenitiesAccessibility || park.accessibility}
+        />
+      )}
+
+      {park.directionsInfo && (
+        <section>
+          <h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">
+            Getting There
+          </h2>
+          <p className="text-stone-700 dark:text-stone-300 leading-relaxed">
+            {park.directionsInfo}
+          </p>
+          {park.directionsUrl && (
+            <a
+              href={park.directionsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-park-forest hover:underline mt-2 inline-block"
+            >
+              Get directions →
+            </a>
+          )}
+        </section>
+      )}
+
+      {park.entranceFees?.length > 0 && (
+        <section>
+          <h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">
+            Entrance Fees
+          </h2>
+          <ul className="space-y-2">
+            {park.entranceFees.map((fee, index) => (
+              <li
+                key={index}
+                className="bg-white dark:bg-stone-800 rounded-lg p-4 border border-stone-200 dark:border-stone-700"
+              >
+                <p className="font-semibold text-park-bark dark:text-park-cream">
+                  {fee.title}
+                </p>
+                <p className="text-stone-600 dark:text-stone-400">
+                  {fee.description}
+                </p>
+                <p className="text-park-forest font-semibold mt-1">
+                  {fee.cost}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {park.operatingHours?.length > 0 && (
+        <section>
+          <h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">
+            Hours
+          </h2>
+          {park.operatingHours.map((hours, index) => (
+            <div
+              key={index}
+              className="bg-white dark:bg-stone-800 rounded-lg p-4 border border-stone-200 dark:border-stone-700 mb-2"
+            >
+              <p className="font-semibold text-park-bark dark:text-park-cream mb-2">
+                {hours.name}
+              </p>
+              {hours.description && (
+                <p className="text-stone-600 dark:text-stone-400 mb-2">
+                  {hours.description}
+                </p>
+              )}
+              {hours.standardHours && (
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm">
+                  {Object.entries(hours.standardHours).map(([day, val]) => (
+                    <div key={day} className="capitalize">
+                      <span className="font-medium">{day}: </span>
+                      <span className="text-stone-600 dark:text-stone-400">
+                        {val}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </section>
+      )}
+
+      {park.activities?.length > 0 && (
+        <section>
+          <h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">
+            Activities
+          </h2>
+          <div className="flex flex-wrap gap-2">
+            {park.activities.map((activity) => (
+              <span
+                key={activity.id}
+                className="bg-park-sage/20 text-park-bark dark:text-park-cream px-3 py-1 rounded-full text-sm"
+              >
+                {activity.name}
+              </span>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {park.topics?.length > 0 && (
+        <section>
+          <h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">
+            Topics
+          </h2>
+          <div className="flex flex-wrap gap-2">
+            {park.topics.map((topic) => (
+              <span
+                key={topic.id}
+                className="bg-stone-200 dark:bg-stone-700 text-stone-700 dark:text-stone-300 px-3 py-1 rounded-full text-sm"
+              >
+                {topic.name}
+              </span>
+            ))}
+          </div>
+        </section>
+      )}
+    </div>
+  );
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { parkCode } = await params;
-  const park = await getPark(parkCode);
+  const park = await fetchPark(parkCode);
 
   if (!park) {
     return { title: "Park Not Found | ParkReach" };
@@ -109,11 +319,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ParkDetailPage({ params }: Props) {
   const { parkCode } = await params;
-  const park = await getPark(parkCode);
+  const park = await fetchPark(parkCode);
 
   if (!park) notFound();
 
-  const image = park.images[0];
   const states = park.states.split(",").join(", ");
   const amenitiesAccessibility = await getAmenities(parkCode);
 
@@ -153,203 +362,11 @@ export default async function ParkDetailPage({ params }: Props) {
           </div>
         </header>
 
-        <div className="relative h-72 sm:h-96">
-          {image?.url ? (
-            <Image
-              src={image.url}
-              alt={image.altText || park.fullName}
-              fill
-              className="object-cover"
-              priority
-            />
-          ) : (
-            <div className="flex items-center justify-center h-full bg-park-forest">
-              <span className="text-9xl opacity-20" aria-hidden="true">
-                🏔️
-              </span>
-            </div>
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-          <div className="absolute bottom-0 left-0 right-0 p-6">
-            <div className="max-w-7xl mx-auto">
-              {park.designation && (
-                <span className="inline-block bg-park-forest/90 backdrop-blur-sm text-white text-sm font-semibold px-3 py-1 rounded-full mb-2">
-                  {park.designation}
-                </span>
-              )}
-              <h1 className="text-3xl sm:text-4xl font-bold text-white">
-                {park.fullName}
-              </h1>
-              <p className="text-park-cream/80 mt-1">{states}</p>
-            </div>
-          </div>
-        </div>
+        <ParkHero park={park} states={states} />
+        <ParkActions parkCode={park.parkCode} npsUrl={park.url} />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-wrap gap-3">
-            <WishlistButton parkCode={park.parkCode} />
-            <VisitedButton parkCode={park.parkCode} />
-          </div>
-        </div>
-
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 space-y-8">
-          <section>
-            <h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">
-              About
-            </h2>
-            <p className="text-stone-700 dark:text-stone-300 leading-relaxed">
-              {park.description}
-            </p>
-          </section>
-
-          {/* Live weather + distance widgets */}
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1">
-              <WeatherWidget parkCode={park.parkCode} />
-            </div>
-            <DistanceBadge
-              parkCode={park.parkCode}
-              latitude={park.latitude}
-              longitude={park.longitude}
-            />
-          </div>
-
-          {(amenitiesAccessibility || park.accessibility) && (
-            <AccessibilityInfo
-              accessibility={amenitiesAccessibility || park.accessibility}
-            />
-          )}
-
-          {park.directionsInfo && (
-            <section>
-              <h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">
-                Getting There
-              </h2>
-              <p className="text-stone-700 dark:text-stone-300 leading-relaxed">
-                {park.directionsInfo}
-              </p>
-              {park.directionsUrl && (
-                <a
-                  href={park.directionsUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-park-forest hover:underline mt-2 inline-block"
-                >
-                  Get directions →
-                </a>
-              )}
-            </section>
-          )}
-
-          {park.entranceFees?.length > 0 && (
-            <section>
-              <h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">
-                Entrance Fees
-              </h2>
-              <ul className="space-y-2">
-                {park.entranceFees.map((fee, i) => (
-                  <li
-                    key={i}
-                    className="bg-white dark:bg-stone-800 rounded-lg p-4 border border-stone-200 dark:border-stone-700"
-                  >
-                    <p className="font-semibold text-park-bark dark:text-park-cream">
-                      {fee.title}
-                    </p>
-                    <p className="text-stone-600 dark:text-stone-400">
-                      {fee.description}
-                    </p>
-                    <p className="text-park-forest font-semibold mt-1">
-                      {fee.cost}
-                    </p>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
-
-          {park.operatingHours?.length > 0 && (
-            <section>
-              <h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">
-                Hours
-              </h2>
-              {park.operatingHours.map((hours, i) => (
-                <div
-                  key={i}
-                  className="bg-white dark:bg-stone-800 rounded-lg p-4 border border-stone-200 dark:border-stone-700 mb-2"
-                >
-                  <p className="font-semibold text-park-bark dark:text-park-cream mb-2">
-                    {hours.name}
-                  </p>
-                  {hours.description && (
-                    <p className="text-stone-600 dark:text-stone-400 mb-2">
-                      {hours.description}
-                    </p>
-                  )}
-                  {hours.standardHours && (
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm">
-                      {Object.entries(hours.standardHours).map(([day, val]) => (
-                        <div key={day} className="capitalize">
-                          <span className="font-medium">{day}: </span>
-                          <span className="text-stone-600 dark:text-stone-400">
-                            {val}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </section>
-          )}
-
-          {park.activities?.length > 0 && (
-            <section>
-              <h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">
-                Activities
-              </h2>
-              <div className="flex flex-wrap gap-2">
-                {park.activities.map((act) => (
-                  <span
-                    key={act.id}
-                    className="bg-park-sage/20 text-park-bark dark:text-park-cream px-3 py-1 rounded-full text-sm"
-                  >
-                    {act.name}
-                  </span>
-                ))}
-              </div>
-            </section>
-          )}
-
-          {park.topics?.length > 0 && (
-            <section>
-              <h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">
-                Topics
-              </h2>
-              <div className="flex flex-wrap gap-2">
-                {park.topics.map((topic) => (
-                  <span
-                    key={topic.id}
-                    className="bg-stone-200 dark:bg-stone-700 text-stone-700 dark:text-stone-300 px-3 py-1 rounded-full text-sm"
-                  >
-                    {topic.name}
-                  </span>
-                ))}
-              </div>
-            </section>
-          )}
-
-          {park.url && (
-            <section>
-              <a
-                href={park.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-park-forest text-white font-semibold rounded-full hover:bg-park-bark transition-colors"
-              >
-                Visit Official Website →
-              </a>
-            </section>
-          )}
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+          <ParkInfoGrid park={park} amenitiesAccessibility={amenitiesAccessibility} />
         </main>
       </div>
     </DarkModeProvider>

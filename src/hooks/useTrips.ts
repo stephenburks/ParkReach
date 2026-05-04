@@ -33,7 +33,7 @@ export function useTrips() {
 				const { data: parksData } = await supabase
 					.from('trip_parks')
 					.select('*')
-					.in('trip_id', fetchedTrips.map((t) => t.id))
+					.in('trip_id', fetchedTrips.map((trip) => trip.id))
 				setTripParks(parksData ?? [])
 			} else {
 				setTripParks([])
@@ -63,8 +63,8 @@ export function useTrips() {
 			if (!supabase) return false
 			const { error } = await supabase.from('trips').delete().eq('id', id)
 			if (!error) {
-				setTrips((prev) => prev.filter((t) => t.id !== id))
-				setTripParks((prev) => prev.filter((tp) => tp.trip_id !== id))
+				setTrips((prev) => prev.filter((trip) => trip.id !== id))
+				setTripParks((prev) => prev.filter((tripPark) => tripPark.trip_id !== id))
 			}
 			return !error
 		},
@@ -95,7 +95,7 @@ export function useTrips() {
 				.eq('park_code', parkCode)
 			if (!error) {
 				setTripParks((prev) =>
-					prev.filter((tp) => !(tp.trip_id === tripId && tp.park_code === parkCode)),
+					prev.filter((tripPark) => !(tripPark.trip_id === tripId && tripPark.park_code === parkCode)),
 				)
 			}
 			return !error
@@ -112,7 +112,7 @@ export function useTrips() {
 				.eq('id', id)
 				.select()
 				.single()
-			if (!error && data) setTrips((prev) => prev.map((t) => (t.id === id ? data : t)))
+			if (!error && data) setTrips((prev) => prev.map((trip) => (trip.id === id ? data : trip)))
 			return !error
 		},
 		[supabase],

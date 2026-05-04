@@ -110,7 +110,7 @@ export function AddToTripButton({ parkCode }: Props) {
 									id="new-trip-name"
 									type="text"
 									value={newTripName}
-									onChange={(e) => setNewTripName(e.target.value)}
+									onChange={(event) => setNewTripName(event.target.value)}
 									placeholder="Trip name"
 									autoFocus
 									className="flex-1 min-w-0 text-sm px-3 py-1.5 border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 text-park-bark dark:text-park-cream rounded-lg focus:outline-none focus:ring-2 focus:ring-park-forest/50"

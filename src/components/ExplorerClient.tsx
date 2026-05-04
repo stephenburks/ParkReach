@@ -55,6 +55,70 @@ function SkeletonCard() {
   );
 }
 
+function SkeletonGrid() {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {Array.from({ length: 9 }).map((_value, index) => (
+        <SkeletonCard key={index} />
+      ))}
+    </div>
+  );
+}
+
+interface LoadMoreButtonProps {
+  onClick: () => void;
+  loading: boolean;
+  remaining: number;
+}
+
+function LoadMoreButton({ onClick, loading, remaining }: LoadMoreButtonProps) {
+  return (
+    <div className="flex justify-center mt-10">
+      <button
+        onClick={onClick}
+        disabled={loading}
+        className="px-8 py-3 bg-park-forest hover:bg-park-bark text-white font-semibold rounded-full transition-colors disabled:opacity-60 disabled:cursor-not-allowed text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-park-forest focus-visible:ring-offset-2"
+      >
+        {loading ? "Loading…" : `Load More Parks (${remaining} remaining)`}
+      </button>
+    </div>
+  );
+}
+
+function EmptyState() {
+  return (
+    <div className="text-center py-16">
+      <p className="text-5xl mb-4" aria-hidden="true">
+        🔭
+      </p>
+      <p className="text-park-bark dark:text-park-cream font-semibold text-lg mb-2">
+        No places found
+      </p>
+      <p className="text-stone-500 text-sm">
+        Try adjusting your search or filters
+      </p>
+    </div>
+  );
+}
+
+interface ErrorStateProps {
+  message: string;
+}
+
+function ErrorState({ message }: ErrorStateProps) {
+  return (
+    <div className="text-center py-16">
+      <p className="text-5xl mb-4" aria-hidden="true">
+        ⛺
+      </p>
+      <p className="text-park-bark dark:text-park-cream font-semibold text-lg mb-2">
+        Something went wrong
+      </p>
+      <p className="text-stone-500 text-sm">{message}</p>
+    </div>
+  );
+}
+
 function formatPlaceType(desig: string): string {
   if (desig === "All") return "Places";
   const label = desig.replace(/^National /, "");
@@ -122,20 +186,20 @@ export function ExplorerClient({ defaultView = "cards" }: ExplorerClientProps) {
     hasNextPage,
   } = useParks(search, stateCode, designation);
 
-  const parks = data?.pages.flatMap((p) => p.data) ?? [];
+  const parks = data?.pages.flatMap((page) => page.data) ?? [];
   const total = parseInt(data?.pages[0]?.total ?? "0", 10);
 
-  const accessibilityFilteredParks = accessibility
+  const visibleParks = accessibility
     ? parks.filter(
-        (p) =>
-          p.accessibility
+        (park) =>
+          park.accessibility
             ?.toLowerCase()
             .includes(accessibility.toLowerCase()) ?? false,
       )
     : parks;
 
   const selectedParkData = selectedPark
-    ? (parks.find((p) => p.parkCode === selectedPark) ?? null)
+    ? (parks.find((park) => park.parkCode === selectedPark) ?? null)
     : null;
 
   return (
@@ -144,7 +208,6 @@ export function ExplorerClient({ defaultView = "cards" }: ExplorerClientProps) {
         id="main-content"
         className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
       >
-        {/* Search + Filter */}
         <SearchFilter
           search={search}
           onSearchChange={setSearch}
@@ -156,7 +219,6 @@ export function ExplorerClient({ defaultView = "cards" }: ExplorerClientProps) {
           onAccessibilityChange={setAccessibility}
         />
 
-        {/* View Toggle */}
         <div className="flex items-center justify-between mb-6">
           {!isLoading && !error && (
             <p
@@ -164,41 +226,25 @@ export function ExplorerClient({ defaultView = "cards" }: ExplorerClientProps) {
               aria-live="polite"
             >
               {total > 0
-                ? `Showing ${accessibilityFilteredParks.length} of ${total} ${formatPlaceType(designation)}`
+                ? `Showing ${visibleParks.length} of ${total} ${formatPlaceType(designation)}`
                 : "No places found — try a different search"}
             </p>
           )}
           <ViewToggle view={view} onChange={setView} />
         </div>
 
-        {/* Error state */}
-        {error && (
-          <div className="text-center py-16">
-            <p className="text-5xl mb-4" aria-hidden="true">
-              ⛺
-            </p>
-            <p className="text-park-bark dark:text-park-cream font-semibold text-lg mb-2">
-              Something went wrong
-            </p>
-            <p className="text-stone-500 text-sm">{error.message}</p>
-          </div>
-        )}
+        {error && <ErrorState message={error.message} />}
 
-        {/* Content based on view */}
         {isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Array.from({ length: 9 }).map((_, i) => (
-              <SkeletonCard key={i} />
-            ))}
-          </div>
-        ) : accessibilityFilteredParks.length > 0 ? (
+          <SkeletonGrid />
+        ) : visibleParks.length > 0 ? (
           <>
             {view === "cards" && (
               <ul
                 className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
                 role="list"
               >
-                {accessibilityFilteredParks.map((park) => (
+                {visibleParks.map((park) => (
                   <li key={park.id}>
                     <ParkCard park={park} onSelect={handleSelectPark} />
                   </li>
@@ -206,34 +252,19 @@ export function ExplorerClient({ defaultView = "cards" }: ExplorerClientProps) {
               </ul>
             )}
             {view === "minimal" && (
-              <>
-                <ul
-                  className="divide-y divide-stone-100 dark:divide-stone-700"
-                  role="list"
-                >
-                  {accessibilityFilteredParks.map((park) => (
-                    <li key={park.id}>
-                      <ParkCardMinimal
-                        park={park}
-                        onSelect={handleSelectPark}
-                      />
-                    </li>
-                  ))}
-                </ul>
-                {hasNextPage && (
-                  <div className="flex justify-center mt-10">
-                    <button
-                      onClick={() => fetchNextPage()}
-                      disabled={isFetchingNextPage}
-                      className="px-8 py-3 bg-park-forest hover:bg-park-bark text-white font-semibold rounded-full transition-colors disabled:opacity-60 disabled:cursor-not-allowed text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-park-forest focus-visible:ring-offset-2"
-                    >
-                      {isFetchingNextPage
-                        ? "Loading…"
-                        : `Load More Parks (${total - parks.length} remaining)`}
-                    </button>
-                  </div>
-                )}
-              </>
+              <ul
+                className="divide-y divide-stone-100 dark:divide-stone-700"
+                role="list"
+              >
+                {visibleParks.map((park) => (
+                  <li key={park.id}>
+                    <ParkCardMinimal
+                      park={park}
+                      onSelect={handleSelectPark}
+                    />
+                  </li>
+                ))}
+              </ul>
             )}
             {view === "map" && (
               <>
@@ -244,38 +275,22 @@ export function ExplorerClient({ defaultView = "cards" }: ExplorerClientProps) {
                   Skip map, view as list
                 </a>
                 <ParkMap
-                  parks={accessibilityFilteredParks}
+                  parks={visibleParks}
                   onParkSelect={handleSelectPark}
                 />
               </>
             )}
 
-            {view === "cards" && hasNextPage && (
-              <div className="flex justify-center mt-10">
-                <button
-                  onClick={() => fetchNextPage()}
-                  disabled={isFetchingNextPage}
-                  className="px-8 py-3 bg-park-forest hover:bg-park-bark text-white font-semibold rounded-full transition-colors disabled:opacity-60 disabled:cursor-not-allowed text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-park-forest focus-visible:ring-offset-2"
-                >
-                  {isFetchingNextPage
-                    ? "Loading…"
-                    : `Load More Parks (${total - parks.length} remaining)`}
-                </button>
-              </div>
+            {hasNextPage && (view === "cards" || view === "minimal") && (
+              <LoadMoreButton
+                onClick={fetchNextPage}
+                loading={isFetchingNextPage}
+                remaining={total - parks.length}
+              />
             )}
           </>
         ) : !error ? (
-          <div className="text-center py-16">
-            <p className="text-5xl mb-4" aria-hidden="true">
-              🔭
-            </p>
-            <p className="text-park-bark dark:text-park-cream font-semibold text-lg mb-2">
-              No places found
-            </p>
-            <p className="text-stone-500 text-sm">
-              Try adjusting your search or filters
-            </p>
-          </div>
+          <EmptyState />
         ) : null}
       </main>
 
@@ -286,7 +301,6 @@ export function ExplorerClient({ defaultView = "cards" }: ExplorerClientProps) {
         />
       )}
 
-      {/* Footer */}
       <footer className="mt-16 border-t border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center">
           <p className="text-xs text-park-stone dark:text-stone-400">

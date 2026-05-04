@@ -87,7 +87,7 @@ export default function LoginPage() {
                 type="email"
                 placeholder="your@email.com"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(event) => setEmail(event.target.value)}
                 className="w-full px-4 py-3 border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-800 text-park-bark dark:text-park-cream rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-park-forest/50"
                 required
                 aria-label="Email address"

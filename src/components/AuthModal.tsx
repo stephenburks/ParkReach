@@ -5,6 +5,7 @@ import { useAuth } from '@/context/AuthContext'
 import { createClient } from '@/lib/supabase/client'
 import { X, Mail, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { useFocusTrap } from '@/hooks/useFocusTrap'
 
 interface AuthModalProps {
   isOpen: boolean
@@ -27,36 +28,14 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
     onClose()
   }, [onClose])
 
-  const handleKeyDown = useCallback((e: KeyboardEvent) => {
-    if (e.key === 'Escape' && isOpen) {
-      handleClose()
-      return
+  useFocusTrap(modalRef, isOpen)
+
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isOpen) handleClose()
     }
-
-    if (e.key !== 'Tab' || !modalRef.current) return
-
-    const focusable = Array.from(
-      modalRef.current.querySelectorAll<HTMLElement>(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
-      ),
-    ).filter((el) => !el.hasAttribute('disabled') && el.offsetParent !== null)
-
-    if (focusable.length === 0) return
-
-    const first = focusable[0]
-    const last = focusable[focusable.length - 1]
-
-    if (e.shiftKey) {
-      if (document.activeElement === first) {
-        e.preventDefault()
-        last.focus()
-      }
-    } else {
-      if (document.activeElement === last) {
-        e.preventDefault()
-        first.focus()
-      }
-    }
+    document.addEventListener('keydown', handleEscape)
+    return () => document.removeEventListener('keydown', handleEscape)
   }, [isOpen, handleClose])
 
   useEffect(() => {
@@ -64,20 +43,17 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
       triggerRef.current = document.activeElement as HTMLElement | null
       closeButtonRef.current?.focus()
       document.body.style.overflow = 'hidden'
-      document.addEventListener('keydown', handleKeyDown)
     } else {
       document.body.style.overflow = ''
-      document.removeEventListener('keydown', handleKeyDown)
       triggerRef.current?.focus()
     }
     return () => {
       document.body.style.overflow = ''
-      document.removeEventListener('keydown', handleKeyDown)
     }
-  }, [isOpen, handleKeyDown])
+  }, [isOpen])
 
-  const handleMagicLink = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleMagicLink = async (event: React.FormEvent) => {
+    event.preventDefault()
     if (!email) return
 
     const supabase = createClient()
@@ -170,7 +146,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                     type="email"
                     placeholder="your@email.com"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(event) => setEmail(event.target.value)}
                     className="w-full px-4 py-3 border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 text-park-bark dark:text-park-cream rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-park-forest/50"
                     required
                   />
