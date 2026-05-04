@@ -1,7 +1,7 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
 import type { NpsApiResponse } from '@/types/park'
 
-export const PARKS_LIMIT = 24
+const PARKS_LIMIT = 24
 
 // NPS API does not support filtering by designation — convert display label
 // to singular form for client-side comparison only.
@@ -28,7 +28,7 @@ async function fetchParkPage(
 		const data: NpsApiResponse = await res.json()
 
 		const filtered = data.data.filter(
-			(p) => p.designation?.toLowerCase() === designation.toLowerCase()
+			(park) => park.designation?.toLowerCase() === designation.toLowerCase()
 		)
 		return { ...data, data: filtered, total: String(filtered.length) }
 	}
@@ -54,7 +54,7 @@ export function useParks(search: string, stateCode: string, designation: string)
 		getNextPageParam: (lastPage, allPages) => {
 			// When designation is filtered, all results come back as a single page
 			if (apiDesignation) return undefined
-			const loaded = allPages.reduce((sum, page) => sum + page.data.length, 0)
+			const loaded = allPages.reduce((total, page) => total + page.data.length, 0)
 			const total = parseInt(lastPage.total, 10)
 			return loaded < total ? loaded : undefined
 		},

@@ -124,7 +124,7 @@ export default function SearchFilter({
               id="park-search"
               type="search"
               value={search}
-              onChange={(e) => onSearchChange(e.target.value)}
+              onChange={(event) => onSearchChange(event.target.value)}
               placeholder="Search parks by name or keyword..."
               className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-800 text-park-bark dark:text-park-cream placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-none focus:ring-2 focus:ring-park-sage focus:border-transparent text-sm shadow-sm"
             />
@@ -133,13 +133,13 @@ export default function SearchFilter({
           <select
             id="park-state"
             value={stateCode}
-            onChange={(e) => onStateChange(e.target.value)}
+            onChange={(event) => onStateChange(event.target.value)}
             className="sm:w-52 px-3.5 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-800 text-park-bark dark:text-park-cream focus:outline-none focus:ring-2 focus:ring-park-sage focus:border-transparent text-sm shadow-sm appearance-none cursor-pointer"
           >
             <option value="">All States & Territories</option>
-            {US_STATES.map((s) => (
-              <option key={s.code} value={s.code}>
-                {s.name}
+            {US_STATES.map((state) => (
+              <option key={state.code} value={state.code}>
+                {state.name}
               </option>
             ))}
           </select>
@@ -147,7 +147,7 @@ export default function SearchFilter({
           <select
             id="park-accessibility"
             value={accessibility}
-            onChange={(e) => onAccessibilityChange(e.target.value)}
+            onChange={(event) => onAccessibilityChange(event.target.value)}
             className="sm:w-48 px-3.5 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-800 text-park-bark dark:text-park-cream focus:outline-none focus:ring-2 focus:ring-park-sage focus:border-transparent text-sm shadow-sm appearance-none cursor-pointer"
           >
             {ACCESSIBILITY_OPTIONS.map((opt) => (
@@ -160,18 +160,18 @@ export default function SearchFilter({
 
         {/* Designation tabs */}
         <div role="group" aria-label="Filter by designation" className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-          {DESIGNATIONS.map((d) => (
+          {DESIGNATIONS.map((desig) => (
             <button
-              key={d}
-              onClick={() => onDesignationChange(d)}
-              aria-pressed={designation === d}
+              key={desig}
+              onClick={() => onDesignationChange(desig)}
+              aria-pressed={designation === desig}
               className={`flex-shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors whitespace-nowrap ${
-                designation === d
+                designation === desig
                   ? 'bg-park-forest text-white shadow-sm'
                   : 'bg-white dark:bg-stone-800 text-park-stone dark:text-stone-400 border border-stone-200 dark:border-stone-600 hover:bg-park-sage/10 hover:text-park-bark dark:hover:text-park-cream hover:border-park-sage/40'
               }`}
             >
-              {formatDesignationLabel(d)}
+              {formatDesignationLabel(desig)}
             </button>
           ))}
         </div>

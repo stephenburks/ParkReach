@@ -49,7 +49,7 @@ function ClusteredPins({ parks, onParkSelect }: Props) {
 		})
 	}
 
-	const parksWithCoords = parks.filter((p) => p.latitude && p.longitude)
+	const parksWithCoords = parks.filter((park) => park.latitude && park.longitude)
 
 	return (
 		<>

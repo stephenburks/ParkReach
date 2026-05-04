@@ -124,13 +124,5 @@ export type Database = {
   }
 }
 
-export type Tables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]
-export type Profiles = Tables<'profiles'>
 export type Trip = Database['public']['Tables']['trips']['Row']
 export type TripPark = Database['public']['Tables']['trip_parks']['Row']
-export type ParkSaves = Tables<'park_saves'>
-
-export type InsertProfiles = Database['public']['Tables']['profiles']['Insert']
-export type UpdateProfiles = Database['public']['Tables']['profiles']['Update']
-export type InsertParkSaves = Database['public']['Tables']['park_saves']['Insert']
-export type UpdateParkSaves = Database['public']['Tables']['park_saves']['Update']

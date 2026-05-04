@@ -1,11 +1,12 @@
 'use client';
 
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { Park } from '@/types/park';
 import { WishlistButton } from '@/components/WishlistButton';
 import { VisitedButton } from '@/components/VisitedButton';
 import { AddToTripButton } from '@/components/AddToTripButton';
+import { useFocusTrap } from '@/hooks/useFocusTrap';
 
 interface Props {
   park: Park;
@@ -25,49 +26,22 @@ export default function ParkModal({ park, onClose }: Props) {
   const modalRef = useRef<HTMLDivElement>(null);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
 
-  const handleKeyDown = useCallback((e: KeyboardEvent) => {
-    if (e.key === 'Escape') {
-      onClose();
-      return;
-    }
-
-    if (e.key !== 'Tab' || !modalRef.current) return;
-
-    const focusable = Array.from(
-      modalRef.current.querySelectorAll<HTMLElement>(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
-      ),
-    ).filter((el): el is HTMLElement => !el.hasAttribute('disabled') && el.offsetParent !== null);
-
-    if (focusable.length === 0) return;
-
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-
-    if (e.shiftKey) {
-      if (document.activeElement === first) {
-        e.preventDefault();
-        last.focus();
-      }
-    } else {
-      if (document.activeElement === last) {
-        e.preventDefault();
-        first.focus();
-      }
-    }
-  }, [onClose]);
+  useFocusTrap(modalRef, true);
 
   useEffect(() => {
     const previouslyFocused = document.activeElement as HTMLElement | null;
-    document.addEventListener('keydown', handleKeyDown);
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handleEscape);
     document.body.style.overflow = 'hidden';
     closeBtnRef.current?.focus();
     return () => {
-      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('keydown', handleEscape);
       document.body.style.overflow = '';
       previouslyFocused?.focus();
     };
-  }, [handleKeyDown]);
+  }, [onClose]);
 
   return (
     <div
@@ -146,12 +120,12 @@ export default function ParkModal({ park, onClose }: Props) {
                 <span aria-hidden="true">🥾</span> Activities
               </h3>
               <div className="flex flex-wrap gap-2">
-                {topActivities.map((a) => (
+                {topActivities.map((activity) => (
                   <span
-                    key={a.id}
+                    key={activity.id}
                     className="bg-park-sage/15 dark:bg-park-sage/25 text-park-bark dark:text-park-cream text-xs px-3 py-1.5 rounded-full border border-park-sage/30 font-medium"
                   >
-                    {a.name}
+                    {activity.name}
                   </span>
                 ))}
               </div>
@@ -163,22 +137,22 @@ export default function ParkModal({ park, onClose }: Props) {
               <h3 className="font-semibold text-park-bark dark:text-park-cream text-sm uppercase tracking-wider mb-3 flex items-center gap-2">
                 <span aria-hidden="true">🕐</span> Operating Hours
               </h3>
-              {park.operatingHours.slice(0, 1).map((h, i) => (
-                <div key={i} className="bg-white dark:bg-stone-700 rounded-xl p-4 shadow-sm">
-                  {h.name && (
-                    <p className="text-sm font-semibold text-park-bark dark:text-park-cream mb-2">{h.name}</p>
+              {park.operatingHours.slice(0, 1).map((hours, index) => (
+                <div key={index} className="bg-white dark:bg-stone-700 rounded-xl p-4 shadow-sm">
+                  {hours.name && (
+                    <p className="text-sm font-semibold text-park-bark dark:text-park-cream mb-2">{hours.name}</p>
                   )}
                   <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
                     {DAY_ORDER.map((day) => (
                       <div key={day} className="flex justify-between text-sm">
                         <span className="text-stone-500 dark:text-stone-400 capitalize">{day}</span>
-                        <span className="text-park-bark dark:text-park-cream font-medium">{h.standardHours[day] || 'Closed'}</span>
+                        <span className="text-park-bark dark:text-park-cream font-medium">{hours.standardHours[day] || 'Closed'}</span>
                       </div>
                     ))}
                   </div>
-                  {h.description && (
+                  {hours.description && (
                     <p className="text-xs text-stone-500 dark:text-stone-400 mt-3 pt-3 border-t border-stone-100 dark:border-stone-600 leading-relaxed">
-                      {h.description}
+                      {hours.description}
                     </p>
                   )}
                 </div>
@@ -192,8 +166,8 @@ export default function ParkModal({ park, onClose }: Props) {
                 <span aria-hidden="true">🎟️</span> Entrance Fees
               </h3>
               <div className="space-y-2">
-                {park.entranceFees.map((fee, i) => (
-                  <div key={i} className="bg-white dark:bg-stone-700 rounded-xl p-4 flex justify-between items-start shadow-sm gap-4">
+                {park.entranceFees.map((fee, index) => (
+                  <div key={index} className="bg-white dark:bg-stone-700 rounded-xl p-4 flex justify-between items-start shadow-sm gap-4">
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-park-bark dark:text-park-cream">{fee.title}</p>
                       {fee.description && (

@@ -1,9 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-
-interface NpsPark {
-  latitude: string;
-  longitude: string;
-}
+import { fetchPark } from '@/lib/nps';
 
 function validateParkCode(parkCode: string): boolean {
   return /^[A-Z]{2,5}$/.test(parkCode);
@@ -17,23 +13,6 @@ function validateLat(lat: string): boolean {
 function validateLon(lon: string): boolean {
   const num = parseFloat(lon);
   return !isNaN(num) && num >= -180 && num <= 180;
-}
-
-async function fetchParkFromNps(parkCode: string): Promise<NpsPark | null> {
-  const apiKey = process.env.NPS_API_KEY;
-  if (!apiKey) return null;
-
-  const res = await fetch(
-    `https://developer.nps.gov/api/v1/parks?parkCode=${parkCode}`,
-    {
-      headers: { 'X-Api-Key': apiKey },
-      next: { revalidate: 3600 },
-    }
-  );
-
-  if (!res.ok) return null;
-  const data = await res.json();
-  return data.data?.[0] || null;
 }
 
 export async function GET(
@@ -75,7 +54,7 @@ export async function GET(
   }
 
   try {
-    const park = await fetchParkFromNps(parkCode);
+    const park = await fetchPark(parkCode);
     if (!park || !park.latitude || !park.longitude) {
       return NextResponse.json(
         { error: 'Park not found or missing coordinates.' },

@@ -50,15 +50,15 @@ export function TripContent({ tripId }: Props) {
 	const [saving, setSaving] = useState(false)
 	const [deleting, setDeleting] = useState(false)
 
-	const trip = trips.find((t) => t.id === tripId)
+	const trip = trips.find((trip) => trip.id === tripId)
 	const parks = useMemo(
-		() => tripParks.filter((tp) => tp.trip_id === tripId),
+		() => tripParks.filter((tripPark) => tripPark.trip_id === tripId),
 		[tripParks, tripId],
 	)
-	const parkCodes = useMemo(() => parks.map((tp) => tp.park_code), [parks])
+	const parkCodes = useMemo(() => parks.map((tripPark) => tripPark.park_code), [parks])
 	const { data: parkDetails = [] } = useParksByCode(parkCodes)
 	const parkByCode = useMemo(
-		() => Object.fromEntries(parkDetails.map((p) => [p.parkCode, p])),
+		() => Object.fromEntries(parkDetails.map((park) => [park.parkCode, park])),
 		[parkDetails],
 	)
 
@@ -67,8 +67,8 @@ export function TripContent({ tripId }: Props) {
 			<div className="animate-pulse space-y-4 max-w-2xl mx-auto py-8">
 				<div className="h-8 bg-stone-200 dark:bg-stone-700 rounded w-48" />
 				<div className="space-y-3">
-					{Array.from({ length: 4 }).map((_, i) => (
-						<div key={i} className="h-16 bg-white dark:bg-stone-800 rounded-lg" />
+					{Array.from({ length: 4 }).map((_value, index) => (
+						<div key={index} className="h-16 bg-white dark:bg-stone-800 rounded-lg" />
 					))}
 				</div>
 			</div>
@@ -87,8 +87,8 @@ export function TripContent({ tripId }: Props) {
 		)
 	}
 
-	const handleSaveName = async (e: React.FormEvent) => {
-		e.preventDefault()
+	const handleSaveName = async (event: React.FormEvent) => {
+		event.preventDefault()
 		if (!editName.trim()) return
 		setSaving(true)
 		await updateTrip(tripId, { name: editName.trim() })
@@ -120,7 +120,7 @@ export function TripContent({ tripId }: Props) {
 								id="trip-name-edit"
 								type="text"
 								value={editName}
-								onChange={(e) => setEditName(e.target.value)}
+								onChange={(event) => setEditName(event.target.value)}
 								autoFocus
 								className="flex-1 text-2xl font-bold bg-transparent border-b-2 border-park-forest text-park-bark dark:text-park-cream focus:outline-none"
 								required

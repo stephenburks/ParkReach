@@ -10,9 +10,9 @@ interface Props {
 	onSelect: (park: Park) => void
 }
 
-function handleCardKeyDown(e: KeyboardEvent<HTMLDivElement>, onSelect: () => void) {
-	if (e.key === 'Enter' || e.key === ' ') {
-		e.preventDefault()
+function handleCardKeyDown(event: KeyboardEvent<HTMLDivElement>, onSelect: () => void) {
+	if (event.key === 'Enter' || event.key === ' ') {
+		event.preventDefault()
 		onSelect()
 	}
 }
@@ -27,7 +27,7 @@ function ParkCardMinimal({ park, onSelect }: Props) {
 			tabIndex={0}
 			aria-label={`View details for ${park.fullName}`}
 			onClick={() => onSelect(park)}
-			onKeyDown={(e) => handleCardKeyDown(e, () => onSelect(park))}
+			onKeyDown={(event) => handleCardKeyDown(event, () => onSelect(park))}
 		>
 			<div className="flex-1 min-w-0">
 				<div className="flex items-center gap-2">

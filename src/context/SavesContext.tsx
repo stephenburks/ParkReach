@@ -60,7 +60,7 @@ export function SavesProvider({ children }: { children: React.ReactNode }) {
 	const toggleFlag = async (parkCode: string, field: 'wishlisted' | 'visited'): Promise<boolean> => {
 		if (!user || !supabase) return false
 
-		const existing = saves.find((s) => s.park_code === parkCode)
+		const existing = saves.find((save) => save.park_code === parkCode)
 
 		if (existing) {
 			const newValue = !existing[field]
@@ -71,7 +71,7 @@ export function SavesProvider({ children }: { children: React.ReactNode }) {
 				.eq('id', existing.id)
 			if (!error) {
 				setSaves((prev) =>
-					prev.map((s) => (s.id === existing.id ? { ...s, [field]: newValue } : s))
+					prev.map((save) => (save.id === existing.id ? { ...save, [field]: newValue } : save))
 				)
 			}
 			return !error
@@ -87,10 +87,10 @@ export function SavesProvider({ children }: { children: React.ReactNode }) {
 	}
 
 	const isWishlisted = (parkCode: string) =>
-		saves.some((s) => s.park_code === parkCode && s.wishlisted)
+		saves.some((save) => save.park_code === parkCode && save.wishlisted)
 
 	const isVisited = (parkCode: string) =>
-		saves.some((s) => s.park_code === parkCode && s.visited)
+		saves.some((save) => save.park_code === parkCode && save.visited)
 
 	return (
 		<SavesContext.Provider

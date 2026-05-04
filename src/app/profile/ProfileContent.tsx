@@ -56,6 +56,33 @@ function Avatar({ url, name }: { url: string | null; name: string }) {
 	)
 }
 
+interface SavedParkSectionProps {
+	title: string
+	saves: Array<{ id: string; park_code: string }>
+	parkByCode: Record<string, Park | undefined>
+	emptyMessage: string
+}
+
+function SavedParkSection({ title, saves, parkByCode, emptyMessage }: SavedParkSectionProps) {
+	return (
+		<section className="max-w-4xl mx-auto mb-12">
+			<h2 className="text-xl font-semibold mb-4">{title} ({saves.length})</h2>
+			{saves.length > 0 ? (
+				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+					{saves.map((save) => (
+						<ParkRow key={save.id} parkCode={save.park_code} parkByCode={parkByCode} />
+					))}
+				</div>
+			) : (
+				<p className="text-stone-500">{emptyMessage}</p>
+			)}
+			<Link href="/" className="inline-block mt-4 text-park-forest hover:underline">
+				Explore parks
+			</Link>
+		</section>
+	)
+}
+
 export function ProfileContent() {
 	const { user, loading: authLoading } = useAuth()
 	const { profile, loading: profileLoading } = useProfile()
@@ -63,11 +90,11 @@ export function ProfileContent() {
 	const { trips, tripParks, loading: tripsLoading } = useTrips()
 	const [showAuthModal, setShowAuthModal] = useState(false)
 
-	const allCodes = useMemo(() => saves.map((s) => s.park_code), [saves])
+	const allCodes = useMemo(() => saves.map((save) => save.park_code), [saves])
 	const { data: parks = [] } = useParksByCode(allCodes)
 
 	const parkByCode = useMemo(
-		() => Object.fromEntries(parks.map((p) => [p.parkCode, p])),
+		() => Object.fromEntries(parks.map((park) => [park.parkCode, park])),
 		[parks]
 	)
 
@@ -84,8 +111,8 @@ export function ProfileContent() {
 							</div>
 						</div>
 						<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-							{Array.from({ length: 6 }).map((_, i) => (
-								<div key={i} className="bg-white dark:bg-stone-800 rounded-2xl h-24" />
+							{Array.from({ length: 6 }).map((_value, index) => (
+								<div key={index} className="bg-white dark:bg-stone-800 rounded-2xl h-24" />
 							))}
 						</div>
 					</div>
@@ -108,8 +135,8 @@ export function ProfileContent() {
 	}
 
 	const displayName = profile?.display_name ?? user.email ?? 'Traveler'
-	const wishlisted = saves.filter((s) => s.wishlisted)
-	const visited = saves.filter((s) => s.visited)
+	const wishlisted = saves.filter((save) => save.wishlisted)
+	const visited = saves.filter((save) => save.visited)
 
 	return (
 		<div className="min-h-screen bg-park-cream dark:bg-park-bark p-8">
@@ -158,39 +185,19 @@ export function ProfileContent() {
 				)}
 			</section>
 
-			{/* Wishlist */}
-			<section className="max-w-4xl mx-auto mb-12">
-				<h2 className="text-xl font-semibold mb-4">Wishlist ({wishlisted.length})</h2>
-				{wishlisted.length > 0 ? (
-					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-						{wishlisted.map((save) => (
-							<ParkRow key={save.id} parkCode={save.park_code} parkByCode={parkByCode} />
-						))}
-					</div>
-				) : (
-					<p className="text-stone-500">No wishlisted parks yet.</p>
-				)}
-				<Link href="/" className="inline-block mt-4 text-park-forest hover:underline">
-					Explore parks to add to your wishlist
-				</Link>
-			</section>
+			<SavedParkSection
+				title="Wishlist"
+				saves={wishlisted}
+				parkByCode={parkByCode}
+				emptyMessage="No wishlisted parks yet."
+			/>
 
-			{/* Visited */}
-			<section className="max-w-4xl mx-auto">
-				<h2 className="text-xl font-semibold mb-4">Visited ({visited.length})</h2>
-				{visited.length > 0 ? (
-					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-						{visited.map((save) => (
-							<ParkRow key={save.id} parkCode={save.park_code} parkByCode={parkByCode} />
-						))}
-					</div>
-				) : (
-					<p className="text-stone-500">No visited parks yet.</p>
-				)}
-				<Link href="/" className="inline-block mt-4 text-park-forest hover:underline">
-					Start exploring
-				</Link>
-			</section>
+			<SavedParkSection
+				title="Visited"
+				saves={visited}
+				parkByCode={parkByCode}
+				emptyMessage="No visited parks yet."
+			/>
 		</div>
 	)
 }

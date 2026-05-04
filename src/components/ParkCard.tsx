@@ -11,9 +11,9 @@ interface Props {
   onSelect: (park: Park) => void;
 }
 
-function handleCardKeyDown(e: KeyboardEvent<HTMLDivElement>, onSelect: () => void) {
-  if (e.key === 'Enter' || e.key === ' ') {
-    e.preventDefault();
+function handleCardKeyDown(event: KeyboardEvent<HTMLDivElement>, onSelect: () => void) {
+  if (event.key === 'Enter' || event.key === ' ') {
+    event.preventDefault();
     onSelect();
   }
 }
@@ -42,10 +42,10 @@ function ParkCard({ park, onSelect }: Props) {
         
         {/* Action buttons overlay — visible on hover OR when a button inside receives focus */}
         <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
-          <div className="bg-white/90 dark:bg-stone-800/90 rounded-full p-1.5" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white/90 dark:bg-stone-800/90 rounded-full p-1.5" onClick={(event) => event.stopPropagation()}>
             <WishlistButton parkCode={park.parkCode} minimal />
           </div>
-          <div className="bg-white/90 dark:bg-stone-800/90 rounded-full p-1.5" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white/90 dark:bg-stone-800/90 rounded-full p-1.5" onClick={(event) => event.stopPropagation()}>
             <VisitedButton parkCode={park.parkCode} minimal />
           </div>
         </div>
@@ -62,7 +62,7 @@ function ParkCard({ park, onSelect }: Props) {
         role="button"
         tabIndex={0}
         onClick={() => onSelect(park)}
-        onKeyDown={(e) => handleCardKeyDown(e, () => onSelect(park))}
+        onKeyDown={(event) => handleCardKeyDown(event, () => onSelect(park))}
       >
         <h3 className="font-bold text-park-bark dark:text-park-cream text-base leading-snug mb-1.5 group-hover:text-park-forest transition-colors">
           {park.fullName}
