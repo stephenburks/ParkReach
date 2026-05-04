@@ -20,7 +20,7 @@ export function AddToTripButton({ parkCode }: Props) {
 	if (!user) return null
 
 	const tripIdsWithPark = new Set(
-		tripParks.filter((tp) => tp.park_code === parkCode).map((tp) => tp.trip_id),
+		tripParks.filter((tripPark) => tripPark.park_code === parkCode).map((tripPark) => tripPark.trip_id),
 	)
 
 	const handleToggle = async (tripId: string) => {

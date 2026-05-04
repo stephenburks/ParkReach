@@ -158,7 +158,7 @@ export function ProfileContent() {
 				{trips.length > 0 ? (
 					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 						{trips.map((trip) => {
-							const count = tripParks.filter((tp) => tp.trip_id === trip.id).length
+							const count = tripParks.filter((tripPark) => tripPark.trip_id === trip.id).length
 							return (
 								<Link
 									key={trip.id}

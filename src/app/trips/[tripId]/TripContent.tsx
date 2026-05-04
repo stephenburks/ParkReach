@@ -172,12 +172,12 @@ export function TripContent({ tripId }: Props) {
 
 				{parks.length > 0 ? (
 					<ul role="list" className="space-y-3">
-						{parks.map((tp) => (
-							<li key={tp.id}>
+						{parks.map((tripPark) => (
+							<li key={tripPark.id}>
 								<ParkRow
-									park={parkByCode[tp.park_code]}
-									parkCode={tp.park_code}
-									onRemove={() => removeParkFromTrip(tripId, tp.park_code)}
+									park={parkByCode[tripPark.park_code]}
+									parkCode={tripPark.park_code}
+									onRemove={() => removeParkFromTrip(tripId, tripPark.park_code)}
 								/>
 							</li>
 						))}
