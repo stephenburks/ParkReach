@@ -2,11 +2,13 @@ import { type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 
 function buildCsp(nonce: string): string {
+	// React dev mode needs 'unsafe-eval' for call stack reconstruction; never added in production.
+	const evalDirective = process.env.NODE_ENV === 'development' ? " 'unsafe-eval'" : ''
 	const directives = [
 		`default-src 'self'`,
 		// 'strict-dynamic' lets trusted scripts (nonce'd) load further dynamic chunks.
 		// Domains are redundant with strict-dynamic but kept for older browsers.
-		`script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https://maps.googleapis.com`,
+		`script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${evalDirective} https://maps.googleapis.com`,
 		// Inline styles are required by Tailwind CSS v4 and Google Maps widget.
 		`style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`,
 		`font-src 'self' data: https://fonts.gstatic.com`,
