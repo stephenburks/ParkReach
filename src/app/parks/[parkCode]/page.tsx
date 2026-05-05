@@ -136,6 +136,82 @@ function ParkActions({ parkCode, npsUrl }: ParkActionsProps) {
   );
 }
 
+function FeesSection({ park }: { park: Park }) {
+  if (!park.entranceFees?.length) {
+    return (
+      <section>
+        <h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">
+          Entrance Fees
+        </h2>
+        <p className="text-stone-600 dark:text-stone-400">Free to Visit</p>
+      </section>
+    );
+  }
+  return (
+    <section>
+      <h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">
+        Entrance Fees
+      </h2>
+      <ul className="space-y-2">
+        {park.entranceFees.map((fee, index) => (
+          <li
+            key={index}
+            className="bg-white dark:bg-stone-800 rounded-lg p-4 border border-stone-200 dark:border-stone-700"
+          >
+            <p className="font-semibold text-park-bark dark:text-park-cream">
+              {fee.title}
+            </p>
+            <p className="text-stone-600 dark:text-stone-400">
+              {fee.description}
+            </p>
+            <p className="text-park-forest font-semibold mt-1">
+              {fee.cost}
+            </p>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+function HoursSection({ hours }: { hours: Park['operatingHours'] }) {
+  if (!hours?.length) return null;
+  return (
+    <section>
+      <h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">
+        Hours
+      </h2>
+      {hours.map((entry, index) => (
+        <div
+          key={index}
+          className="bg-white dark:bg-stone-800 rounded-lg p-4 border border-stone-200 dark:border-stone-700 mb-2"
+        >
+          <p className="font-semibold text-park-bark dark:text-park-cream mb-2">
+            {entry.name}
+          </p>
+          {entry.description && (
+            <p className="text-stone-600 dark:text-stone-400 mb-2">
+              {entry.description}
+            </p>
+          )}
+          {entry.standardHours && (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm">
+              {Object.entries(entry.standardHours).map(([day, val]) => (
+                <div key={day} className="capitalize">
+                  <span className="font-medium">{day}: </span>
+                  <span className="text-stone-600 dark:text-stone-400">
+                    {val}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
+    </section>
+  );
+}
+
 interface ParkInfoGridProps {
   park: Park;
   amenitiesAccessibility: string | null;
@@ -191,66 +267,8 @@ function ParkInfoGrid({ park, amenitiesAccessibility }: ParkInfoGridProps) {
         </section>
       )}
 
-      {park.entranceFees?.length > 0 && (
-        <section>
-          <h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">
-            Entrance Fees
-          </h2>
-          <ul className="space-y-2">
-            {park.entranceFees.map((fee, index) => (
-              <li
-                key={index}
-                className="bg-white dark:bg-stone-800 rounded-lg p-4 border border-stone-200 dark:border-stone-700"
-              >
-                <p className="font-semibold text-park-bark dark:text-park-cream">
-                  {fee.title}
-                </p>
-                <p className="text-stone-600 dark:text-stone-400">
-                  {fee.description}
-                </p>
-                <p className="text-park-forest font-semibold mt-1">
-                  {fee.cost}
-                </p>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
-
-      {park.operatingHours?.length > 0 && (
-        <section>
-          <h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">
-            Hours
-          </h2>
-          {park.operatingHours.map((hours, index) => (
-            <div
-              key={index}
-              className="bg-white dark:bg-stone-800 rounded-lg p-4 border border-stone-200 dark:border-stone-700 mb-2"
-            >
-              <p className="font-semibold text-park-bark dark:text-park-cream mb-2">
-                {hours.name}
-              </p>
-              {hours.description && (
-                <p className="text-stone-600 dark:text-stone-400 mb-2">
-                  {hours.description}
-                </p>
-              )}
-              {hours.standardHours && (
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm">
-                  {Object.entries(hours.standardHours).map(([day, val]) => (
-                    <div key={day} className="capitalize">
-                      <span className="font-medium">{day}: </span>
-                      <span className="text-stone-600 dark:text-stone-400">
-                        {val}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
-        </section>
-      )}
+      <FeesSection park={park} />
+      <HoursSection hours={park.operatingHours} />
 
       {park.activities?.length > 0 && (
         <section>

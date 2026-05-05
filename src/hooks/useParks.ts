@@ -10,6 +10,12 @@ function toApiDesignation(display: string): string {
 	return display.replace(/s$/, '') // "National Parks" → "National Park"
 }
 
+async function fetchParksApi(params: URLSearchParams): Promise<NpsApiResponse> {
+	const res = await fetch(`/api/parks?${params}`)
+	if (!res.ok) throw new Error('Failed to load parks')
+	return res.json()
+}
+
 async function fetchParkPage(
 	q: string,
 	stateCode: string,
@@ -23,10 +29,7 @@ async function fetchParkPage(
 		if (q) params.set('q', q)
 		if (stateCode) params.set('stateCode', stateCode)
 
-		const res = await fetch(`/api/parks?${params}`)
-		if (!res.ok) throw new Error('Failed to load parks')
-		const data: NpsApiResponse = await res.json()
-
+		const data = await fetchParksApi(params)
 		const filtered = data.data.filter(
 			(park) => park.designation?.toLowerCase() === designation.toLowerCase()
 		)
@@ -37,9 +40,7 @@ async function fetchParkPage(
 	if (q) params.set('q', q)
 	if (stateCode) params.set('stateCode', stateCode)
 
-	const res = await fetch(`/api/parks?${params}`)
-	if (!res.ok) throw new Error('Failed to load parks')
-	return res.json()
+	return fetchParksApi(params)
 }
 
 export function useParks(search: string, stateCode: string, designation: string) {

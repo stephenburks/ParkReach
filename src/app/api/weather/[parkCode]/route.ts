@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { fetchPark } from '@/lib/nps';
+import { jsonError } from '@/lib/api-response';
+import { isValidParkCode } from '@/lib/validate-park-code';
 
 interface NwsPoint {
   properties: {
@@ -20,36 +22,25 @@ interface NwsForecast {
   };
 }
 
-function validateParkCode(parkCode: string): boolean {
-  return /^[A-Z]{2,5}$/.test(parkCode);
-}
-
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ parkCode: string }> }
 ) {
   const { parkCode } = await params;
 
-  if (!validateParkCode(parkCode)) {
-    return NextResponse.json(
-      { error: 'Invalid park code. Must be 2-5 uppercase letters.' },
-      { status: 400 }
-    );
+  if (!isValidParkCode(parkCode)) {
+    return jsonError('Invalid park code.', 400);
   }
 
   try {
     const park = await fetchPark(parkCode);
     if (!park || !park.latitude || !park.longitude) {
-      return NextResponse.json(
-        { error: 'Park not found or missing coordinates.' },
-        { status: 404 }
-      );
+      return jsonError('Park not found or missing coordinates.', 404);
     }
 
     const lat = parseFloat(park.latitude);
     const lon = parseFloat(park.longitude);
 
-    // Step 1: Get NWS point data to find the forecast URL
     const pointRes = await fetch(
       `https://api.weather.gov/points/${lat},${lon}`,
       {
@@ -59,26 +50,19 @@ export async function GET(
     );
 
     if (!pointRes.ok) {
-      return NextResponse.json(
-        { error: 'Weather data unavailable for this location.' },
-        { status: 502 }
-      );
+      return jsonError('Weather data unavailable for this location.', 502);
     }
 
     const pointData: NwsPoint = await pointRes.json();
     const forecastUrl = pointData.properties.forecast;
 
-    // Step 2: Fetch the actual forecast
     const forecastRes = await fetch(forecastUrl, {
       headers: { 'Accept': 'application/geo+json' },
       next: { revalidate: 3600 },
     });
 
     if (!forecastRes.ok) {
-      return NextResponse.json(
-        { error: 'Failed to fetch weather forecast.' },
-        { status: 502 }
-      );
+      return jsonError('Failed to fetch weather forecast.', 502);
     }
 
     const forecastData: NwsForecast = await forecastRes.json();
@@ -95,9 +79,6 @@ export async function GET(
       { status: 200 }
     );
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to fetch weather data.' },
-      { status: 500 }
-    );
+    return jsonError('Failed to fetch weather data.', 500);
   }
 }

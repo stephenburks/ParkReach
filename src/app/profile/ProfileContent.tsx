@@ -10,7 +10,8 @@ import { useTrips } from '@/hooks/useTrips'
 import { AuthButton } from '@/components/AuthButton'
 import { AuthModal } from '@/components/AuthModal'
 import Link from 'next/link'
-import { Park } from '@/types/park'
+import type { Park } from '@/types/park'
+import type { Trip, TripPark } from '@/types/supabase'
 
 interface ParkRowProps {
 	parkCode: string
@@ -61,6 +62,49 @@ interface SavedParkSectionProps {
 	saves: Array<{ id: string; park_code: string }>
 	parkByCode: Record<string, Park | undefined>
 	emptyMessage: string
+}
+
+interface TripsSectionProps {
+	trips: Trip[]
+	tripParks: TripPark[]
+}
+
+function TripsSection({ trips, tripParks }: TripsSectionProps) {
+	return (
+		<section className="max-w-4xl mx-auto mb-12">
+			<div className="flex items-center justify-between mb-4">
+				<h2 className="text-xl font-semibold">Trips ({trips.length})</h2>
+			</div>
+			{trips.length > 0 ? (
+				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+					{trips.map((trip) => {
+						const count = tripParks.filter((tripPark) => tripPark.trip_id === trip.id).length
+						return (
+							<Link
+								key={trip.id}
+								href={`/trips/${trip.id}`}
+								className="block p-4 bg-white dark:bg-stone-800 rounded-lg hover:bg-stone-50 dark:hover:bg-stone-700 transition-colors"
+							>
+								<p className="font-medium text-park-bark dark:text-park-cream leading-snug">
+									{trip.name}
+								</p>
+								<p className="text-xs text-park-stone dark:text-stone-400 mt-0.5">
+									{count} {count === 1 ? 'park' : 'parks'}
+								</p>
+								{trip.description && (
+									<p className="text-xs text-stone-500 dark:text-stone-400 mt-1 line-clamp-1">
+										{trip.description}
+									</p>
+								)}
+							</Link>
+						)
+					})}
+				</div>
+			) : (
+				<p className="text-stone-500">No trips yet. Open a park and click &ldquo;Add to Trip&rdquo; to create one.</p>
+			)}
+		</section>
+	)
 }
 
 function SavedParkSection({ title, saves, parkByCode, emptyMessage }: SavedParkSectionProps) {
@@ -150,40 +194,7 @@ export function ProfileContent() {
 				</div>
 			</header>
 
-			{/* Trips */}
-			<section className="max-w-4xl mx-auto mb-12">
-				<div className="flex items-center justify-between mb-4">
-					<h2 className="text-xl font-semibold">Trips ({trips.length})</h2>
-				</div>
-				{trips.length > 0 ? (
-					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-						{trips.map((trip) => {
-							const count = tripParks.filter((tripPark) => tripPark.trip_id === trip.id).length
-							return (
-								<Link
-									key={trip.id}
-									href={`/trips/${trip.id}`}
-									className="block p-4 bg-white dark:bg-stone-800 rounded-lg hover:bg-stone-50 dark:hover:bg-stone-700 transition-colors"
-								>
-									<p className="font-medium text-park-bark dark:text-park-cream leading-snug">
-										{trip.name}
-									</p>
-									<p className="text-xs text-park-stone dark:text-stone-400 mt-0.5">
-										{count} {count === 1 ? 'park' : 'parks'}
-									</p>
-									{trip.description && (
-										<p className="text-xs text-stone-500 dark:text-stone-400 mt-1 line-clamp-1">
-											{trip.description}
-										</p>
-									)}
-								</Link>
-							)
-						})}
-					</div>
-				) : (
-					<p className="text-stone-500">No trips yet. Open a park and click &ldquo;Add to Trip&rdquo; to create one.</p>
-				)}
-			</section>
+			<TripsSection trips={trips} tripParks={tripParks} />
 
 			<SavedParkSection
 				title="Wishlist"
