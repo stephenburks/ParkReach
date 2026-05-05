@@ -2,29 +2,23 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import ParkCardMinimal from '../ParkCardMinimal'
-import { Park } from '@/types/park'
+import { makePark } from './park-fixture'
 
-const mockPark: Park = {
+const mockPark = makePark({
 	id: '2',
 	name: 'Grand Canyon',
 	fullName: 'Grand Canyon National Park',
 	parkCode: 'grca',
 	description: 'A dramatic canyon carved by the Colorado River',
-	designation: 'National Park',
 	states: 'AZ',
 	url: 'https://www.nps.gov/grca',
 	latitude: '36.1069',
 	longitude: '-112.1129',
 	activities: [],
-	topics: [],
-	entranceFees: [],
-	entrancePasses: [],
-	operatingHours: [],
-	images: [],
 	weatherInfo: '',
 	directionsInfo: '',
 	directionsUrl: '',
-}
+})
 
 describe('ParkCardMinimal', () => {
 	it('renders park full name', () => {

@@ -2,9 +2,9 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { useAuth } from '@/context/AuthContext'
-import { createClient } from '@/lib/supabase/client'
-import { X, Mail, Loader2 } from 'lucide-react'
+import { X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { MagicLinkForm } from '@/components/MagicLinkForm'
 import { useFocusTrap } from '@/hooks/useFocusTrap'
 
 interface AuthModalProps {
@@ -14,16 +14,14 @@ interface AuthModalProps {
 
 export function AuthModal({ isOpen, onClose }: AuthModalProps) {
   const { signIn } = useAuth()
-  const [email, setEmail] = useState('')
+  const [sentEmail, setSentEmail] = useState('')
   const [magicLinkSent, setMagicLinkSent] = useState(false)
-  const [loading, setLoading] = useState(false)
   const closeButtonRef = useRef<HTMLButtonElement>(null)
-  const emailInputRef = useRef<HTMLInputElement>(null)
   const modalRef = useRef<HTMLDivElement>(null)
   const triggerRef = useRef<HTMLElement | null>(null)
 
   const handleClose = useCallback(() => {
-    setEmail('')
+    setSentEmail('')
     setMagicLinkSent(false)
     onClose()
   }, [onClose])
@@ -52,22 +50,9 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
     }
   }, [isOpen])
 
-  const handleMagicLink = async (event: React.FormEvent) => {
-    event.preventDefault()
-    if (!email) return
-
-    const supabase = createClient()
-    if (!supabase) return
-
-    setLoading(true)
-    try {
-      await supabase.auth.signInWithOtp({ email })
-      setMagicLinkSent(true)
-    } catch (error) {
-      console.error('Magic link error:', error)
-    } finally {
-      setLoading(false)
-    }
+  const handleSent = (email: string) => {
+    setSentEmail(email)
+    setMagicLinkSent(true)
   }
 
   if (!isOpen) return null
@@ -111,7 +96,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
             <div className="space-y-3">
               <div className="p-4 bg-stone-100 dark:bg-stone-700 rounded-lg">
                 <p className="text-sm text-stone-600 dark:text-stone-300">
-                  Check <strong>{email}</strong> for your magic link
+                  Check <strong>{sentEmail}</strong> for your magic link
                 </p>
               </div>
               <Button
@@ -138,29 +123,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                   </div>
                 </div>
 
-                <form onSubmit={handleMagicLink} className="space-y-3">
-                  <label htmlFor="auth-email" className="sr-only">Email address</label>
-                  <input
-                    ref={emailInputRef}
-                    id="auth-email"
-                    type="email"
-                    placeholder="your@email.com"
-                    value={email}
-                    onChange={(event) => setEmail(event.target.value)}
-                    className="w-full px-4 py-3 border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 text-park-bark dark:text-park-cream rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-park-forest/50"
-                    required
-                  />
-                  <Button type="submit" size="lg" className="w-full" disabled={loading}>
-                    {loading ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <>
-                        <Mail className="mr-2 h-4 w-4" />
-                        Send Magic Link
-                      </>
-                    )}
-                  </Button>
-                </form>
+                <MagicLinkForm onSent={handleSent} inputId="auth-modal-email" />
               </div>
 
               <p className="text-xs text-stone-500 dark:text-stone-400 mt-6">

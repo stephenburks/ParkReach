@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, type Locator } from '@playwright/test'
 
 // Minimal park fixture — enough for the card + modal to render
 const YOSEMITE = {
@@ -31,6 +31,12 @@ const PARKS_RESPONSE = {
 }
 
 test.describe('Save flow', () => {
+	async function clickSaveButton(dialog: Locator, buttonName: RegExp | string) {
+		const btn = dialog.getByRole('button', { name: buttonName })
+		await btn.scrollIntoViewIfNeeded()
+		await btn.click()
+	}
+
 	test.beforeEach(async ({ page }) => {
 		// Intercept the client-side parks API so tests run without a real NPS key
 		await page.route('/api/parks*', (route) =>
@@ -61,10 +67,7 @@ test.describe('Save flow', () => {
 		const dialog = page.getByRole('dialog')
 		await dialog.waitFor()
 
-		// Scroll save buttons into view before clicking (modal body is scrollable)
-		const wishlistBtn = dialog.getByRole('button', { name: /add to wishlist/i })
-		await wishlistBtn.scrollIntoViewIfNeeded()
-		await wishlistBtn.click()
+		await clickSaveButton(dialog, /add to wishlist/i)
 
 		// sonner toast should appear
 		await expect(page.getByText(/sign in to save parks to your wishlist/i)).toBeVisible()
@@ -77,9 +80,7 @@ test.describe('Save flow', () => {
 		const dialog = page.getByRole('dialog')
 		await dialog.waitFor()
 
-		const visitedBtn = dialog.getByRole('button', { name: /mark as visited/i })
-		await visitedBtn.scrollIntoViewIfNeeded()
-		await visitedBtn.click()
+		await clickSaveButton(dialog, /mark as visited/i)
 
 		await expect(page.getByText('Sign in to mark parks as visited')).toBeVisible()
 	})

@@ -2,29 +2,9 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import ParkCard from '../ParkCard'
-import { Park } from '@/types/park'
+import { makePark } from './park-fixture'
 
-const mockPark: Park = {
-  id: '1',
-  name: 'Yosemite',
-  fullName: 'Yosemite National Park',
-  parkCode: 'yose',
-  description: 'A beautiful park in California',
-  designation: 'National Park',
-  states: 'CA',
-  url: 'https://www.nps.gov/yose',
-  latitude: '37.8651',
-  longitude: '-119.5383',
-  activities: [{ id: '1', name: 'Hiking' }],
-  topics: [],
-  entranceFees: [],
-  entrancePasses: [],
-  operatingHours: [],
-  images: [],
-  weatherInfo: 'Sunny',
-  directionsInfo: 'Drive west',
-  directionsUrl: 'https://example.com',
-}
+const mockPark = makePark()
 
 describe('ParkCard', () => {
   it('renders park name', () => {
