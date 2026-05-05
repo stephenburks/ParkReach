@@ -12,11 +12,7 @@ export function AuthButton({ onSignInClick }: AuthButtonProps) {
   const { user, signOut, loading } = useAuth()
 
   if (loading) {
-    return (
-      <Button variant="ghost" size="sm" disabled className="text-stone-500">
-        Loading...
-      </Button>
-    )
+    return <div className="w-20 h-8 rounded-md bg-white/20 animate-pulse" />
   }
 
   if (user) {

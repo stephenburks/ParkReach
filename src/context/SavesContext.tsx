@@ -35,7 +35,7 @@ const SavesContext = createContext<SavesContextType>({
 
 export function SavesProvider({ children }: { children: React.ReactNode }) {
 	const [saves, setSaves] = useState<ParkSave[]>([])
-	const [loading, setLoading] = useState(true)
+	const [loading, setLoading] = useState(false)
 	const { user } = useAuth()
 	const supabase = useMemo(() => createClient(), [])
 
@@ -51,11 +51,17 @@ export function SavesProvider({ children }: { children: React.ReactNode }) {
 	}, [user, supabase])
 
 	useEffect(() => {
+		if (!user) {
+			setSaves([])
+			setLoading(false)
+			return
+		}
+		setLoading(true)
 		fetchSaves().then((result) => {
 			setSaves(result)
 			setLoading(false)
 		})
-	}, [fetchSaves])
+	}, [fetchSaves, user])
 
 	const toggleFlag = async (parkCode: string, field: 'wishlisted' | 'visited'): Promise<boolean> => {
 		if (!user || !supabase) return false

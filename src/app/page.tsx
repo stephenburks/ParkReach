@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { ParkOfTheDay } from "@/components/ParkOfTheDay";
 import { ExplorerClient } from "@/components/ExplorerClient";
 import { HeaderControls } from "@/components/HeaderControls";
@@ -44,7 +45,7 @@ export default async function Home() {
       <header className="bg-park-forest text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+            <Link href="/" className="flex items-center gap-4 hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-lg">
               <div
                 className="w-14 h-14 rounded-full bg-white/15 flex items-center justify-center text-3xl flex-shrink-0"
                 aria-hidden="true"
@@ -59,7 +60,7 @@ export default async function Home() {
                   Discover America&apos;s natural and cultural treasures
                 </p>
               </div>
-            </div>
+            </Link>
             <div className="flex items-center gap-2">
               <HeaderControls />
             </div>

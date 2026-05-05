@@ -35,12 +35,12 @@ export default function RootLayout({
         <NuqsAdapter>
           <SkipLink />
           <QueryProvider>
-            <DarkModeProvider>
-              <AuthProvider>
+            <AuthProvider>
+              <DarkModeProvider>
                 <SavesProvider>{children}</SavesProvider>
-              </AuthProvider>
-              <Toaster />
-            </DarkModeProvider>
+                <Toaster />
+              </DarkModeProvider>
+            </AuthProvider>
           </QueryProvider>
         </NuqsAdapter>
       </body>

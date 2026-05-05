@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { MapPin, CheckCircle } from 'lucide-react';
+import { MapPin, CheckCircle, Plus, Minus } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { useSaves } from '@/hooks/useParkSaves';
@@ -30,7 +30,9 @@ export function VisitedButton({ parkCode, minimal = false }: Props) {
     setIsLoading(false);
 
     if (ok) {
-      toast.success(visited ? 'Removed from visited' : 'Marked as visited');
+      toast.success(visited ? 'Removed from visited' : 'Marked as visited', {
+        icon: visited ? <Minus className="h-4 w-4" /> : <Plus className="h-4 w-4" />,
+      });
     } else {
       toast.error('Something went wrong — please try again');
     }

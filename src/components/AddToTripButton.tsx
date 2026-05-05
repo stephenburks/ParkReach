@@ -53,9 +53,12 @@ function NewTripForm({ onCreated, onCancel }: NewTripFormProps) {
 		const trimmed = name.trim()
 		if (!trimmed) return
 		setCreating(true)
-		await onCreated(trimmed)
-		setCreating(false)
-		setName('')
+		try {
+			await onCreated(trimmed)
+			setName('')
+		} finally {
+			setCreating(false)
+		}
 	}
 
 	return (

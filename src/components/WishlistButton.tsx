@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Heart } from 'lucide-react';
+import { Heart, Plus, Minus } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { useSaves } from '@/hooks/useParkSaves';
@@ -30,7 +30,9 @@ export function WishlistButton({ parkCode, minimal = false }: Props) {
     setIsLoading(false);
 
     if (ok) {
-      toast.success(wishlisted ? 'Removed from wishlist' : 'Added to wishlist');
+      toast.success(wishlisted ? 'Removed from wishlist' : 'Added to wishlist', {
+        icon: wishlisted ? <Minus className="h-4 w-4" /> : <Plus className="h-4 w-4" />,
+      });
     } else {
       toast.error('Something went wrong — please try again');
     }
