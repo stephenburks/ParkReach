@@ -2,7 +2,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import ParkCardMinimal from '../ParkCardMinimal'
-import { makePark } from './park-fixture'
+import { makePark, KEYBOARD_ACTIVATION_CASES } from './park-fixture'
 
 const mockPark = makePark({
 	id: '2',
@@ -14,10 +14,6 @@ const mockPark = makePark({
 	url: 'https://www.nps.gov/grca',
 	latitude: '36.1069',
 	longitude: '-112.1129',
-	activities: [],
-	weatherInfo: '',
-	directionsInfo: '',
-	directionsUrl: '',
 })
 
 describe('ParkCardMinimal', () => {
@@ -58,23 +54,13 @@ describe('ParkCardMinimal', () => {
 		expect(onSelect).toHaveBeenCalledWith(mockPark)
 	})
 
-	it('calls onSelect on Enter key press', async () => {
+	it.each(KEYBOARD_ACTIVATION_CASES)('calls onSelect on %s key press', async (_label, key) => {
 		const user = userEvent.setup()
 		const onSelect = vi.fn()
 		render(<ParkCardMinimal park={mockPark} onSelect={onSelect} />)
 		const card = screen.getByRole('button', { name: /view details/i })
 		card.focus()
-		await user.keyboard('{Enter}')
-		expect(onSelect).toHaveBeenCalledWith(mockPark)
-	})
-
-	it('calls onSelect on Space key press', async () => {
-		const user = userEvent.setup()
-		const onSelect = vi.fn()
-		render(<ParkCardMinimal park={mockPark} onSelect={onSelect} />)
-		const card = screen.getByRole('button', { name: /view details/i })
-		card.focus()
-		await user.keyboard(' ')
+		await user.keyboard(key)
 		expect(onSelect).toHaveBeenCalledWith(mockPark)
 	})
 })

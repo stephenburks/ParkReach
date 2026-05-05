@@ -1,24 +1,18 @@
 'use client'
 
-import { memo, type KeyboardEvent } from 'react'
+import { memo } from 'react'
 import { Park } from '@/types/park'
 import { WishlistButton } from './WishlistButton'
 import { VisitedButton } from './VisitedButton'
+import { handleCardKeyDown, formatStates } from './park-card-utils'
 
 interface Props {
 	park: Park
 	onSelect: (park: Park) => void
 }
 
-function handleCardKeyDown(event: KeyboardEvent<HTMLDivElement>, onSelect: () => void) {
-	if (event.key === 'Enter' || event.key === ' ') {
-		event.preventDefault()
-		onSelect()
-	}
-}
-
 function ParkCardMinimal({ park, onSelect }: Props) {
-	const stateList = park.states.split(',').join(' · ')
+	const stateList = formatStates(park.states)
 
 	return (
 		<div

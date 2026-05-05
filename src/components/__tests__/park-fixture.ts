@@ -25,3 +25,8 @@ const BASE_PARK: Park = {
 export function makePark(overrides: Partial<Park> = {}): Park {
 	return { ...BASE_PARK, ...overrides }
 }
+
+export const KEYBOARD_ACTIVATION_CASES = [
+	['Enter', '{Enter}'],
+	['Space', ' '],
+] as const

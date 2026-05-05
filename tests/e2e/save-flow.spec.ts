@@ -1,4 +1,4 @@
-import { test, expect, type Locator } from '@playwright/test'
+import { test, expect, type Locator, type Page } from '@playwright/test'
 
 // Minimal park fixture — enough for the card + modal to render
 const YOSEMITE = {
@@ -37,6 +37,14 @@ test.describe('Save flow', () => {
 		await btn.click()
 	}
 
+	async function openParkDialog(page: Page): Promise<Locator> {
+		await page.goto('/')
+		await page.getByRole('button', { name: /yosemite national park/i }).click()
+		const dialog = page.getByRole('dialog')
+		await dialog.waitFor()
+		return dialog
+	}
+
 	test.beforeEach(async ({ page }) => {
 		// Intercept the client-side parks API so tests run without a real NPS key
 		await page.route('/api/parks*', (route) =>
@@ -54,44 +62,27 @@ test.describe('Save flow', () => {
 	})
 
 	test('clicking a park card opens the detail modal', async ({ page }) => {
-		await page.goto('/')
-		await page.getByRole('button', { name: /yosemite national park/i }).click()
-		await expect(page.getByRole('dialog')).toBeVisible()
-		await expect(page.getByRole('dialog')).toContainText('Yosemite National Park')
+		const dialog = await openParkDialog(page)
+		await expect(dialog).toBeVisible()
+		await expect(dialog).toContainText('Yosemite National Park')
 	})
 
 	test('unauthenticated wishlist click shows sign-in prompt', async ({ page }) => {
-		await page.goto('/')
-		await page.getByRole('button', { name: /yosemite national park/i }).click()
-
-		const dialog = page.getByRole('dialog')
-		await dialog.waitFor()
-
+		const dialog = await openParkDialog(page)
 		await clickSaveButton(dialog, /add to wishlist/i)
-
 		// sonner toast should appear
 		await expect(page.getByText(/sign in to save parks to your wishlist/i)).toBeVisible()
 	})
 
 	test('unauthenticated visited click shows sign-in prompt', async ({ page }) => {
-		await page.goto('/')
-		await page.getByRole('button', { name: /yosemite national park/i }).click()
-
-		const dialog = page.getByRole('dialog')
-		await dialog.waitFor()
-
+		const dialog = await openParkDialog(page)
 		await clickSaveButton(dialog, /mark as visited/i)
-
 		await expect(page.getByText('Sign in to mark parks as visited')).toBeVisible()
 	})
 
 	test('modal closes on Escape key', async ({ page }) => {
-		await page.goto('/')
-		await page.getByRole('button', { name: /yosemite national park/i }).click()
-		await page.getByRole('dialog').waitFor()
-
+		await openParkDialog(page)
 		await page.keyboard.press('Escape')
-
 		await expect(page.getByRole('dialog')).not.toBeVisible()
 	})
 

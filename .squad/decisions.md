@@ -74,6 +74,18 @@ The `useTrips` hook fetches all trips first, then all trip_parks in a second que
 
 ---
 
+### 13. `htmlFor`/`id` label association — do not combine with `aria-label` on the same input
+
+For all `<input>` elements with a visible or sr-only `<label>`, use the `htmlFor`/`id` pairing as the sole accessible name mechanism. Do not add a redundant `aria-label` on the same input — `aria-label` takes precedence in the ARIA name computation (Step 2B beats Step 2E) and effectively hides the `<label>` relationship from assistive technology. A standalone `aria-label` is fine when there is no `<label>` element at all (e.g. icon buttons, search inputs without an explicit label). The two patterns must not be combined.
+
+---
+
+### 14. `isValidParkCode` lives in `src/lib/validate-park-code.ts`
+
+NPS park codes are 2–5 lowercase letters (e.g. `yose`, `grca`, `zion`). The shared validation helper at `src/lib/validate-park-code.ts` exports `isValidParkCode(parkCode: string): boolean` using `/^[a-z]{2,5}$/`. All API routes that receive a `parkCode` path parameter must import from this module — do not define inline regex validators in route files.
+
+---
+
 ## Governance
 
 - All meaningful architectural changes require a decision note here.

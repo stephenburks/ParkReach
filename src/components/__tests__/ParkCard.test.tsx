@@ -2,7 +2,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import ParkCard from '../ParkCard'
-import { makePark } from './park-fixture'
+import { makePark, KEYBOARD_ACTIVATION_CASES } from './park-fixture'
 
 const mockPark = makePark()
 
@@ -25,23 +25,13 @@ describe('ParkCard', () => {
     expect(onSelect).toHaveBeenCalledWith(mockPark)
   })
 
-  it('responds to Enter key press', async () => {
+  it.each(KEYBOARD_ACTIVATION_CASES)('responds to %s key press', async (_label, key) => {
     const user = userEvent.setup()
     const onSelect = vi.fn()
     render(<ParkCard park={mockPark} onSelect={onSelect} />)
     const card = screen.getByRole('button', { name: /yosemite national park/i })
     card.focus()
-    await user.keyboard('{Enter}')
-    expect(onSelect).toHaveBeenCalledWith(mockPark)
-  })
-
-  it('responds to Space key press', async () => {
-    const user = userEvent.setup()
-    const onSelect = vi.fn()
-    render(<ParkCard park={mockPark} onSelect={onSelect} />)
-    const card = screen.getByRole('button', { name: /yosemite national park/i })
-    card.focus()
-    await user.keyboard(' ')
+    await user.keyboard(key)
     expect(onSelect).toHaveBeenCalledWith(mockPark)
   })
 })

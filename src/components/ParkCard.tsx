@@ -1,26 +1,20 @@
 'use client';
 
-import { memo, type KeyboardEvent } from 'react';
+import { memo } from 'react';
 import Image from 'next/image';
 import { Park } from '@/types/park';
 import { WishlistButton } from './WishlistButton';
 import { VisitedButton } from './VisitedButton';
+import { handleCardKeyDown, formatStates } from './park-card-utils';
 
 interface Props {
   park: Park;
   onSelect: (park: Park) => void;
 }
 
-function handleCardKeyDown(event: KeyboardEvent<HTMLDivElement>, onSelect: () => void) {
-  if (event.key === 'Enter' || event.key === ' ') {
-    event.preventDefault();
-    onSelect();
-  }
-}
-
 function ParkCard({ park, onSelect }: Props) {
   const image = park.images[0];
-  const stateList = park.states.split(',').join(' · ');
+  const stateList = formatStates(park.states);
 
   return (
     <article className="group relative bg-white dark:bg-stone-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-stone-100 dark:border-stone-700 flex flex-col">
