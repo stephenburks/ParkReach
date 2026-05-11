@@ -10,7 +10,7 @@ Things that would make the existing product better but aren't blocking launch.
 
 ### Accessibility Audit
 
-Run a formal axe-core scan and manual keyboard walkthrough. Resolve any critical/serious WCAG 2.1 AA violations. Document findings in `.squad/decisions/`.
+Run a formal axe-core scan and manual keyboard walkthrough. Resolve any critical/serious WCAG 2.1 AA violations. Document findings in project docs.
 
 ### Content Security Policy
 

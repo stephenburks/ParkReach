@@ -67,7 +67,7 @@ The core product is built. All major features exist in code.
 
 | #   | What                          | Status      | Notes                                              |
 | --- | ----------------------------- | ----------- | -------------------------------------------------- |
-| 1   | Decisions inbox merged        | ✅ Done      | 8 decisions now in `.squad/decisions.md`           |
+| 1   | Decisions inbox merged        | ✅ Done      | Decisions documented in project docs            |
 | 2   | `generateMetadata` on profile | ✅ Done      | Server wrapper + noindex                           |
 | 3   | `loading.tsx` skeletons       | ✅ Done      | Park detail + profile                              |
 | 4   | Content Security Policy       | ✅ Done        | Nonce-based CSP in `proxy.ts`; `x-nonce` forwarded to RSC |
