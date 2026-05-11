@@ -87,6 +87,24 @@ Reuses a running dev server locally (`http://localhost:3000`); starts fresh in C
 
 Vitest with jsdom. Test files: `src/**/*.test.{ts,tsx}`. Setup: `src/test/setup.ts` (imports `@testing-library/jest-dom/vitest`). Path alias `@/` → `./src/` configured in `vitest.config.ts`.
 
+## Team (Mystery Inc. edition)
+
+ParkReach's agents are Scooby-Doo themed. Invoke with `@agent_name` in OpenCode.
+
+| Agent | Role | Domain | Color |
+|-------|------|--------|-------|
+| **Fred** | Lead Architect | System design, ADRs, issue triage, cross-cutting decisions | Amber |
+| **Daphne** | Frontend Developer | `src/app/`, `src/components/`, UI, client state, WCAG compliance | Pink |
+| **Velma** | Backend Developer | `src/app/api/`, Route Handlers, DB schema, integrations, env/config | Purple |
+| **Shaggy** | Test Engineer & ADA/WCAG Specialist | All test authoring, a11y audits, quality gates | Green |
+| **Scooby** | Code Reviewer | PR review gate, code quality, cross-agent review coordination | Indigo |
+
+**Routing rules:**
+- UI change → `@daphne` + `@shaggy` (a11y is a gate, not a suggestion)
+- API/backend → `@velma` + `@shaggy` (test coverage)
+- Architecture decision → `@fred` (design note before implementation)
+- Pre-merge review → `@scooby` (correctness → clarity → style)
+
 ## Code Style
 
 - Tabs for indentation
