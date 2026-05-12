@@ -33,6 +33,8 @@ There is no root `middleware.ts`. Next.js 16 reads `src/proxy.ts` instead, which
 
 `next.config.ts` wraps the config with `varlockNextConfigPlugin()`. The `@next/env` package is overridden to `@varlock/nextjs-integration` (see `package.json` overrides). Secrets are fetched via `pass()` at build/dev time — never put real values in `.env*` files. The schema in `.env.schema` defines which keys exist and their `pass()` paths.
 
+**GPG passphrase required.** `npm run dev` and `npm run build` run `tools/predev.sh` first, which attempts a `pass` decryption to cache your GPG passphrase. If it's not cached, you'll get a `pinentry-mac` dialog. If decryption fails, the script exits with troubleshooting steps. Prerequisite: `brew install pinentry-mac` and set `pinentry-program /opt/homebrew/bin/pinentry-mac` in `~/.gnupg/gpg-agent.conf`.
+
 ### Tailwind v4 — no config file
 
 Tailwind v4 uses CSS-based configuration. There is no `tailwind.config.ts`. All customization lives in `src/app/globals.css` via `@theme inline { }`. PostCSS uses `@tailwindcss/postcss`. Do not generate a `tailwind.config.*` file.

@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useAuth } from '@/context/AuthContext'
 import { LogOut, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -17,23 +18,31 @@ export function AuthButton({ onSignInClick }: AuthButtonProps) {
 
   if (user) {
     return (
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={signOut}
-        aria-label="Sign out"
-        className="text-white hover:bg-white/20 dark:text-stone-300 dark:hover:bg-stone-700"
-      >
-        <LogOut className="mr-2 h-4 w-4" />
-        Sign out
-      </Button>
+      <div className="flex items-center gap-1">
+        <Link
+          href="/profile"
+          className="inline-flex items-center justify-center gap-1 h-7 px-2.5 text-sm font-medium rounded-lg text-white hover:bg-white/20 dark:text-stone-300 dark:hover:bg-stone-700 transition-colors"
+        >
+          <User className="h-4 w-4" />
+          Profile
+        </Link>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={signOut}
+          aria-label="Sign out"
+          className="text-white hover:bg-white/20 dark:text-stone-300 dark:hover:bg-stone-700"
+        >
+          <LogOut className="h-4 w-4" />
+        </Button>
+      </div>
     )
   }
 
   return (
-    <Button 
-      variant="default" 
-      size="sm" 
+    <Button
+      variant="default"
+      size="sm"
       onClick={onSignInClick}
       className="bg-park-cream text-park-bark hover:bg-white dark:bg-park-bark dark:text-park-cream dark:hover:bg-stone-700"
     >

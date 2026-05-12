@@ -2,25 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { fetchPark } from '@/lib/nps';
 import { jsonError } from '@/lib/api-response';
 import { isValidParkCode } from '@/lib/validate-park-code';
-
-interface NwsPoint {
-  properties: {
-    forecast: string;
-  };
-}
-
-interface NwsForecastPeriod {
-  name: string;
-  temperature: number;
-  shortForecast: string;
-  detailedForecast: string;
-}
-
-interface NwsForecast {
-  properties: {
-    periods: NwsForecastPeriod[];
-  };
-}
+import type { NwsPoint, NwsForecast } from '@/types/weather';
 
 export async function GET(
   request: NextRequest,

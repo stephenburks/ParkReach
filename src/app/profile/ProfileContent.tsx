@@ -12,6 +12,7 @@ import { AuthModal } from '@/components/AuthModal'
 import Link from 'next/link'
 import type { Park } from '@/types/park'
 import type { Trip, TripPark } from '@/types/supabase'
+import { formatStates } from '@/components/park-card-utils'
 
 interface ParkRowProps {
 	parkCode: string
@@ -28,6 +29,11 @@ function ParkRow({ parkCode, parkByCode }: ParkRowProps) {
 			<p className="font-medium text-park-bark dark:text-park-cream leading-snug">
 				{park?.fullName ?? parkCode}
 			</p>
+			{park?.states && (
+				<p className="text-xs text-park-stone dark:text-stone-400 mt-0.5">
+					📍 {formatStates(park.states)}
+				</p>
+			)}
 			{park?.designation && (
 				<p className="text-xs text-park-stone dark:text-stone-400 mt-0.5">{park.designation}</p>
 			)}

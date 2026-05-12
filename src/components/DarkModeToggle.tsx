@@ -1,6 +1,6 @@
 "use client";
 
-import { useDarkMode } from "@/components/DarkModeProvider";
+import { useDarkMode } from "@/context/DarkModeProvider";
 import { Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 

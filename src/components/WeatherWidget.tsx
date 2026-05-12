@@ -2,16 +2,10 @@
 
 import { CloudSun } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
+import type { WeatherData } from '@/types/weather';
 
 interface Props {
   parkCode: string;
-}
-
-interface WeatherData {
-  parkCode: string;
-  conditions: string;
-  temperature: string;
-  forecast: string;
 }
 
 export function WeatherWidget({ parkCode }: Props) {
@@ -19,6 +13,7 @@ export function WeatherWidget({ parkCode }: Props) {
     queryKey: ['weather', parkCode],
     queryFn: async () => {
       const res = await fetch(`/api/weather/${parkCode}`);
+      if (!res.ok) throw new Error('Failed to fetch weather data');
       return res.json() as Promise<WeatherData>;
     },
   });

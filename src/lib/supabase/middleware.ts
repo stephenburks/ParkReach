@@ -46,8 +46,12 @@ export async function updateSession(
 		},
 	});
 
-	// Refresh the session. Must use getUser() — getSession() skips JWT validation.
-	await supabase.auth.getUser();
+	try {
+		await supabase.auth.getUser();
+	} catch {
+		// Supabase unreachable (paused project, DNS failure, network issue).
+		// Pass through — auth will be unavailable but the app still loads.
+	}
 
 	return supabaseResponse;
 }

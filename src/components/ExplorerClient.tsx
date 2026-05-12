@@ -155,7 +155,6 @@ export function ExplorerClient({ defaultView = "cards" }: ExplorerClientProps) {
     : "cards";
   const viewParser = useMemo(
     () => parseAsStringLiteral(VIEW_OPTIONS).withDefault(safeDefault),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [safeDefault],
   );
   const [view, setViewParam] = useQueryState("view", viewParser);
@@ -190,11 +189,10 @@ export function ExplorerClient({ defaultView = "cards" }: ExplorerClientProps) {
   const total = parseInt(data?.pages[0]?.total ?? "0", 10);
 
   const visibleParks = accessibility
-    ? parks.filter(
-        (park) =>
-          park.accessibility
-            ?.toLowerCase()
-            .includes(accessibility.toLowerCase()) ?? false,
+    ? parks.filter((park) =>
+        park.activities?.some((activity) =>
+          activity.name.toLowerCase().includes(accessibility.toLowerCase())
+        ) ?? false
       )
     : parks;
 

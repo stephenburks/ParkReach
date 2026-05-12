@@ -4,7 +4,8 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import type { Park } from "@/types/park";
 import { fetchPark } from "@/lib/nps";
-import { DarkModeProvider } from "@/components/DarkModeProvider";
+import { formatStates } from "@/components/park-card-utils";
+
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { WishlistButton } from "@/components/WishlistButton";
 import { VisitedButton } from "@/components/VisitedButton";
@@ -341,7 +342,7 @@ export default async function ParkDetailPage({ params }: Props) {
 
   if (!park) notFound();
 
-  const states = park.states.split(",").join(", ");
+  const states = formatStates(park.states);
   const amenitiesAccessibility = await getAmenities(parkCode);
 
   // JSON-LD structured data for Google rich results
@@ -359,8 +360,8 @@ export default async function ParkDetailPage({ params }: Props) {
     },
   };
 
-  return (
-    <DarkModeProvider>
+return (
+    <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -387,6 +388,6 @@ export default async function ParkDetailPage({ params }: Props) {
           <ParkInfoGrid park={park} amenitiesAccessibility={amenitiesAccessibility} />
         </main>
       </div>
-    </DarkModeProvider>
+    </>
   );
 }

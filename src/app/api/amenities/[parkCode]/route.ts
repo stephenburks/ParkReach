@@ -1,14 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { jsonError } from '@/lib/api-response';
+import { isValidParkCode } from '@/lib/validate-park-code';
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ parkCode: string }> }
 ) {
   const { parkCode } = await params;
+
+  if (!isValidParkCode(parkCode)) {
+    return jsonError('Invalid park code.', 400);
+  }
+
   const apiKey = process.env.NPS_API_KEY;
 
   if (!apiKey) {
-    return NextResponse.json({ error: 'NPS API key not configured' }, { status: 500 });
+    return jsonError('NPS API key not configured.', 503);
   }
 
   try {
@@ -21,18 +28,12 @@ export async function GET(
     );
 
     if (!res.ok) {
-      return NextResponse.json(
-        { error: 'Failed to fetch amenities data' },
-        { status: res.status }
-      );
+      return jsonError('Failed to fetch amenities data.', res.status);
     }
 
     const data = await res.json();
     return NextResponse.json(data);
   } catch {
-    return NextResponse.json(
-      { error: 'Failed to fetch amenities data' },
-      { status: 500 }
-    );
+    return jsonError('Failed to fetch amenities data.', 500);
   }
 }

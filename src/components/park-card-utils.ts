@@ -1,6 +1,6 @@
 import { type KeyboardEvent } from 'react'
 
-export function handleCardKeyDown(event: KeyboardEvent<HTMLDivElement>, onSelect: () => void) {
+export function handleCardKeyDown(event: KeyboardEvent<HTMLElement>, onSelect: () => void) {
 	if (event.key === 'Enter' || event.key === ' ') {
 		event.preventDefault()
 		onSelect()

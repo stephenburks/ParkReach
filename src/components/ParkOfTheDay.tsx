@@ -14,7 +14,10 @@ function dateToIndex(dateStr: string, total: number): number {
 }
 
 async function getTodaysPark(): Promise<Park | null> {
-	const headers = { 'X-Api-Key': process.env.NPS_API_KEY! }
+	const apiKey = process.env.NPS_API_KEY
+	if (!apiKey) return null
+
+	const headers = { 'X-Api-Key': apiKey }
 
 	try {
 		const countRes = await fetch(`${NPS_BASE}?limit=1`, {

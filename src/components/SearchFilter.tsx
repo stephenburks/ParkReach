@@ -90,11 +90,11 @@ interface Props {
 
 const ACCESSIBILITY_OPTIONS = [
   { value: '', label: 'All Accessibility' },
-  { value: 'wheelchair', label: 'Wheelchair Accessible' },
-  { value: 'audio', label: 'Audio Tour' },
-  { value: 'video', label: 'Video Tour' },
+  { value: 'accessible', label: 'Accessible Facilities' },
+  { value: 'audio', label: 'Audio Description' },
   { value: 'braille', label: 'Braille' },
-  { value: 'sign_language', label: 'Sign Language' },
+  { value: 'sign language', label: 'Sign Language' },
+  { value: 'captioning', label: 'Video Captioning' },
 ];
 
 export default function SearchFilter({

@@ -17,7 +17,14 @@ function ParkCard({ park, onSelect }: Props) {
   const stateList = formatStates(park.states);
 
   return (
-    <article className="group relative bg-white dark:bg-stone-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-stone-100 dark:border-stone-700 flex flex-col">
+    <div
+      className="group relative bg-white dark:bg-stone-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-stone-100 dark:border-stone-700 flex flex-col cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-park-forest"
+      role="button"
+      tabIndex={0}
+      aria-label={`View details for ${park.fullName}`}
+      onClick={() => onSelect(park)}
+      onKeyDown={(event) => handleCardKeyDown(event, () => onSelect(park))}
+    >
       <div className="relative h-52 overflow-hidden bg-gradient-to-br from-park-forest to-park-sage flex-shrink-0">
         {image?.url ? (
           <Image
@@ -33,8 +40,8 @@ function ParkCard({ park, onSelect }: Props) {
           </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-        
-        {/* Action buttons overlay — visible on hover OR when a button inside receives focus */}
+
+        {/* Action buttons — stopPropagation so they don't trigger the card click */}
         <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
           <div className="bg-white/90 dark:bg-stone-800/90 rounded-full p-1.5" onClick={(event) => event.stopPropagation()}>
             <WishlistButton parkCode={park.parkCode} minimal />
@@ -51,13 +58,7 @@ function ParkCard({ park, onSelect }: Props) {
         )}
       </div>
 
-      <div
-        className="p-5 flex flex-col flex-1 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-park-forest"
-        role="button"
-        tabIndex={0}
-        onClick={() => onSelect(park)}
-        onKeyDown={(event) => handleCardKeyDown(event, () => onSelect(park))}
-      >
+      <div className="p-5 flex flex-col flex-1">
         <h3 className="font-bold text-park-bark dark:text-park-cream text-base leading-snug mb-1.5 group-hover:text-park-forest transition-colors">
           {park.fullName}
         </h3>
@@ -74,7 +75,7 @@ function ParkCard({ park, onSelect }: Props) {
           View details →
         </p>
       </div>
-    </article>
+    </div>
   );
 }
 

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { useAuth } from '@/context/AuthContext'
 import { Mail, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
@@ -15,11 +15,12 @@ export function MagicLinkForm({ onSent, inputId = 'magic-link-email' }: MagicLin
 	const [loading, setLoading] = useState(false)
 	const [error, setError] = useState<string | null>(null)
 
+	const { supabase } = useAuth()
+
 	const handleSubmit = async (event: React.FormEvent) => {
 		event.preventDefault()
 		if (!email) return
 
-		const supabase = createClient()
 		if (!supabase) return
 
 		setError(null)

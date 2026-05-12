@@ -1,122 +1,134 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '@/context/AuthContext'
 import type { Trip, TripPark } from '@/types/supabase'
 
 export function useTrips() {
 	const { supabase, user } = useAuth()
-	const [trips, setTrips] = useState<Trip[]>([])
-	const [tripParks, setTripParks] = useState<TripPark[]>([])
-	const [loading, setLoading] = useState(true)
+	const queryClient = useQueryClient()
 
-	useEffect(() => {
-		if (!supabase || !user) {
-			setTrips([])
-			setTripParks([])
-			setLoading(false)
-			return
-		}
+	const { data, isLoading: loading } = useQuery({
+		queryKey: ['trips', user?.id],
+		queryFn: async () => {
+			if (!supabase || !user) return { trips: [], tripParks: [] }
 
-		const fetchAll = async () => {
-			setLoading(true)
 			const { data: tripsData } = await supabase
 				.from('trips')
 				.select('*')
 				.eq('user_id', user.id)
 				.order('created_at', { ascending: false })
 
-			const fetchedTrips = tripsData ?? []
-			setTrips(fetchedTrips)
+			const fetchedTrips: Trip[] = tripsData ?? []
 
+			let fetchedTripParks: TripPark[] = []
 			if (fetchedTrips.length > 0) {
 				const { data: parksData } = await supabase
 					.from('trip_parks')
 					.select('*')
 					.in('trip_id', fetchedTrips.map((trip) => trip.id))
-				setTripParks(parksData ?? [])
-			} else {
-				setTripParks([])
+				fetchedTripParks = parksData ?? []
 			}
-			setLoading(false)
-		}
 
-		fetchAll()
-	}, [supabase, user])
+			return { trips: fetchedTrips, tripParks: fetchedTripParks }
+		},
+		enabled: !!(supabase && user),
+	})
 
-	const createTrip = useCallback(
-		async (name: string, description?: string): Promise<Trip | null> => {
+	const trips = data?.trips ?? []
+	const tripParks = data?.tripParks ?? []
+
+	const createTripMutation = useMutation({
+		mutationFn: async ({ name, description }: { name: string; description?: string }) => {
 			if (!supabase || !user) return null
 			const { data, error } = await supabase
 				.from('trips')
 				.insert({ user_id: user.id, name, description: description ?? null })
 				.select()
 				.single()
-			if (!error && data) setTrips((prev) => [data, ...prev])
 			return error ? null : data
 		},
-		[supabase, user],
-	)
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ['trips', user?.id] })
+		},
+	})
 
-	const deleteTrip = useCallback(
-		async (id: string): Promise<boolean> => {
+	const deleteTripMutation = useMutation({
+		mutationFn: async (id: string) => {
 			if (!supabase) return false
 			const { error } = await supabase.from('trips').delete().eq('id', id)
-			if (!error) {
-				setTrips((prev) => prev.filter((trip) => trip.id !== id))
-				setTripParks((prev) => prev.filter((tripPark) => tripPark.trip_id !== id))
-			}
 			return !error
 		},
-		[supabase],
-	)
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ['trips', user?.id] })
+		},
+	})
 
-	const addParkToTrip = useCallback(
-		async (tripId: string, parkCode: string): Promise<boolean> => {
+	const addParkToTripMutation = useMutation({
+		mutationFn: async ({ tripId, parkCode }: { tripId: string; parkCode: string }) => {
 			if (!supabase) return false
-			const { data, error } = await supabase
+			const { error } = await supabase
 				.from('trip_parks')
 				.insert({ trip_id: tripId, park_code: parkCode })
 				.select()
 				.single()
-			if (!error && data) setTripParks((prev) => [...prev, data])
 			return !error
 		},
-		[supabase],
-	)
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ['trips', user?.id] })
+		},
+	})
 
-	const removeParkFromTrip = useCallback(
-		async (tripId: string, parkCode: string): Promise<boolean> => {
+	const removeParkFromTripMutation = useMutation({
+		mutationFn: async ({ tripId, parkCode }: { tripId: string; parkCode: string }) => {
 			if (!supabase) return false
 			const { error } = await supabase
 				.from('trip_parks')
 				.delete()
 				.eq('trip_id', tripId)
 				.eq('park_code', parkCode)
-			if (!error) {
-				setTripParks((prev) =>
-					prev.filter((tripPark) => !(tripPark.trip_id === tripId && tripPark.park_code === parkCode)),
-				)
-			}
 			return !error
 		},
-		[supabase],
-	)
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ['trips', user?.id] })
+		},
+	})
 
-	const updateTrip = useCallback(
-		async (id: string, updates: { name?: string; description?: string | null }): Promise<boolean> => {
+	const updateTripMutation = useMutation({
+		mutationFn: async ({ id, updates }: { id: string; updates: { name?: string; description?: string | null } }) => {
 			if (!supabase) return false
-			const { data, error } = await supabase
+			const { error } = await supabase
 				.from('trips')
 				.update(updates)
 				.eq('id', id)
 				.select()
 				.single()
-			if (!error && data) setTrips((prev) => prev.map((trip) => (trip.id === id ? data : trip)))
 			return !error
 		},
-		[supabase],
-	)
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ['trips', user?.id] })
+		},
+	})
+
+	async function createTrip(name: string, description?: string): Promise<Trip | null> {
+		return createTripMutation.mutateAsync({ name, description })
+	}
+
+	async function deleteTrip(id: string): Promise<boolean> {
+		return deleteTripMutation.mutateAsync(id)
+	}
+
+	async function addParkToTrip(tripId: string, parkCode: string): Promise<boolean> {
+		return addParkToTripMutation.mutateAsync({ tripId, parkCode })
+	}
+
+	async function removeParkFromTrip(tripId: string, parkCode: string): Promise<boolean> {
+		return removeParkFromTripMutation.mutateAsync({ tripId, parkCode })
+	}
+
+	async function updateTrip(id: string, updates: { name?: string; description?: string | null }): Promise<boolean> {
+		return updateTripMutation.mutateAsync({ id, updates })
+	}
 
 	return {
 		trips,

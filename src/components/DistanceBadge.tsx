@@ -2,18 +2,12 @@
 
 import { Car } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
+import type { DistanceData } from '@/types/distance';
 
 interface Props {
   parkCode: string;
   latitude?: string;
   longitude?: string;
-}
-
-interface DistanceData {
-  parkCode: string;
-  drivingMiles: string | null;
-  drivingTime: string | null;
-  message: string;
 }
 
 export function DistanceBadge({ parkCode, latitude, longitude }: Props) {
@@ -23,6 +17,7 @@ export function DistanceBadge({ parkCode, latitude, longitude }: Props) {
       if (!latitude || !longitude) return null;
       const params = new URLSearchParams({ lat: latitude, lon: longitude });
       const res = await fetch(`/api/distance/${parkCode}?${params}`);
+      if (!res.ok) throw new Error('Failed to fetch distance data');
       return res.json() as Promise<DistanceData>;
     },
     enabled: !!(latitude && longitude),

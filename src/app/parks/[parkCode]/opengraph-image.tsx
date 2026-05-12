@@ -1,5 +1,4 @@
 import { ImageResponse } from 'next/og'
-import { NextRequest } from 'next/server'
 
 export const runtime = 'edge'
 export const contentType = 'image/png'
@@ -50,6 +49,7 @@ export default async function OgImage({ params }: Props) {
 			{heroUrl && (
 				<img
 					src={heroUrl}
+					alt=""
 					style={{
 						position: 'absolute',
 						inset: 0,

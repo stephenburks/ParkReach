@@ -1,7 +1,7 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { createContext, useContext } from 'react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '@/context/AuthContext'
 
 type ParkSave = {
@@ -34,62 +34,97 @@ const SavesContext = createContext<SavesContextType>({
 })
 
 export function SavesProvider({ children }: { children: React.ReactNode }) {
-	const [saves, setSaves] = useState<ParkSave[]>([])
-	const [loading, setLoading] = useState(false)
-	const { user } = useAuth()
-	const supabase = useMemo(() => createClient(), [])
+	const { user, supabase } = useAuth()
+	const queryClient = useQueryClient()
 
-	const fetchSaves = useCallback(async () => {
-		if (!user || !supabase) return []
-
-		const { data, error } = await supabase
-			.from('park_saves')
-			.select('id, user_id, park_code, wishlisted, visited, created_at')
-			.eq('user_id', user.id)
-
-		return error ? [] : (data ?? [])
-	}, [user, supabase])
-
-	useEffect(() => {
-		if (!user) {
-			setSaves([])
-			setLoading(false)
-			return
-		}
-		setLoading(true)
-		fetchSaves().then((result) => {
-			setSaves(result)
-			setLoading(false)
-		})
-	}, [fetchSaves, user])
-
-	const toggleFlag = async (parkCode: string, field: 'wishlisted' | 'visited'): Promise<boolean> => {
-		if (!user || !supabase) return false
-
-		const existing = saves.find((save) => save.park_code === parkCode)
-
-		if (existing) {
-			const newValue = !existing[field]
-			const patch = field === 'wishlisted' ? { wishlisted: newValue } : { visited: newValue }
-			const { error } = await supabase
+	const { data: saves = [], isLoading: loading } = useQuery({
+		queryKey: ['saves', user?.id],
+		queryFn: async () => {
+			if (!user || !supabase) return []
+			const { data, error } = await supabase
 				.from('park_saves')
-				.update(patch)
-				.eq('id', existing.id)
-			if (!error) {
-				setSaves((prev) =>
-					prev.map((save) => (save.id === existing.id ? { ...save, [field]: newValue } : save))
-				)
-			}
-			return !error
-		}
+				.select('id, user_id, park_code, wishlisted, visited, created_at')
+				.eq('user_id', user.id)
+			return error ? [] : (data ?? [])
+		},
+		enabled: !!(user && supabase),
+	})
 
-		const row =
-			field === 'wishlisted'
-				? { user_id: user.id, park_code: parkCode, wishlisted: true }
-				: { user_id: user.id, park_code: parkCode, visited: true }
-		const { data, error } = await supabase.from('park_saves').insert(row).select().single()
-		if (!error && data) setSaves((prev) => [...prev, data])
-		return !error
+	const toggleMutation = useMutation({
+		mutationFn: async ({ parkCode, field }: { parkCode: string; field: 'wishlisted' | 'visited' }) => {
+			if (!user || !supabase) return false
+
+			const existing = saves.find((save) => save.park_code === parkCode)
+
+			if (existing) {
+				const newValue = !existing[field]
+				const patch = field === 'wishlisted' ? { wishlisted: newValue } : { visited: newValue }
+				const { error } = await supabase
+					.from('park_saves')
+					.update(patch)
+					.eq('id', existing.id)
+				return !error
+			}
+
+			const row =
+				field === 'wishlisted'
+					? { user_id: user.id, park_code: parkCode, wishlisted: true }
+					: { user_id: user.id, park_code: parkCode, visited: true }
+			const { error } = await supabase.from('park_saves').insert(row).select().single()
+			return !error
+		},
+		onMutate: async ({ parkCode, field }) => {
+			await queryClient.cancelQueries({ queryKey: ['saves', user?.id] })
+			const previousSaves = queryClient.getQueryData<ParkSave[]>(['saves', user?.id])
+
+			queryClient.setQueryData<ParkSave[]>(['saves', user?.id], (old) => {
+				if (!old) return old
+				const existing = old.find((save) => save.park_code === parkCode)
+
+				if (existing) {
+					const newValue = !existing[field]
+					return old.map((save) =>
+						save.id === existing.id ? { ...save, [field]: newValue } : save,
+					)
+				}
+
+				const tempSave: ParkSave = {
+					id: `temp-${Date.now()}`,
+					user_id: user?.id ?? '',
+					park_code: parkCode,
+					wishlisted: field === 'wishlisted',
+					visited: field === 'visited',
+					created_at: new Date().toISOString(),
+				}
+				return [...old, tempSave]
+			})
+
+			return { previousSaves }
+		},
+		onError: (_err, _variables, context) => {
+			if (context?.previousSaves) {
+				queryClient.setQueryData(['saves', user?.id], context.previousSaves)
+			}
+		},
+		onSettled: () => {
+			queryClient.invalidateQueries({ queryKey: ['saves', user?.id] })
+		},
+	})
+
+	async function toggleWishlist(parkCode: string): Promise<boolean> {
+		try {
+			return await toggleMutation.mutateAsync({ parkCode, field: 'wishlisted' })
+		} catch {
+			return false
+		}
+	}
+
+	async function toggleVisited(parkCode: string): Promise<boolean> {
+		try {
+			return await toggleMutation.mutateAsync({ parkCode, field: 'visited' })
+		} catch {
+			return false
+		}
 	}
 
 	const isWishlisted = (parkCode: string) =>
@@ -103,8 +138,8 @@ export function SavesProvider({ children }: { children: React.ReactNode }) {
 			value={{
 				saves,
 				loading,
-				toggleWishlist: (parkCode) => toggleFlag(parkCode, 'wishlisted'),
-				toggleVisited: (parkCode) => toggleFlag(parkCode, 'visited'),
+				toggleWishlist,
+				toggleVisited,
 				isWishlisted,
 				isVisited,
 				isAuthenticated: !!user,

@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "bash tools/predev.sh && next dev",
+    "build": "bash tools/predev.sh && next build",
     "start": "next start",
     "lint": "eslint",
     "test": "vitest",

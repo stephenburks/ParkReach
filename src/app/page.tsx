@@ -42,7 +42,7 @@ export default async function Home() {
   return (
     <div className="min-h-screen bg-park-cream dark:bg-park-bark">
       {/* Header */}
-      <header className="bg-park-forest text-white">
+      <header className="bg-park-forest text-white relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center gap-4 hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-lg">
