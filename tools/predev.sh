@@ -25,3 +25,11 @@ if ! pass show parkreach/supabase-url &>/dev/null; then
 fi
 
 echo '✅ GPG passphrase cached — varlock will resolve secrets'
+
+supabase_host=$(pass show parkreach/supabase-url 2>/dev/null | sed 's|https://||' | sed 's|/.*||')
+if [[ -n "$supabase_host" ]]; then
+	if ! nslookup "$supabase_host" &>/dev/null; then
+		echo "⚠️  Supabase host $supabase_host does not resolve — project may be paused"
+		echo "   Restore it at https://supabase.com/dashboard"
+	fi
+fi

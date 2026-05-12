@@ -31,11 +31,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!supabase) return
 
     const getUser = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
-      setUser(user)
-      setLoading(false)
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        setUser(user)
+      } catch {
+        // Supabase unreachable (paused project, DNS failure, network issue)
+      } finally {
+        setLoading(false)
+      }
     }
 
     getUser()

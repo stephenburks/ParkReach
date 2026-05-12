@@ -11,7 +11,18 @@ export function createClient() {
 	if (!url || !anonKey) return null
 
 	if (!_instance) {
-		_instance = createBrowserClient<Database>(url, anonKey)
+		_instance = createBrowserClient<Database>(url, anonKey, {
+			auth: {
+				autoRefreshToken: true,
+				detectSessionInUrl: true,
+				persistSession: true,
+			},
+			global: {
+				fetch: (input, init) => {
+					return fetch(input, { ...init, signal: init?.signal ?? AbortSignal.timeout(10_000) })
+				},
+			},
+		})
 	}
 	return _instance
 }
