@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
 	const stateCode = sp.get('stateCode') || ''
 	const designation = sp.get('designation') || ''
 	const parkCode = sp.get('parkCode') || ''
-	const limit = Math.min(50, Math.max(1, parseInt(sp.get('limit') || '20', 10) || 20))
+	const limit = Math.min(600, Math.max(1, parseInt(sp.get('limit') || '20', 10) || 20))
 	const start = Math.max(0, parseInt(sp.get('start') || '0', 10) || 0)
 
 	const params = new URLSearchParams({ limit: String(limit), start: String(start) })

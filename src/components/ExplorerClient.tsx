@@ -40,7 +40,10 @@ type ViewOption = typeof VIEW_OPTIONS[number];
 
 function SkeletonCard() {
   return (
-    <div className="bg-white dark:bg-stone-800 rounded-2xl overflow-hidden shadow-sm border border-stone-100 dark:border-stone-700 animate-pulse">
+    <div
+      className="bg-white dark:bg-stone-800 rounded-2xl overflow-hidden shadow-sm border border-stone-100 dark:border-stone-700 animate-pulse"
+      aria-hidden="true"
+    >
       <div className="h-52 bg-stone-200 dark:bg-stone-700" />
       <div className="p-5 space-y-3">
         <div className="h-4 bg-stone-200 dark:bg-stone-700 rounded-full w-3/4" />
@@ -57,30 +60,48 @@ function SkeletonCard() {
 
 function SkeletonGrid() {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      {Array.from({ length: 9 }).map((_value, index) => (
-        <SkeletonCard key={index} />
-      ))}
-    </div>
+    <>
+      <p className="sr-only" role="status">
+        Loading parks…
+      </p>
+      <div
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+        aria-hidden="true"
+      >
+        {Array.from({ length: 9 }).map((_value, index) => (
+          <SkeletonCard key={index} />
+        ))}
+      </div>
+    </>
   );
 }
 
-interface LoadMoreButtonProps {
-  onClick: () => void;
-  loading: boolean;
-  remaining: number;
-}
+function BackgroundLoadingIndicator({
+  loaded,
+  total,
+}: {
+  loaded: number;
+  total: number;
+}) {
+  const pct = total > 0 ? (loaded / total) * 100 : 0;
 
-function LoadMoreButton({ onClick, loading, remaining }: LoadMoreButtonProps) {
   return (
-    <div className="flex justify-center mt-10">
-      <button
-        onClick={onClick}
-        disabled={loading}
-        className="px-8 py-3 bg-park-forest hover:bg-park-bark text-white font-semibold rounded-full transition-colors disabled:opacity-60 disabled:cursor-not-allowed text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-park-forest focus-visible:ring-offset-2"
+    <div className="mt-6">
+      <div
+        className="h-1 rounded-full bg-stone-200 dark:bg-stone-700 overflow-hidden"
+        aria-hidden="true"
       >
-        {loading ? "Loading…" : `Load More Parks (${remaining} remaining)`}
-      </button>
+        <div
+          className="h-full bg-park-forest transition-all duration-500 ease-out rounded-full"
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+      <p
+        className="text-sm text-park-stone dark:text-stone-400 mt-2 text-center"
+        role="status"
+      >
+        Loading more parks…
+      </p>
     </div>
   );
 }
@@ -176,17 +197,11 @@ export function ExplorerClient({ defaultView = "cards" }: ExplorerClientProps) {
     [setSelectedPark],
   );
 
-  const {
-    data,
-    isLoading,
-    isFetchingNextPage,
-    error,
-    fetchNextPage,
-    hasNextPage,
-  } = useParks(search, stateCode, designation);
-
-  const parks = data?.pages.flatMap((page) => page.data) ?? [];
-  const total = parseInt(data?.pages[0]?.total ?? "0", 10);
+  const { parks, total, isLoading, isBackgroundLoading, error } = useParks(
+    search,
+    stateCode,
+    designation,
+  );
 
   const visibleParks = accessibility
     ? parks.filter((park) =>
@@ -199,6 +214,15 @@ export function ExplorerClient({ defaultView = "cards" }: ExplorerClientProps) {
   const selectedParkData = selectedPark
     ? (parks.find((park) => park.parkCode === selectedPark) ?? null)
     : null;
+
+  const countText =
+    total > 0
+      ? isBackgroundLoading
+        ? `Showing ${visibleParks.length} of ${total} ${formatPlaceType(designation)} — loading more…`
+        : `Showing ${visibleParks.length} ${formatPlaceType(designation)}`
+      : "No places found — try a different search";
+
+  const loadComplete = !isLoading && !isBackgroundLoading && parks.length > 0;
 
   return (
     <>
@@ -223,9 +247,7 @@ export function ExplorerClient({ defaultView = "cards" }: ExplorerClientProps) {
               className="text-sm text-park-stone dark:text-stone-400"
               aria-live="polite"
             >
-              {total > 0
-                ? `Showing ${visibleParks.length} of ${total} ${formatPlaceType(designation)}`
-                : "No places found — try a different search"}
+              {countText}
             </p>
           )}
           <ViewToggle view={view} onChange={setView} />
@@ -279,11 +301,10 @@ export function ExplorerClient({ defaultView = "cards" }: ExplorerClientProps) {
               </>
             )}
 
-            {hasNextPage && (view === "cards" || view === "minimal") && (
-              <LoadMoreButton
-                onClick={fetchNextPage}
-                loading={isFetchingNextPage}
-                remaining={total - parks.length}
+            {isBackgroundLoading && (view === "cards" || view === "minimal") && (
+              <BackgroundLoadingIndicator
+                loaded={parks.length}
+                total={total}
               />
             )}
           </>
@@ -291,6 +312,10 @@ export function ExplorerClient({ defaultView = "cards" }: ExplorerClientProps) {
           <EmptyState />
         ) : null}
       </main>
+
+      <p className="sr-only" aria-live="polite" role="status">
+        {loadComplete ? `All ${visibleParks.length} ${formatPlaceType(designation)} loaded.` : ''}
+      </p>
 
       {selectedParkData && (
         <ParkModal
