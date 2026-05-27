@@ -63,7 +63,7 @@ export default function SearchFilter({
         </div>
 
         {/* Designation tabs */}
-        <fieldset className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide border-0 p-0">
+        <fieldset className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide border-0 p-0 min-w-0 w-full">
           <legend className="sr-only">Filter by designation</legend>
           {displayDesignations.map((desig) => (
             <button
