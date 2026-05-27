@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import { useMemo, useState } from 'react'
 import { useAuth } from '@/context/AuthContext'
-import { useSaves } from '@/hooks/useParkSaves'
+import { useSaves } from '@/context/SavesContext'
 import { useParksByCode } from '@/hooks/useParksByCode'
 import { useProfile } from '@/hooks/useProfile'
 import { useTrips } from '@/hooks/useTrips'

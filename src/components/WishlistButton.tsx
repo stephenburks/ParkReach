@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Heart, Plus, Minus } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { useSaves } from '@/hooks/useParkSaves';
+import { useSaves } from '@/context/SavesContext';
 
 interface Props {
   parkCode: string;

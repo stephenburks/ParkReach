@@ -111,6 +111,48 @@ export type Database = {
         }
         Relationships: []
       }
+      parks: {
+        Row: {
+          park_code: string
+          full_name: string
+          description: string | null
+          states: string
+          designation: string | null
+          latitude: string | null
+          longitude: string | null
+          image_url: string | null
+          image_alt: string | null
+          url: string | null
+          updated_at: string
+        }
+        Insert: {
+          park_code: string
+          full_name: string
+          description?: string | null
+          states: string
+          designation?: string | null
+          latitude?: string | null
+          longitude?: string | null
+          image_url?: string | null
+          image_alt?: string | null
+          url?: string | null
+          updated_at?: string
+        }
+        Update: {
+          park_code?: string
+          full_name?: string
+          description?: string | null
+          states?: string
+          designation?: string | null
+          latitude?: string | null
+          longitude?: string | null
+          image_url?: string | null
+          image_alt?: string | null
+          url?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -126,3 +168,4 @@ export type Database = {
 
 export type Trip = Database['public']['Tables']['trips']['Row']
 export type TripPark = Database['public']['Tables']['trip_parks']['Row']
+export type ParkRow = Database['public']['Tables']['parks']['Row']

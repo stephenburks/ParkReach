@@ -10,14 +10,17 @@ import {
   debounce,
 } from "nuqs";
 import type { Park } from "@/types/park";
-import ParkCard from "@/components/ParkCard";
-import ParkCardMinimal from "@/components/ParkCardMinimal";
 import ParkModal from "@/components/ParkModal";
 import SearchFilter from "@/components/SearchFilter";
 import { useParks } from "@/hooks/useParks";
 import { ViewToggle } from "@/components/ViewToggle";
 import { useAuth } from "@/context/AuthContext";
-import { Search, AlertTriangle } from "lucide-react";
+import { SkeletonGrid } from "@/components/explorer/SkeletonGrid";
+import { EmptyState } from "@/components/explorer/EmptyState";
+import { ErrorState } from "@/components/explorer/ErrorState";
+import { LoadingProgress } from "@/components/explorer/LoadingProgress";
+import { ParkGridView } from "@/components/explorer/ParkGridView";
+import { ParkListView } from "@/components/explorer/ParkListView";
 
 interface ParkMapProps {
   parks: Park[];
@@ -38,104 +41,6 @@ const ParkMap = dynamic(
 
 const VIEW_OPTIONS = ["cards", "minimal", "map"] as const;
 type ViewOption = typeof VIEW_OPTIONS[number];
-
-function SkeletonCard() {
-  return (
-    <div
-      className="bg-white dark:bg-stone-800 rounded-2xl overflow-hidden shadow-sm border border-stone-100 dark:border-stone-700 animate-pulse"
-      aria-hidden="true"
-    >
-      <div className="h-52 bg-stone-200 dark:bg-stone-700" />
-      <div className="p-5 space-y-3">
-        <div className="h-4 bg-stone-200 dark:bg-stone-700 rounded-full w-3/4" />
-        <div className="h-3 bg-stone-100 dark:bg-stone-600 rounded-full w-1/3" />
-        <div className="space-y-2">
-          <div className="h-3 bg-stone-100 dark:bg-stone-600 rounded-full" />
-          <div className="h-3 bg-stone-100 dark:bg-stone-600 rounded-full" />
-          <div className="h-3 bg-stone-100 dark:bg-stone-600 rounded-full w-2/3" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function SkeletonGrid() {
-  return (
-    <>
-      <p className="sr-only" role="status">
-        Loading parks…
-      </p>
-      <div
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-        aria-hidden="true"
-      >
-        {Array.from({ length: 9 }).map((_value, index) => (
-          <SkeletonCard key={index} />
-        ))}
-      </div>
-    </>
-  );
-}
-
-function BackgroundLoadingIndicator({
-  loaded,
-  total,
-}: {
-  loaded: number;
-  total: number;
-}) {
-  const pct = total > 0 ? (loaded / total) * 100 : 0;
-
-  return (
-    <div className="mt-6">
-      <div
-        className="h-1 rounded-full bg-stone-200 dark:bg-stone-700 overflow-hidden"
-        aria-hidden="true"
-      >
-        <div
-          className="h-full bg-park-forest transition-all duration-500 ease-out rounded-full"
-          style={{ width: `${pct}%` }}
-        />
-      </div>
-      <p
-        className="text-sm text-park-stone dark:text-stone-400 mt-2 text-center"
-        role="status"
-      >
-        Loading more parks…
-      </p>
-    </div>
-  );
-}
-
-function EmptyState() {
-  return (
-    <div className="text-center py-16">
-      <Search className="h-12 w-12 mx-auto mb-4 opacity-30 text-park-stone" aria-hidden="true" />
-      <p className="text-park-bark dark:text-park-cream font-semibold text-lg mb-2">
-        No places found
-      </p>
-      <p className="text-stone-500 text-sm">
-        Try adjusting your search or filters
-      </p>
-    </div>
-  );
-}
-
-interface ErrorStateProps {
-  message: string;
-}
-
-function ErrorState({ message }: ErrorStateProps) {
-  return (
-    <div className="text-center py-16">
-      <AlertTriangle className="h-12 w-12 mx-auto mb-4 opacity-30 text-park-stone" aria-hidden="true" />
-      <p className="text-park-bark dark:text-park-cream font-semibold text-lg mb-2">
-        Something went wrong
-      </p>
-      <p className="text-stone-500 text-sm">{message}</p>
-    </div>
-  );
-}
 
 function formatPlaceType(desig: string): string {
   if (desig === "All") return "Places";
@@ -215,6 +120,8 @@ export function ExplorerClient({ defaultView = "cards" }: ExplorerClientProps) {
     ? `Showing ${parks.length} parks in ${viewLabel} view`
     : ''
 
+  const hasFilters = Boolean(search || stateCode || designation !== "All")
+
   const countText =
     total > 0
       ? isBackgroundLoading
@@ -226,7 +133,7 @@ export function ExplorerClient({ defaultView = "cards" }: ExplorerClientProps) {
 
   return (
     <>
-      <      main
+      <main
         id="main-content"
         className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
         ref={resultsRef}
@@ -260,31 +167,10 @@ export function ExplorerClient({ defaultView = "cards" }: ExplorerClientProps) {
         ) : parks.length > 0 ? (
           <>
             {view === "cards" && (
-              <ul
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-                role="list"
-              >
-                {parks.map((park) => (
-                  <li key={park.id}>
-                    <ParkCard park={park} onSelect={handleSelectPark} />
-                  </li>
-                ))}
-              </ul>
+              <ParkGridView parks={parks} onParkSelect={handleSelectPark} />
             )}
             {view === "minimal" && (
-              <ul
-                className="divide-y divide-stone-100 dark:divide-stone-700"
-                role="list"
-              >
-                {parks.map((park) => (
-                  <li key={park.id}>
-                    <ParkCardMinimal
-                      park={park}
-                      onSelect={handleSelectPark}
-                    />
-                  </li>
-                ))}
-              </ul>
+              <ParkListView parks={parks} onParkSelect={handleSelectPark} />
             )}
             {view === "map" && (
               <>
@@ -302,14 +188,21 @@ export function ExplorerClient({ defaultView = "cards" }: ExplorerClientProps) {
             )}
 
             {isBackgroundLoading && (view === "cards" || view === "minimal") && (
-              <BackgroundLoadingIndicator
+              <LoadingProgress
                 loaded={parks.length}
                 total={total}
               />
             )}
           </>
         ) : !error ? (
-          <EmptyState />
+          <EmptyState
+            hasFilters={hasFilters}
+            onClearFilters={() => {
+              setSearch("")
+              setStateCode("")
+              setDesignation("All")
+            }}
+          />
         ) : null}
       </main>
 
