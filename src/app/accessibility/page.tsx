@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { SiteFooter } from '@/components/SiteFooter'
 
 export const metadata: Metadata = {
 	title: 'Accessibility | ParkReach',
@@ -103,7 +104,9 @@ export default function AccessibilityPage() {
 				<p className="text-sm text-stone-500 dark:text-stone-400 pt-4 border-t border-stone-200 dark:border-stone-700">
 					Last updated: May 2026
 				</p>
-			</main>
-		</div>
+          </main>
+
+          <SiteFooter />
+        </div>
 	)
 }

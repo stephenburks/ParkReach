@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation'
 import { useTrips } from '@/hooks/useTrips'
 import { useParksByCode } from '@/hooks/useParksByCode'
 import { HeaderControls } from '@/components/HeaderControls'
+import { SiteFooter } from '@/components/SiteFooter'
+import { Map } from 'lucide-react'
 import type { Park } from '@/types/park'
 
 interface Props {
@@ -81,7 +83,7 @@ export function TripContent({ tripId }: Props) {
 	if (!trip) {
 		return (
 			<div className="text-center py-16">
-				<p className="text-5xl mb-4" aria-hidden="true">🗺️</p>
+				<Map className="h-12 w-12 mx-auto mb-4 text-park-stone/50" aria-hidden="true" />
 				<p className="text-park-bark dark:text-park-cream font-semibold text-lg mb-2">Trip not found</p>
 				<Link href="/profile" className="text-park-forest hover:underline text-sm">
 					Back to profile
@@ -182,7 +184,9 @@ export function TripContent({ tripId }: Props) {
 				</header>
 
 				{parks.length > 0 ? (
-					<ul role="list" className="space-y-3">
+					<>
+						<h2 className="text-lg font-semibold text-park-bark dark:text-park-cream mb-3">Parks in this trip</h2>
+						<ul role="list" className="space-y-3">
 						{parks.map((tripPark) => (
 							<li key={tripPark.id}>
 								<ParkRow
@@ -193,6 +197,7 @@ export function TripContent({ tripId }: Props) {
 							</li>
 						))}
 					</ul>
+					</>
 				) : (
 					<div className="text-center py-12">
 						<p className="text-stone-500 mb-4">No parks in this trip yet.</p>
@@ -204,7 +209,9 @@ export function TripContent({ tripId }: Props) {
 						</Link>
 					</div>
 				)}
-			</main>
-		</div>
+          </main>
+
+          <SiteFooter />
+        </div>
 	)
 }

@@ -2,6 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Sun, MapPin } from 'lucide-react'
 import type { Park } from '@/types/park'
+import { formatStates } from '@/components/park-card-utils'
 
 const NPS_BASE = 'https://developer.nps.gov/api/v1/parks'
 
@@ -48,7 +49,7 @@ export async function ParkOfTheDay() {
 	if (!park) return null
 
 	const image = park.images?.[0]
-	const states = park.states?.split(',').join(' · ')
+	const states = formatStates(park.states)
 
 	return (
 		<section aria-label="Park of the Day">

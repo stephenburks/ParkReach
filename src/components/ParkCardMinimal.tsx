@@ -18,7 +18,7 @@ function ParkCardMinimal({ park, onSelect }: Props) {
 
 	return (
 		<div
-			className="flex items-center gap-4 px-5 py-4 bg-white dark:bg-stone-800 rounded-xl hover:bg-stone-50 dark:hover:bg-stone-700/70 transition-colors cursor-pointer shadow-sm border border-stone-100 dark:border-stone-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-park-forest"
+			className="flex items-center gap-4 px-5 py-4 bg-white dark:bg-stone-800 rounded-xl hover:bg-stone-50 dark:hover:bg-stone-700/70 transition-colors cursor-pointer shadow-sm border border-stone-200 dark:border-stone-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-park-forest"
 			role="button"
 			tabIndex={0}
 			aria-label={`View details for ${park.fullName}`}

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { TripContent } from './TripContent'
 
 interface Props {
@@ -51,5 +52,9 @@ export default async function TripPage({ params }: Props) {
 
 	if (!trip) notFound()
 
-	return <TripContent tripId={tripId} />
+	return (
+		<ErrorBoundary>
+			<TripContent tripId={tripId} />
+		</ErrorBoundary>
+	)
 }

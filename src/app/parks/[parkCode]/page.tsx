@@ -18,6 +18,7 @@ import { Campgrounds } from "@/components/Campgrounds";
 import { VisitorCenters } from "@/components/VisitorCenters";
 import { HeaderControls } from "@/components/HeaderControls";
 import { NewsSection } from "@/components/NewsSection";
+import { SiteFooter } from "@/components/SiteFooter";
 import { Mountain } from "lucide-react";
 
 const BASE_URL = "https://parkreach.app";
@@ -149,7 +150,7 @@ function FeesSection({ park }: { park: Park }) {
         <h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">
           Entrance Fees
         </h2>
-        <p className="text-stone-600 dark:text-stone-400">Free to Visit</p>
+        <p className="text-stone-700 dark:text-stone-300">Free to Visit</p>
       </section>
     );
   }
@@ -167,7 +168,7 @@ function FeesSection({ park }: { park: Park }) {
             <p className="font-semibold text-park-bark dark:text-park-cream">
               {fee.title}
             </p>
-            <p className="text-stone-600 dark:text-stone-400">
+            <p className="text-stone-700 dark:text-stone-300">
               {fee.description}
             </p>
             <p className="text-park-forest font-semibold mt-1">
@@ -196,7 +197,7 @@ function HoursSection({ hours }: { hours: Park['operatingHours'] }) {
             {entry.name}
           </p>
           {entry.description && (
-            <p className="text-stone-600 dark:text-stone-400 mb-2">
+            <p className="text-stone-700 dark:text-stone-300 mb-2">
               {entry.description}
             </p>
           )}
@@ -205,7 +206,7 @@ function HoursSection({ hours }: { hours: Park['operatingHours'] }) {
               {Object.entries(entry.standardHours).map(([day, val]) => (
                 <div key={day} className="capitalize">
                   <span className="font-medium">{day}: </span>
-                  <span className="text-stone-600 dark:text-stone-400">
+                  <span className="text-stone-700 dark:text-stone-300">
                     {val}
                   </span>
                 </div>
@@ -402,6 +403,8 @@ return (
         <main id="main-content" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
           <ParkInfoGrid park={park} amenitiesAccessibility={amenitiesAccessibility} parkCode={parkCode} />
         </main>
+
+        <SiteFooter />
       </div>
     </>
   );

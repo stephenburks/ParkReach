@@ -22,7 +22,6 @@ export async function GET(request: NextRequest) {
 		const url = new URL('https://developer.nps.gov/api/v1/visitorcenters')
 		url.searchParams.set('parkCode', parkCode)
 		url.searchParams.set('limit', '50')
-		url.searchParams.set('api_key', apiKey)
 
 		const res = await fetch(url.toString(), {
 			headers: { 'X-Api-Key': apiKey },

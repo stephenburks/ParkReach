@@ -17,7 +17,6 @@ export async function GET(request: NextRequest) {
 	try {
 		const url = new URL('https://developer.nps.gov/api/v1/newsreleases')
 		url.searchParams.set('limit', '50')
-		url.searchParams.set('api_key', apiKey)
 		if (parkCode) {
 			url.searchParams.set('parkCode', parkCode)
 		}

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { ProfileContent } from './ProfileContent'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 
 export const metadata: Metadata = {
 	title: 'My Profile | ParkReach',
@@ -7,5 +8,9 @@ export const metadata: Metadata = {
 }
 
 export default function ProfilePage() {
-	return <ProfileContent />
+	return (
+		<ErrorBoundary>
+			<ProfileContent />
+		</ErrorBoundary>
+	)
 }

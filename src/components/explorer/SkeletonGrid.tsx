@@ -1,7 +1,7 @@
 export function SkeletonCard() {
 	return (
 		<div
-			className="bg-white dark:bg-stone-800 rounded-xl overflow-hidden shadow-sm border border-stone-100 dark:border-stone-700 animate-pulse"
+			className="bg-white dark:bg-stone-800 rounded-xl overflow-hidden shadow-sm border border-stone-200 dark:border-stone-700 motion-safe:animate-pulse"
 			aria-hidden="true"
 		>
 			<div className="h-52 bg-stone-200 dark:bg-stone-700" />

@@ -10,6 +10,7 @@ import { useTrips } from '@/hooks/useTrips'
 import { AuthButton } from '@/components/AuthButton'
 import { AuthModal } from '@/components/AuthModal'
 import { HeaderControls } from '@/components/HeaderControls'
+import { SiteFooter } from '@/components/SiteFooter'
 import Link from 'next/link'
 import type { Park } from '@/types/park'
 import type { Trip, TripPark } from '@/types/supabase'
@@ -154,7 +155,7 @@ export function ProfileContent() {
 		return (
 			<div className="min-h-screen bg-park-cream dark:bg-park-bark p-8">
 				<div className="max-w-4xl mx-auto">
-					<div className="animate-pulse space-y-4">
+					<div className="motion-safe:animate-pulse space-y-4">
 						<div className="flex items-center gap-4 mb-8">
 							<div className="w-16 h-16 rounded-full bg-stone-200 dark:bg-stone-700" />
 							<div className="space-y-2">
@@ -225,6 +226,8 @@ export function ProfileContent() {
           emptyMessage="No visited parks yet."
         />
       </main>
+
+      <SiteFooter />
     </div>
   )
 }

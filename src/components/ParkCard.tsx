@@ -20,7 +20,7 @@ function ParkCard({ park, onSelect }: Props) {
 
   return (
     <div
-      className="group relative bg-white dark:bg-stone-800 rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-stone-100 dark:border-stone-700 flex flex-col cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-park-forest"
+      className="group relative bg-white dark:bg-stone-800 rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-stone-200 dark:border-stone-700 flex flex-col cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-park-forest"
       role="button"
       tabIndex={0}
       aria-label={`View details for ${park.fullName}`}
@@ -73,7 +73,7 @@ function ParkCard({ park, onSelect }: Props) {
             {stateList}
           </p>
         )}
-        <p className="text-sm text-stone-600 dark:text-stone-300 leading-relaxed line-clamp-3 flex-1">
+        <p className="text-sm text-stone-700 dark:text-stone-300 leading-relaxed line-clamp-3 flex-1">
           {park.description}
         </p>
         <p className="text-xs text-park-sage dark:text-park-sage font-medium mt-3 group-hover:text-park-forest transition-colors">

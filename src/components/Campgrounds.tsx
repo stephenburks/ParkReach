@@ -8,7 +8,7 @@ function CampgroundsSkeleton() {
 	return (
 		<div className="grid gap-4 sm:grid-cols-2" aria-hidden="true">
 			{[1, 2].map((i) => (
-				<div key={i} className="h-48 animate-pulse rounded-lg bg-stone-200 dark:bg-stone-700" />
+				<div key={i} className="h-48 motion-safe:animate-pulse rounded-lg bg-stone-200 dark:bg-stone-700" />
 			))}
 		</div>
 	)
@@ -64,7 +64,7 @@ export function Campgrounds({ parkCode }: { parkCode: string }) {
 										{cg.name}
 									</h3>
 									{cg.description && (
-										<p className="mt-1 text-sm text-stone-600 dark:text-stone-400 line-clamp-2">
+										<p className="mt-1 text-sm text-stone-700 dark:text-stone-300 line-clamp-2">
 											{cg.description}
 										</p>
 									)}

@@ -17,7 +17,7 @@ function NewsSkeleton() {
 				{[1, 2, 3].map((i) => (
 					<div
 						key={i}
-						className="rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 p-4 animate-pulse"
+						className="rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 p-4 motion-safe:animate-pulse"
 					>
 						<div className="h-4 bg-stone-200 dark:bg-stone-700 rounded-full w-3/4 mb-3" />
 						<div className="h-3 bg-stone-100 dark:bg-stone-600 rounded-full w-1/3 mb-3" />
@@ -121,7 +121,7 @@ export function NewsSection({ parkCode }: { parkCode: string }) {
 								</p>
 							)}
 							{newsItem.abstract && (
-								<p className="mt-2 text-sm text-stone-600 dark:text-stone-400 line-clamp-3">
+								<p className="mt-2 text-sm text-stone-700 dark:text-stone-300 line-clamp-3">
 									{newsItem.abstract}
 								</p>
 							)}

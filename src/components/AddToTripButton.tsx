@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef, useState } from 'react'
+import { Check, Map, ChevronUp, ChevronDown } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { useTrips } from '@/hooks/useTrips'
 import type { Trip } from '@/types/supabase'
@@ -31,7 +32,7 @@ function TripListItem({ trip, inTrip, onToggle }: TripListItemProps) {
 					}`}
 					aria-hidden="true"
 				>
-					{inTrip ? '✓' : ''}
+					{inTrip ? <Check className="h-4 w-4" aria-hidden="true" /> : ''}
 				</span>
 				<span className="text-park-bark dark:text-park-cream">{trip.name}</span>
 			</button>
@@ -137,9 +138,9 @@ export function AddToTripButton({ parkCode }: Props) {
 				aria-expanded={expanded}
 				className="flex items-center gap-2 px-5 py-2.5 bg-park-cream dark:bg-stone-700 border border-stone-200 dark:border-stone-600 text-park-bark dark:text-park-cream font-semibold rounded-full text-sm transition-colors hover:bg-stone-100 dark:hover:bg-stone-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-park-forest focus-visible:ring-offset-2"
 			>
-				<span aria-hidden="true">🗺️</span>
+				<Map className="h-4 w-4" aria-hidden="true" />
 				{inCount > 0 ? `In ${inCount} trip${inCount > 1 ? 's' : ''}` : 'Add to Trip'}
-				<span className="ml-auto text-xs opacity-60" aria-hidden="true">{expanded ? '▲' : '▼'}</span>
+				{expanded ? <ChevronUp className="ml-auto h-4 w-4 opacity-60" aria-hidden="true" /> : <ChevronDown className="ml-auto h-4 w-4 opacity-60" aria-hidden="true" />}
 			</button>
 
 			{expanded && (

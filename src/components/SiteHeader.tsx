@@ -5,19 +5,26 @@ import { TreePine } from 'lucide-react'
 export function SiteHeader() {
 	return (
 		<header className="bg-park-forest text-white relative">
-			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 				<div className="flex items-center justify-between">
 					<Link
 						href="/"
-						className="flex items-center gap-3 hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-lg"
+						className="flex items-center gap-4 hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-lg"
 					>
 						<div
-							className="w-10 h-10 rounded-full bg-white/15 flex items-center justify-center flex-shrink-0"
+							className="w-14 h-14 rounded-full bg-white/15 flex items-center justify-center flex-shrink-0"
 							aria-hidden="true"
 						>
-							<TreePine className="h-5 w-5" />
+							<TreePine className="h-7 w-7" />
 						</div>
-						<span className="text-xl font-bold tracking-tight">ParkReach</span>
+						<div>
+							<h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
+								ParkReach
+							</h1>
+							<p className="text-park-cream/70 mt-1 text-sm sm:text-base">
+								Discover America&apos;s natural and cultural treasures
+							</p>
+						</div>
 					</Link>
 					<div className="flex items-center gap-2">
 						<HeaderControls />

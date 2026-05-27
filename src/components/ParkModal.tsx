@@ -197,7 +197,7 @@ export default function ParkModal({ park, onClose }: Props) {
               <h3 className="font-semibold text-park-bark dark:text-park-cream text-sm uppercase tracking-wider mb-2 flex items-center gap-2">
                 <CloudSun className="h-4 w-4" aria-hidden="true" /> Weather
               </h3>
-              <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">{park.weatherInfo}</p>
+              <p className="text-sm text-stone-700 dark:text-stone-300 leading-relaxed">{park.weatherInfo}</p>
             </section>
           )}
 

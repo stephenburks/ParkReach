@@ -45,10 +45,10 @@ export function WishlistButton({ parkCode, minimal = false }: Props) {
         size="sm"
         onClick={handleClick}
         disabled={savesLoading || isLoading}
-        className="h-8 w-8 p-0 rounded-full hover:bg-red-50"
+        className="h-8 w-8 p-0 rounded-full hover:bg-red-50 dark:hover:bg-red-950"
         aria-label={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
       >
-        <Heart className={`h-4 w-4 ${wishlisted ? 'fill-current text-red-500' : 'text-gray-600'}`} />
+        <Heart className={`h-4 w-4 ${wishlisted ? 'fill-current text-red-500' : 'text-stone-600 dark:text-stone-400'}`} />
       </Button>
     );
   }

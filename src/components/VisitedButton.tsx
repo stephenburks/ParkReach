@@ -45,13 +45,13 @@ export function VisitedButton({ parkCode, minimal = false }: Props) {
         size="sm"
         onClick={handleClick}
         disabled={savesLoading || isLoading}
-        className="h-8 w-8 p-0 rounded-full hover:bg-green-50"
+        className="h-8 w-8 p-0 rounded-full hover:bg-green-50 dark:hover:bg-green-950"
         aria-label={visited ? 'Mark as not visited' : 'Mark as visited'}
       >
         {visited ? (
           <CheckCircle className="h-4 w-4 fill-current text-green-500" />
         ) : (
-          <MapPin className="h-4 w-4 text-gray-600" />
+          <MapPin className="h-4 w-4 text-stone-600 dark:text-stone-400" />
         )}
       </Button>
     );

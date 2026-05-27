@@ -8,7 +8,7 @@ function ThingsToDoSkeleton() {
 	return (
 		<div className="grid gap-4 sm:grid-cols-2" aria-hidden="true">
 			{[1, 2, 3, 4].map((i) => (
-				<div key={i} className="h-32 animate-pulse rounded-lg bg-stone-200 dark:bg-stone-700" />
+				<div key={i} className="h-32 motion-safe:animate-pulse rounded-lg bg-stone-200 dark:bg-stone-700" />
 			))}
 		</div>
 	)
@@ -42,7 +42,7 @@ export function ThingsToDo({ parkCode }: { parkCode: string }) {
 						className="rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 p-4"
 					>
 						<h3 className="font-medium text-park-bark dark:text-park-cream">{thing.title}</h3>
-						<p className="mt-1 text-sm text-stone-600 dark:text-stone-400">
+						<p className="mt-1 text-sm text-stone-700 dark:text-stone-300">
 							{thing.shortDescription}
 						</p>
 						<div className="mt-3 flex flex-wrap gap-3 text-xs text-stone-500 dark:text-stone-400">
