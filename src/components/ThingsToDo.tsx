@@ -58,7 +58,7 @@ export function ThingsToDo({ parkCode }: { parkCode: string }) {
 									Fee required
 								</span>
 							)}
-							{thing.ages.length > 0 && (
+							{thing.ages?.length > 0 && (
 								<span className="flex items-center gap-1">
 									<User className="h-3 w-3" aria-hidden="true" />
 									{thing.ages.join(', ')}

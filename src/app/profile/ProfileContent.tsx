@@ -9,6 +9,7 @@ import { useProfile } from '@/hooks/useProfile'
 import { useTrips } from '@/hooks/useTrips'
 import { AuthButton } from '@/components/AuthButton'
 import { AuthModal } from '@/components/AuthModal'
+import { HeaderControls } from '@/components/HeaderControls'
 import Link from 'next/link'
 import type { Park } from '@/types/park'
 import type { Trip, TripPark } from '@/types/supabase'
@@ -32,7 +33,7 @@ function ParkRow({ parkCode, parkByCode }: ParkRowProps) {
 			</p>
 			{park?.states && (
 				<p className="text-xs text-park-stone dark:text-stone-400 mt-0.5">
-									<MapPin className="h-3 w-3 inline mr-1" aria-hidden="true" />{formatStates(park.states)}
+					<MapPin className="h-3 w-3 inline mr-1" aria-hidden="true" />{formatStates(park.states)}
 				</p>
 			)}
 			{park?.designation && (
@@ -191,7 +192,13 @@ export function ProfileContent() {
 
 	return (
 		<div className="min-h-screen bg-park-cream dark:bg-park-bark p-8">
-			<header className="max-w-4xl mx-auto mb-10 flex items-center gap-5">
+			<header className="max-w-4xl mx-auto mb-6 flex items-center justify-between">
+				<Link href="/" className="text-park-forest hover:underline text-sm font-medium">
+					← Back to Parks
+				</Link>
+				<HeaderControls />
+			</header>
+			<div className="max-w-4xl mx-auto mb-10 flex items-center gap-5">
 				<Avatar url={profile?.avatar_url ?? null} name={displayName} />
 				<div>
 					<h1 className="text-3xl font-bold text-park-bark dark:text-park-cream">{displayName}</h1>
@@ -199,7 +206,7 @@ export function ProfileContent() {
 						<p className="text-sm text-stone-500 dark:text-stone-400 mt-0.5">{user.email}</p>
 					)}
 				</div>
-			</header>
+			</div>
 
 			<TripsSection trips={trips} tripParks={tripParks} />
 

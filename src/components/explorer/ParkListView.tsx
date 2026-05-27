@@ -9,7 +9,7 @@ interface ParkListViewProps {
 export function ParkListView({ parks, onParkSelect }: ParkListViewProps) {
 	return (
 		<ul
-			className="divide-y divide-stone-100 dark:divide-stone-700"
+			className="space-y-3"
 			role="list"
 		>
 			{parks.map((park) => (

@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useTrips } from '@/hooks/useTrips'
 import { useParksByCode } from '@/hooks/useParksByCode'
+import { HeaderControls } from '@/components/HeaderControls'
 import type { Park } from '@/types/park'
 
 interface Props {
@@ -106,11 +107,12 @@ export function TripContent({ tripId }: Props) {
 	return (
 		<div className="min-h-screen bg-park-cream dark:bg-park-bark p-8">
 			<div className="max-w-2xl mx-auto">
-				<nav className="mb-6">
+				<div className="mb-6 flex items-center justify-between">
 					<Link href="/profile" className="text-sm text-park-forest hover:underline">
 						← My Profile
 					</Link>
-				</nav>
+					<HeaderControls />
+				</div>
 
 				<header className="mb-8">
 					{editing ? (

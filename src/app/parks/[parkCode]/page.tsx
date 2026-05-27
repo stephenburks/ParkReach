@@ -6,7 +6,6 @@ import type { Park } from "@/types/park";
 import { fetchPark } from "@/lib/nps";
 import { formatStates } from "@/components/park-card-utils";
 
-import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { WishlistButton } from "@/components/WishlistButton";
 import { VisitedButton } from "@/components/VisitedButton";
 import { AccessibilityInfo } from "@/components/AccessibilityInfo";
@@ -14,6 +13,7 @@ import { WeatherWidget } from "@/components/WeatherWidget";
 import { DistanceBadge } from "@/components/DistanceBadge";
 import { AlertBanner } from "@/components/AlertBanner";
 import { ThingsToDo } from "@/components/ThingsToDo";
+import { HeaderControls } from "@/components/HeaderControls";
 import { Mountain } from "lucide-react";
 
 const BASE_URL = "https://parkreach.app";
@@ -371,7 +371,7 @@ return (
       />
       <div className="min-h-screen bg-park-cream dark:bg-park-bark">
         <header className="bg-park-forest text-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center justify-between">
               <Link
                 href="/"
@@ -379,13 +379,15 @@ return (
               >
                 ← Back to Parks
               </Link>
-              <DarkModeToggle />
+              <HeaderControls />
             </div>
           </div>
         </header>
 
         <ParkHero park={park} states={states} />
-        <AlertBanner parkCode={park.parkCode} />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <AlertBanner parkCode={park.parkCode} />
+        </div>
         <ParkActions parkCode={park.parkCode} npsUrl={park.url} />
 
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
