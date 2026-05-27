@@ -115,7 +115,6 @@ export function ParkMap({ parks, onParkSelect }: Props) {
 					defaultZoom={DEFAULT_ZOOM}
 					gestureHandling="greedy"
 					disableDefaultUI={false}
-					mapId={process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID ?? ''}
 				>
 					<ClusteredPins parks={parks} onParkSelect={onParkSelect} />
 				</Map>
