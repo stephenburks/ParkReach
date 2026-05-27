@@ -13,6 +13,7 @@ import Link from 'next/link'
 import type { Park } from '@/types/park'
 import type { Trip, TripPark } from '@/types/supabase'
 import { formatStates } from '@/components/park-card-utils'
+import { MapPin } from 'lucide-react'
 
 interface ParkRowProps {
 	parkCode: string
@@ -31,7 +32,7 @@ function ParkRow({ parkCode, parkByCode }: ParkRowProps) {
 			</p>
 			{park?.states && (
 				<p className="text-xs text-park-stone dark:text-stone-400 mt-0.5">
-					📍 {formatStates(park.states)}
+									<MapPin className="h-3 w-3 inline mr-1" aria-hidden="true" />{formatStates(park.states)}
 				</p>
 			)}
 			{park?.designation && (

@@ -1,5 +1,7 @@
 'use client';
 
+import { Search } from 'lucide-react';
+
 const US_STATES = [
   { code: 'AL', name: 'Alabama' },
   { code: 'AK', name: 'Alaska' },
@@ -104,12 +106,7 @@ export default function SearchFilter({
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
             <label htmlFor="park-search" className="sr-only">Search parks</label>
-            <span
-              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-park-stone dark:text-stone-400 text-sm"
-              aria-hidden="true"
-            >
-              🔍
-            </span>
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-park-stone dark:text-stone-400" aria-hidden="true" />
             <input
               id="park-search"
               type="search"

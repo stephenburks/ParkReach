@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import { Sun, MapPin } from 'lucide-react'
 import type { Park } from '@/types/park'
 
 const NPS_BASE = 'https://developer.nps.gov/api/v1/parks'
@@ -67,14 +68,14 @@ export async function ParkOfTheDay() {
 				<div className="absolute inset-0 flex flex-col justify-end">
 					<div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pb-6 sm:pb-10">
 						<span className="inline-flex items-center gap-1.5 text-xs font-semibold text-white/90 bg-park-forest/80 backdrop-blur-sm px-3 py-1 rounded-full w-fit mb-3">
-							<span aria-hidden="true">🌄</span> Park of the Day
+							<Sun className="h-3.5 w-3.5" aria-hidden="true" /> Park of the Day
 						</span>
 						<h2 className="text-2xl sm:text-4xl font-bold text-white leading-tight mb-1">
 							{park.fullName}
 						</h2>
 						{states && (
 							<p className="text-sm text-white/70 mb-3">
-								<span aria-hidden="true">📍</span> {states}
+								<MapPin className="h-3.5 w-3.5 inline mr-1" aria-hidden="true" />{states}
 							</p>
 						)}
 						<p className="text-sm sm:text-base text-white/80 line-clamp-2 mb-5 max-w-2xl">

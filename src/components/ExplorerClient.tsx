@@ -2,7 +2,7 @@
 
 import type { ComponentType } from "react";
 import dynamic from "next/dynamic";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useEffect, useRef } from "react";
 import {
   useQueryState,
   parseAsString,
@@ -17,6 +17,7 @@ import SearchFilter from "@/components/SearchFilter";
 import { useParks } from "@/hooks/useParks";
 import { ViewToggle } from "@/components/ViewToggle";
 import { useAuth } from "@/context/AuthContext";
+import { Search, AlertTriangle } from "lucide-react";
 
 interface ParkMapProps {
   parks: Park[];
@@ -109,9 +110,7 @@ function BackgroundLoadingIndicator({
 function EmptyState() {
   return (
     <div className="text-center py-16">
-      <p className="text-5xl mb-4" aria-hidden="true">
-        🔭
-      </p>
+      <Search className="h-12 w-12 mx-auto mb-4 opacity-30 text-park-stone" aria-hidden="true" />
       <p className="text-park-bark dark:text-park-cream font-semibold text-lg mb-2">
         No places found
       </p>
@@ -129,9 +128,7 @@ interface ErrorStateProps {
 function ErrorState({ message }: ErrorStateProps) {
   return (
     <div className="text-center py-16">
-      <p className="text-5xl mb-4" aria-hidden="true">
-        ⛺
-      </p>
+      <AlertTriangle className="h-12 w-12 mx-auto mb-4 opacity-30 text-park-stone" aria-hidden="true" />
       <p className="text-park-bark dark:text-park-cream font-semibold text-lg mb-2">
         Something went wrong
       </p>
@@ -187,6 +184,7 @@ export function ExplorerClient({ defaultView = "cards" }: ExplorerClientProps) {
   );
 
   const [selectedPark, setSelectedPark] = useQueryState("park");
+  const resultsRef = useRef<HTMLDivElement>(null);
 
   const handleSelectPark = useCallback(
     (park: Park) => setSelectedPark(park.parkCode),
@@ -203,6 +201,20 @@ export function ExplorerClient({ defaultView = "cards" }: ExplorerClientProps) {
     ? (parks.find((park) => park.parkCode === selectedPark) ?? null)
     : null;
 
+  useEffect(() => {
+    if (!isLoading && !isBackgroundLoading && resultsRef.current) {
+      const firstResult = resultsRef.current.querySelector('li, [role="listitem"]')
+      if (firstResult instanceof HTMLElement) {
+        firstResult.focus()
+      }
+    }
+  }, [view, isLoading, isBackgroundLoading])
+
+  const viewLabel = view === "cards" ? "card" : view === "minimal" ? "list" : "map";
+  const viewAnnouncement = parks.length > 0
+    ? `Showing ${parks.length} parks in ${viewLabel} view`
+    : ''
+
   const countText =
     total > 0
       ? isBackgroundLoading
@@ -214,9 +226,10 @@ export function ExplorerClient({ defaultView = "cards" }: ExplorerClientProps) {
 
   return (
     <>
-      <main
+      <      main
         id="main-content"
         className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+        ref={resultsRef}
       >
         <SearchFilter
           search={search}
@@ -275,12 +288,12 @@ export function ExplorerClient({ defaultView = "cards" }: ExplorerClientProps) {
             )}
             {view === "map" && (
               <>
-                <a
-                  href="#main-content"
+                <button
+                  onClick={() => setView("minimal")}
                   className="text-xs text-park-forest hover:underline mb-2 inline-block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-park-forest"
                 >
-                  Skip map, view as list
-                </a>
+                  View as list
+                </button>
                 <ParkMap
                   parks={parks}
                   onParkSelect={handleSelectPark}
@@ -302,6 +315,10 @@ export function ExplorerClient({ defaultView = "cards" }: ExplorerClientProps) {
 
       <p className="sr-only" aria-live="polite" role="status">
         {loadComplete ? `All ${parks.length} ${formatPlaceType(designation)} loaded.` : ''}
+      </p>
+
+      <p className="sr-only" aria-live="polite" role="status">
+        {viewAnnouncement}
       </p>
 
       {selectedParkData && (

@@ -7,6 +7,7 @@ import { WishlistButton } from './WishlistButton';
 import { VisitedButton } from './VisitedButton';
 import { AlertBadge } from './AlertBadge';
 import { handleCardKeyDown, formatStates } from './park-card-utils';
+import { Mountain, MapPin } from 'lucide-react';
 
 interface Props {
   park: Park;
@@ -37,7 +38,7 @@ function ParkCard({ park, onSelect }: Props) {
           />
         ) : (
           <div className="flex items-center justify-center h-full">
-            <span className="text-7xl opacity-20 select-none">🏔️</span>
+            <Mountain className="h-16 w-16 text-white/20" aria-hidden="true" />
           </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
@@ -68,7 +69,7 @@ function ParkCard({ park, onSelect }: Props) {
         </div>
         {stateList && (
           <p className="text-xs text-park-stone dark:text-stone-400 mb-3 flex items-center gap-1">
-            <span aria-hidden="true">📍</span>
+            <MapPin className="h-3.5 w-3.5" aria-hidden="true" />
             {stateList}
           </p>
         )}

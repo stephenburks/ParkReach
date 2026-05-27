@@ -14,6 +14,7 @@ import { WeatherWidget } from "@/components/WeatherWidget";
 import { DistanceBadge } from "@/components/DistanceBadge";
 import { AlertBanner } from "@/components/AlertBanner";
 import { ThingsToDo } from "@/components/ThingsToDo";
+import { Mountain } from "lucide-react";
 
 const BASE_URL = "https://parkreach.app";
 
@@ -90,9 +91,7 @@ function ParkHero({ park, states }: ParkHeroProps) {
         />
       ) : (
         <div className="flex items-center justify-center h-full bg-park-forest">
-          <span className="text-9xl opacity-20" aria-hidden="true">
-            🏔️
-          </span>
+          <Mountain className="h-16 w-16 text-white/20" aria-hidden="true" />
         </div>
       )}
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />

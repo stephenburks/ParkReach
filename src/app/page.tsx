@@ -4,6 +4,7 @@ import { ParkOfTheDay } from "@/components/ParkOfTheDay";
 import { ExplorerClient } from "@/components/ExplorerClient";
 import { HeaderControls } from "@/components/HeaderControls";
 import { createClient } from "@/lib/supabase/server";
+import { TreePine } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "ParkReach — Discover America's National Parks",
@@ -47,10 +48,10 @@ export default async function Home() {
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center gap-4 hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-lg">
               <div
-                className="w-14 h-14 rounded-full bg-white/15 flex items-center justify-center text-3xl flex-shrink-0"
+                className="w-14 h-14 rounded-full bg-white/15 flex items-center justify-center flex-shrink-0"
                 aria-hidden="true"
               >
-                🏕️
+                <TreePine className="h-7 w-7" />
               </div>
               <div>
                 <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">

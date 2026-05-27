@@ -7,6 +7,7 @@ import { WishlistButton } from '@/components/WishlistButton';
 import { VisitedButton } from '@/components/VisitedButton';
 import { AddToTripButton } from '@/components/AddToTripButton';
 import { useFocusTrap } from '@/hooks/useFocusTrap';
+import { MapPin, Activity, Clock, Ticket, CloudSun, BadgeCheck, X } from 'lucide-react';
 
 interface Props {
   park: Park;
@@ -75,10 +76,10 @@ export default function ParkModal({ park, onClose }: Props) {
           <button
             ref={closeBtnRef}
             onClick={onClose}
-            className="absolute top-4 right-4 bg-black/40 hover:bg-black/70 text-white rounded-full w-10 h-10 flex items-center justify-center transition-colors text-lg font-medium"
+            className="absolute top-4 right-4 bg-black/40 hover:bg-black/70 text-white rounded-full w-10 h-10 flex items-center justify-center transition-colors"
             aria-label="Close modal"
           >
-            ✕
+            <X className="h-5 w-5" />
           </button>
 
           <a
@@ -98,7 +99,7 @@ export default function ParkModal({ park, onClose }: Props) {
               {park.fullName}
             </h2>
             {stateList && (
-              <p className="text-white/80 text-sm mt-1"><span aria-hidden="true">📍</span> {stateList}</p>
+              <p className="text-white/80 text-sm mt-1"><MapPin className="h-3.5 w-3.5 inline mr-1" aria-hidden="true" />{stateList}</p>
             )}
           </div>
         </div>
@@ -117,7 +118,7 @@ export default function ParkModal({ park, onClose }: Props) {
           {topActivities.length > 0 && (
             <section>
               <h3 className="font-semibold text-park-bark dark:text-park-cream text-sm uppercase tracking-wider mb-3 flex items-center gap-2">
-                <span aria-hidden="true">🥾</span> Activities
+                <Activity className="h-4 w-4" aria-hidden="true" /> Activities
               </h3>
               <div className="flex flex-wrap gap-2">
                 {topActivities.map((activity) => (
@@ -135,7 +136,7 @@ export default function ParkModal({ park, onClose }: Props) {
           {hasHours && (
             <section>
               <h3 className="font-semibold text-park-bark dark:text-park-cream text-sm uppercase tracking-wider mb-3 flex items-center gap-2">
-                <span aria-hidden="true">🕐</span> Operating Hours
+                <Clock className="h-4 w-4" aria-hidden="true" /> Operating Hours
               </h3>
               {park.operatingHours.slice(0, 1).map((hours, index) => (
                 <div key={index} className="bg-white dark:bg-stone-700 rounded-xl p-4 shadow-sm">
@@ -163,7 +164,7 @@ export default function ParkModal({ park, onClose }: Props) {
           {hasFees ? (
             <section>
               <h3 className="font-semibold text-park-bark dark:text-park-cream text-sm uppercase tracking-wider mb-3 flex items-center gap-2">
-                <span aria-hidden="true">🎟️</span> Entrance Fees
+                <Ticket className="h-4 w-4" aria-hidden="true" /> Entrance Fees
               </h3>
               <div className="space-y-2">
                 {park.entranceFees.map((fee, index) => (
@@ -183,7 +184,7 @@ export default function ParkModal({ park, onClose }: Props) {
             </section>
           ) : (
             <div className="bg-park-sage/10 border border-park-sage/30 dark:border-park-sage/50 rounded-xl p-4 flex items-center gap-3">
-              <span className="text-2xl" aria-hidden="true">🆓</span>
+              <span className="text-2xl" aria-hidden="true"><BadgeCheck className="h-6 w-6 text-park-forest" /></span>
               <div>
                 <p className="font-semibold text-park-bark dark:text-park-cream text-sm">Free to Visit</p>
                 <p className="text-xs text-stone-500 dark:text-stone-400">No entrance fee for this park</p>
@@ -194,7 +195,7 @@ export default function ParkModal({ park, onClose }: Props) {
           {park.weatherInfo && (
             <section>
               <h3 className="font-semibold text-park-bark dark:text-park-cream text-sm uppercase tracking-wider mb-2 flex items-center gap-2">
-                <span aria-hidden="true">🌤️</span> Weather
+                <CloudSun className="h-4 w-4" aria-hidden="true" /> Weather
               </h3>
               <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">{park.weatherInfo}</p>
             </section>

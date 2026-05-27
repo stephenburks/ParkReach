@@ -6,6 +6,7 @@ import { WishlistButton } from './WishlistButton'
 import { VisitedButton } from './VisitedButton'
 import { AlertBadge } from './AlertBadge'
 import { handleCardKeyDown, formatStates } from './park-card-utils'
+import { MapPin } from 'lucide-react'
 
 interface Props {
 	park: Park
@@ -38,7 +39,7 @@ function ParkCardMinimal({ park, onSelect }: Props) {
 				</div>
 				{stateList && (
 					<p className="text-xs text-park-stone dark:text-stone-400 truncate">
-						<span aria-hidden="true">📍</span> {stateList}
+						<MapPin className="h-3 w-3 inline mr-1" aria-hidden="true" />{stateList}
 					</p>
 				)}
 			</div>
