@@ -17,9 +17,16 @@ export function MagicLinkForm({ onSent, inputId = 'magic-link-email' }: MagicLin
 
 	const { supabase } = useAuth()
 
+	const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+
 	const handleSubmit = async (event: React.FormEvent) => {
 		event.preventDefault()
 		if (!email) return
+
+		if (!isValidEmail(email)) {
+			setError('Please enter a valid email address.')
+			return
+		}
 
 		if (!supabase) return
 

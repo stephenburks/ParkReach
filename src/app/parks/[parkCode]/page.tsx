@@ -13,6 +13,9 @@ import { WeatherWidget } from "@/components/WeatherWidget";
 import { DistanceBadge } from "@/components/DistanceBadge";
 import { AlertBanner } from "@/components/AlertBanner";
 import { ThingsToDo } from "@/components/ThingsToDo";
+import { UpcomingEvents } from "@/components/UpcomingEvents";
+import { Campgrounds } from "@/components/Campgrounds";
+import { VisitorCenters } from "@/components/VisitorCenters";
 import { HeaderControls } from "@/components/HeaderControls";
 import { Mountain } from "lucide-react";
 
@@ -272,27 +275,31 @@ function ParkInfoGrid({ park, amenitiesAccessibility, parkCode }: ParkInfoGridPr
 
       <FeesSection park={park} />
       <HoursSection hours={park.operatingHours} />
-      <ThingsToDo parkCode={parkCode} />
+		<ThingsToDo parkCode={parkCode} />
 
-      {park.activities?.length > 0 && (
-        <section>
-          <h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">
-            Activities
-          </h2>
-          <div className="flex flex-wrap gap-2">
-            {park.activities.map((activity) => (
-              <span
-                key={activity.id}
-                className="bg-park-sage/20 text-park-bark dark:text-park-cream px-3 py-1 rounded-full text-sm"
-              >
-                {activity.name}
-              </span>
-            ))}
-          </div>
-        </section>
-      )}
+			{park.activities?.length > 0 && (
+				<section>
+					<h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">
+						Activities
+					</h2>
+					<div className="flex flex-wrap gap-2">
+						{park.activities.map((activity) => (
+							<span
+								key={activity.id}
+								className="bg-park-sage/20 text-park-bark dark:text-park-cream px-3 py-1 rounded-full text-sm"
+							>
+								{activity.name}
+							</span>
+						))}
+					</div>
+				</section>
+			)}
 
-      {park.topics?.length > 0 && (
+			<UpcomingEvents parkCode={parkCode} />
+			<Campgrounds parkCode={parkCode} />
+			<VisitorCenters parkCode={parkCode} />
+
+			{park.topics?.length > 0 && (
         <section>
           <h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">
             Topics

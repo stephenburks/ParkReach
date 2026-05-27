@@ -28,10 +28,10 @@ function normalizeDesignation(str: string): string {
 
 function filterByDesignation(parks: Park[], designation: string): Park[] {
 	if (!designation || designation === 'All') return parks
-	const normalized = normalizeDesignation(designation)
+	const normalized = normalizeDesignation(designation).replace(/s$/, '')
 	return parks.filter((park) => {
 		const parkDesignation = normalizeDesignation(park.designation ?? '')
-		return parkDesignation.includes(normalized) || normalized.includes(parkDesignation)
+		return parkDesignation === normalized
 	})
 }
 

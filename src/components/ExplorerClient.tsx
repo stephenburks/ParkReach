@@ -1,7 +1,5 @@
 "use client";
 
-import type { ComponentType } from "react";
-import dynamic from "next/dynamic";
 import { useCallback, useMemo, useEffect, useRef } from "react";
 import {
   useQueryState,
@@ -22,24 +20,7 @@ import { LoadingProgress } from "@/components/explorer/LoadingProgress";
 import { ParkGridView } from "@/components/explorer/ParkGridView";
 import { ParkListView } from "@/components/explorer/ParkListView";
 
-interface ParkMapProps {
-  parks: Park[];
-  onParkSelect: (park: Park) => void;
-}
-
-const ParkMap = dynamic(
-  () => import("@/components/ParkMap").then((m) => ({ default: m.ParkMap })),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="h-[600px] flex items-center justify-center bg-stone-100 dark:bg-stone-800 rounded-xl">
-        <p className="text-park-stone">Loading map…</p>
-      </div>
-    ),
-  },
-) as ComponentType<ParkMapProps>;
-
-const VIEW_OPTIONS = ["cards", "minimal", "map"] as const;
+const VIEW_OPTIONS = ["cards", "minimal"] as const;
 type ViewOption = typeof VIEW_OPTIONS[number];
 
 function formatPlaceType(desig: string): string {
@@ -115,7 +96,7 @@ export function ExplorerClient({ defaultView = "cards" }: ExplorerClientProps) {
     }
   }, [view, isLoading, isBackgroundLoading])
 
-  const viewLabel = view === "cards" ? "card" : view === "minimal" ? "list" : "map";
+  const viewLabel = view === "cards" ? "card" : "list";
   const viewAnnouncement = parks.length > 0
     ? `Showing ${parks.length} parks in ${viewLabel} view`
     : ''
@@ -171,20 +152,6 @@ export function ExplorerClient({ defaultView = "cards" }: ExplorerClientProps) {
             )}
             {view === "minimal" && (
               <ParkListView parks={parks} onParkSelect={handleSelectPark} />
-            )}
-            {view === "map" && (
-              <>
-                <button
-                  onClick={() => setView("minimal")}
-                  className="text-xs text-park-forest hover:underline mb-2 inline-block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-park-forest"
-                >
-                  View as list
-                </button>
-                <ParkMap
-                  parks={parks}
-                  onParkSelect={handleSelectPark}
-                />
-              </>
             )}
 
             {isBackgroundLoading && (view === "cards" || view === "minimal") && (

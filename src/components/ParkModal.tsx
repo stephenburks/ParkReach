@@ -138,7 +138,7 @@ export default function ParkModal({ park, onClose }: Props) {
               <h3 className="font-semibold text-park-bark dark:text-park-cream text-sm uppercase tracking-wider mb-3 flex items-center gap-2">
                 <Clock className="h-4 w-4" aria-hidden="true" /> Operating Hours
               </h3>
-              {park.operatingHours.slice(0, 1).map((hours, index) => (
+              {park.operatingHours.map((hours, index) => (
                 <div key={index} className="bg-white dark:bg-stone-700 rounded-xl p-4 shadow-sm">
                   {hours.name && (
                     <p className="text-sm font-semibold text-park-bark dark:text-park-cream mb-2">{hours.name}</p>

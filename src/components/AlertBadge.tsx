@@ -23,8 +23,8 @@ function AlertBadgeContent({ alerts }: { alerts: NpsAlert[] }) {
 	return (
 		<span
 			className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${categoryColor[highest.category]}`}
-			aria-label={`${alerts.length} active alert${alerts.length !== 1 ? 's' : ''}: ${highest.category}`}
 		>
+			<span className="sr-only">{alerts.length} active alert{alerts.length !== 1 ? 's' : ''}: </span>
 			{alerts.length > 1 ? `${alerts.length} alerts` : highest.category}
 		</span>
 	)

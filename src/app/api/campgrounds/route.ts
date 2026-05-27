@@ -19,14 +19,14 @@ export async function GET(request: NextRequest) {
 	}
 
 	try {
-		const url = new URL('https://developer.nps.gov/api/v1/alerts')
+		const url = new URL('https://developer.nps.gov/api/v1/campgrounds')
 		url.searchParams.set('parkCode', parkCode)
 		url.searchParams.set('limit', '50')
 		url.searchParams.set('api_key', apiKey)
 
 		const res = await fetch(url.toString(), {
 			headers: { 'X-Api-Key': apiKey },
-			next: { revalidate: 1800 },
+			next: { revalidate: 21600 },
 		})
 
 		if (!res.ok) {
@@ -34,10 +34,8 @@ export async function GET(request: NextRequest) {
 		}
 
 		const data = await res.json()
-		return NextResponse.json(data, {
-			headers: { 'Cache-Control': 'public, s-maxage=1800, stale-while-revalidate=1800' },
-		})
+		return NextResponse.json(data)
 	} catch {
-		return jsonError('Failed to fetch alerts.', 500)
+		return jsonError('Failed to fetch campgrounds.', 500)
 	}
 }

@@ -94,16 +94,23 @@ export function TripContent({ tripId }: Props) {
 		event.preventDefault()
 		if (!editName.trim()) return
 		setSaving(true)
-		await updateTrip(tripId, { name: editName.trim() })
-		setSaving(false)
-		setEditing(false)
+		try {
+			await updateTrip(tripId, { name: editName.trim() })
+			setEditing(false)
+		} finally {
+			setSaving(false)
+		}
 	}
 
 	const handleDelete = async () => {
 		if (!confirm(`Delete "${trip.name}"? This cannot be undone.`)) return
 		setDeleting(true)
-		await deleteTrip(tripId)
-		router.push('/profile')
+		try {
+			await deleteTrip(tripId)
+			router.push('/profile')
+		} finally {
+			setDeleting(false)
+		}
 	}
 
 	return (

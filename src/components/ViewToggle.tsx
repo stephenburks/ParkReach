@@ -1,9 +1,9 @@
 'use client';
 
-import { LayoutGrid, List, Map } from 'lucide-react';
+import { LayoutGrid, List } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-type ViewMode = 'cards' | 'minimal' | 'map';
+type ViewMode = 'cards' | 'minimal';
 
 interface ViewToggleProps {
 	view: ViewMode;
@@ -34,17 +34,6 @@ export function ViewToggle({ view, onChange }: ViewToggleProps) {
 			>
 				<List className="h-4 w-4 mr-1.5" />
 				<span className="text-xs">Minimal</span>
-			</Button>
-			<Button
-				variant={view === 'map' ? 'default' : 'ghost'}
-				size="sm"
-				onClick={() => onChange('map')}
-				aria-label="Map view"
-				aria-pressed={view === 'map'}
-				className={view === 'map' ? 'bg-park-forest text-white' : 'text-stone-600 dark:text-stone-400'}
-			>
-				<Map className="h-4 w-4 mr-1.5" />
-				<span className="text-xs">Map</span>
 			</Button>
 		</div>
 	);
