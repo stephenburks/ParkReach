@@ -68,8 +68,7 @@ describe('Accessibility — SearchFilter', () => {
 		onStateChange: () => {},
 		designation: 'All',
 		onDesignationChange: () => {},
-		accessibility: '',
-		onAccessibilityChange: () => {},
+		designations: ['All', 'National Park'],
 	}
 
 	it('has no axe violations with default state', async () => {

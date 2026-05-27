@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { headers } from 'next/headers';
 import { fetchPark } from '@/lib/nps';
 import { jsonError } from '@/lib/api-response';
 import { isValidParkCode } from '@/lib/validate-park-code';
+import { checkRateLimit } from '@/lib/rate-limit';
 
 function validateLat(lat: string): boolean {
   const num = parseFloat(lat);
@@ -18,6 +20,13 @@ export async function GET(
   { params }: { params: Promise<{ parkCode: string }> }
 ) {
   const { parkCode } = await params;
+  const headersList = await headers();
+  const ip = headersList.get('x-forwarded-for') ?? 'unknown';
+  const { allowed } = checkRateLimit(ip, 20, 60_000);
+  if (!allowed) {
+    return jsonError('Too many requests — please wait a moment.', 429);
+  }
+
   const url = new URL(request.url);
   const userLat = url.searchParams.get('lat');
   const userLon = url.searchParams.get('lon');

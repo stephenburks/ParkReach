@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { headers } from 'next/headers';
 import { fetchPark } from '@/lib/nps';
 import { jsonError } from '@/lib/api-response';
 import { isValidParkCode } from '@/lib/validate-park-code';
+import { checkRateLimit } from '@/lib/rate-limit';
 import type { NwsPoint, NwsForecast } from '@/types/weather';
 
 export async function GET(
@@ -12,6 +14,13 @@ export async function GET(
 
   if (!isValidParkCode(parkCode)) {
     return jsonError('Invalid park code.', 400);
+  }
+
+  const headersList = await headers();
+  const ip = headersList.get('x-forwarded-for') ?? 'unknown';
+  const { allowed } = checkRateLimit(ip, 30, 60_000);
+  if (!allowed) {
+    return jsonError('Too many requests — please wait a moment.', 429);
   }
 
   try {

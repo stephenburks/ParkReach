@@ -26,6 +26,7 @@ export async function GET(request: NextRequest) {
 	try {
 		const res = await fetch(`${NPS_BASE}?${params}`, {
 			headers: { 'X-Api-Key': apiKey },
+			next: { revalidate: 3600 },
 		})
 
 		if (!res.ok) {

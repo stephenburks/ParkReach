@@ -96,7 +96,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
             <div className="space-y-3">
               <div className="p-4 bg-stone-100 dark:bg-stone-700 rounded-lg">
                 <p className="text-sm text-stone-600 dark:text-stone-300">
-                  Check <strong>{sentEmail}</strong> for your magic link
+                  Check <strong>{sentEmail}</strong> for your sign-in link
                 </p>
               </div>
               <Button

@@ -59,7 +59,7 @@ const US_STATES = [
   { code: 'VI', name: 'U.S. Virgin Islands' },
 ];
 
-const DESIGNATIONS = [
+const FALLBACK_DESIGNATIONS = [
   'All',
   'National Parks',
   'National Monuments',
@@ -84,18 +84,8 @@ interface Props {
   onStateChange: (v: string) => void;
   designation: string;
   onDesignationChange: (v: string) => void;
-  accessibility: string;
-  onAccessibilityChange: (v: string) => void;
+  designations: string[];
 }
-
-const ACCESSIBILITY_OPTIONS = [
-  { value: '', label: 'All Accessibility' },
-  { value: 'accessible', label: 'Accessible Facilities' },
-  { value: 'audio', label: 'Audio Description' },
-  { value: 'braille', label: 'Braille' },
-  { value: 'sign language', label: 'Sign Language' },
-  { value: 'captioning', label: 'Video Captioning' },
-];
 
 export default function SearchFilter({
   search,
@@ -104,9 +94,9 @@ export default function SearchFilter({
   onStateChange,
   designation,
   onDesignationChange,
-  accessibility,
-  onAccessibilityChange,
+  designations,
 }: Props) {
+  const displayDesignations = designations.length > 1 ? designations : FALLBACK_DESIGNATIONS;
   return (
     <div className="sticky top-0 z-40 bg-park-cream/95 dark:bg-park-bark/95 backdrop-blur-md border-b border-stone-200 dark:border-stone-700 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-3">
@@ -136,31 +126,19 @@ export default function SearchFilter({
             onChange={(event) => onStateChange(event.target.value)}
             className="sm:w-52 px-3.5 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-800 text-park-bark dark:text-park-cream focus:outline-none focus:ring-2 focus:ring-park-sage focus:border-transparent text-sm shadow-sm appearance-none cursor-pointer"
           >
-            <option value="">All States & Territories</option>
+            <option value="">All States &amp; Territories</option>
             {US_STATES.map((state) => (
               <option key={state.code} value={state.code}>
                 {state.name}
               </option>
             ))}
           </select>
-          <label htmlFor="park-accessibility" className="sr-only">Filter by accessibility feature</label>
-          <select
-            id="park-accessibility"
-            value={accessibility}
-            onChange={(event) => onAccessibilityChange(event.target.value)}
-            className="sm:w-48 px-3.5 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-800 text-park-bark dark:text-park-cream focus:outline-none focus:ring-2 focus:ring-park-sage focus:border-transparent text-sm shadow-sm appearance-none cursor-pointer"
-          >
-            {ACCESSIBILITY_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
         </div>
 
         {/* Designation tabs */}
-        <div role="group" aria-label="Filter by designation" className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-          {DESIGNATIONS.map((desig) => (
+        <fieldset className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide border-0 p-0">
+          <legend className="sr-only">Filter by designation</legend>
+          {displayDesignations.map((desig) => (
             <button
               key={desig}
               onClick={() => onDesignationChange(desig)}
@@ -174,7 +152,10 @@ export default function SearchFilter({
               {formatDesignationLabel(desig)}
             </button>
           ))}
-        </div>
+        </fieldset>
+        <p className="text-xs text-park-stone dark:text-stone-500">
+          Accessibility information is available on each park&apos;s detail page.
+        </p>
       </div>
     </div>
   );

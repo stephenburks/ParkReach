@@ -166,10 +166,6 @@ export function ExplorerClient({ defaultView = "cards" }: ExplorerClientProps) {
     "desig",
     parseAsString.withDefault("All"),
   );
-  const [accessibility, setAccessibility] = useQueryState(
-    "acc",
-    parseAsString.withDefault(""),
-  );
 
   const safeDefault: ViewOption = VIEW_OPTIONS.includes(defaultView as ViewOption)
     ? (defaultView as ViewOption)
@@ -181,10 +177,10 @@ export function ExplorerClient({ defaultView = "cards" }: ExplorerClientProps) {
   const [view, setViewParam] = useQueryState("view", viewParser);
 
   const setView = useCallback(
-    (newView: ViewOption) => {
+    async (newView: ViewOption) => {
       setViewParam(newView);
       if (supabase && user) {
-        supabase.from("profiles").update({ default_view: newView }).eq("id", user.id);
+        await supabase.from("profiles").update({ default_view: newView }).eq("id", user.id);
       }
     },
     [setViewParam, supabase, user],
@@ -197,19 +193,11 @@ export function ExplorerClient({ defaultView = "cards" }: ExplorerClientProps) {
     [setSelectedPark],
   );
 
-  const { parks, total, isLoading, isBackgroundLoading, error } = useParks(
+  const { parks, total, isLoading, isBackgroundLoading, error, designations } = useParks(
     search,
     stateCode,
     designation,
   );
-
-  const visibleParks = accessibility
-    ? parks.filter((park) =>
-        park.activities?.some((activity) =>
-          activity.name.toLowerCase().includes(accessibility.toLowerCase())
-        ) ?? false
-      )
-    : parks;
 
   const selectedParkData = selectedPark
     ? (parks.find((park) => park.parkCode === selectedPark) ?? null)
@@ -218,8 +206,8 @@ export function ExplorerClient({ defaultView = "cards" }: ExplorerClientProps) {
   const countText =
     total > 0
       ? isBackgroundLoading
-        ? `Showing ${visibleParks.length} of ${total} ${formatPlaceType(designation)} — loading more…`
-        : `Showing ${visibleParks.length} ${formatPlaceType(designation)}`
+        ? `Showing ${parks.length} of ${total} ${formatPlaceType(designation)} — loading more…`
+        : `Showing ${parks.length} ${formatPlaceType(designation)}`
       : "No places found — try a different search";
 
   const loadComplete = !isLoading && !isBackgroundLoading && parks.length > 0;
@@ -237,8 +225,7 @@ export function ExplorerClient({ defaultView = "cards" }: ExplorerClientProps) {
           onStateChange={setStateCode}
           designation={designation}
           onDesignationChange={setDesignation}
-          accessibility={accessibility}
-          onAccessibilityChange={setAccessibility}
+          designations={designations}
         />
 
         <div className="flex items-center justify-between mb-6">
@@ -257,14 +244,14 @@ export function ExplorerClient({ defaultView = "cards" }: ExplorerClientProps) {
 
         {isLoading ? (
           <SkeletonGrid />
-        ) : visibleParks.length > 0 ? (
+        ) : parks.length > 0 ? (
           <>
             {view === "cards" && (
               <ul
                 className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
                 role="list"
               >
-                {visibleParks.map((park) => (
+                {parks.map((park) => (
                   <li key={park.id}>
                     <ParkCard park={park} onSelect={handleSelectPark} />
                   </li>
@@ -276,7 +263,7 @@ export function ExplorerClient({ defaultView = "cards" }: ExplorerClientProps) {
                 className="divide-y divide-stone-100 dark:divide-stone-700"
                 role="list"
               >
-                {visibleParks.map((park) => (
+                {parks.map((park) => (
                   <li key={park.id}>
                     <ParkCardMinimal
                       park={park}
@@ -295,7 +282,7 @@ export function ExplorerClient({ defaultView = "cards" }: ExplorerClientProps) {
                   Skip map, view as list
                 </a>
                 <ParkMap
-                  parks={visibleParks}
+                  parks={parks}
                   onParkSelect={handleSelectPark}
                 />
               </>
@@ -314,7 +301,7 @@ export function ExplorerClient({ defaultView = "cards" }: ExplorerClientProps) {
       </main>
 
       <p className="sr-only" aria-live="polite" role="status">
-        {loadComplete ? `All ${visibleParks.length} ${formatPlaceType(designation)} loaded.` : ''}
+        {loadComplete ? `All ${parks.length} ${formatPlaceType(designation)} loaded.` : ''}
       </p>
 
       {selectedParkData && (

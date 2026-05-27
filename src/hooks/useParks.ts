@@ -22,11 +22,25 @@ function buildParams(q: string, stateCode: string, limit: number): URLSearchPara
 	return params
 }
 
+function normalizeDesignation(str: string): string {
+	return str.toLowerCase().replace(/\s+/g, ' ').trim()
+}
+
 function filterByDesignation(parks: Park[], designation: string): Park[] {
-	if (!designation) return parks
-	return parks.filter(
-		(park) => park.designation?.toLowerCase() === designation.toLowerCase()
-	)
+	if (!designation || designation === 'All') return parks
+	const normalized = normalizeDesignation(designation)
+	return parks.filter((park) => {
+		const parkDesignation = normalizeDesignation(park.designation ?? '')
+		return parkDesignation.includes(normalized) || normalized.includes(parkDesignation)
+	})
+}
+
+function buildDesignationList(parks: Park[]): string[] {
+	const raw = parks
+		.map((p) => p.designation)
+		.filter((d): d is string => Boolean(d) && d.trim() !== '')
+	const unique = Array.from(new Set(raw)).sort()
+	return ['All', ...unique]
 }
 
 export function useParks(search: string, stateCode: string, designation: string) {
@@ -63,5 +77,9 @@ export function useParks(search: string, stateCode: string, designation: string)
 	const error = previewQuery.error ?? fullQuery.error
 	const isRefetching = previewQuery.isFetching && !previewQuery.isLoading
 
-	return { parks, total, isLoading, isBackgroundLoading, error, isRefetching }
+	const designations = fullQuery.isSuccess
+		? buildDesignationList(fullQuery.data.data)
+		: buildDesignationList(parks)
+
+	return { parks, total, isLoading, isBackgroundLoading, error, isRefetching, designations }
 }
