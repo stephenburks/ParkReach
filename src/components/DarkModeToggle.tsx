@@ -13,7 +13,7 @@ export function DarkModeToggle() {
       size="sm"
       onClick={toggle}
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-      className="text-white hover:bg-park-cream hover:text-park-bark dark:text-park-cream dark:hover:bg-park-bark dark:hover:text-park-cream"
+      className="text-park-bark hover:bg-stone-200 dark:text-park-cream dark:hover:bg-stone-700"
     >
       {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
     </Button>

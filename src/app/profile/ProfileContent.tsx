@@ -190,39 +190,41 @@ export function ProfileContent() {
 	const wishlisted = saves.filter((save) => save.wishlisted)
 	const visited = saves.filter((save) => save.visited)
 
-	return (
-		<div className="min-h-screen bg-park-cream dark:bg-park-bark p-8">
-			<header className="max-w-4xl mx-auto mb-6 flex items-center justify-between">
-				<Link href="/" className="text-park-forest hover:underline text-sm font-medium">
-					← Back to Parks
-				</Link>
-				<HeaderControls />
-			</header>
-			<div className="max-w-4xl mx-auto mb-10 flex items-center gap-5">
-				<Avatar url={profile?.avatar_url ?? null} name={displayName} />
-				<div>
-					<h1 className="text-3xl font-bold text-park-bark dark:text-park-cream">{displayName}</h1>
-					{profile?.display_name && (
-						<p className="text-sm text-stone-500 dark:text-stone-400 mt-0.5">{user.email}</p>
-					)}
-				</div>
-			</div>
+  return (
+    <div className="min-h-screen bg-park-cream dark:bg-park-bark p-8">
+      <header className="max-w-4xl mx-auto mb-6 flex items-center justify-between">
+        <Link href="/" className="text-park-forest hover:underline text-sm font-medium">
+          ← Back to Parks
+        </Link>
+        <HeaderControls />
+      </header>
+      <main id="main-content" className="max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto mb-10 flex items-center gap-5">
+          <Avatar url={profile?.avatar_url ?? null} name={displayName} />
+          <div>
+            <h1 className="text-3xl font-bold text-park-bark dark:text-park-cream">{displayName}</h1>
+            {profile?.display_name && (
+              <p className="text-sm text-stone-500 dark:text-stone-400 mt-0.5">{user.email}</p>
+            )}
+          </div>
+        </div>
 
-			<TripsSection trips={trips} tripParks={tripParks} />
+        <TripsSection trips={trips} tripParks={tripParks} />
 
-			<SavedParkSection
-				title="Wishlist"
-				saves={wishlisted}
-				parkByCode={parkByCode}
-				emptyMessage="No wishlisted parks yet."
-			/>
+        <SavedParkSection
+          title="Wishlist"
+          saves={wishlisted}
+          parkByCode={parkByCode}
+          emptyMessage="No wishlisted parks yet."
+        />
 
-			<SavedParkSection
-				title="Visited"
-				saves={visited}
-				parkByCode={parkByCode}
-				emptyMessage="No visited parks yet."
-			/>
-		</div>
-	)
+        <SavedParkSection
+          title="Visited"
+          saves={visited}
+          parkByCode={parkByCode}
+          emptyMessage="No visited parks yet."
+        />
+      </main>
+    </div>
+  )
 }

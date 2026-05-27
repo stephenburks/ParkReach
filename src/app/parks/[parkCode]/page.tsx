@@ -17,6 +17,7 @@ import { UpcomingEvents } from "@/components/UpcomingEvents";
 import { Campgrounds } from "@/components/Campgrounds";
 import { VisitorCenters } from "@/components/VisitorCenters";
 import { HeaderControls } from "@/components/HeaderControls";
+import { NewsSection } from "@/components/NewsSection";
 import { Mountain } from "lucide-react";
 
 const BASE_URL = "https://parkreach.app";
@@ -298,6 +299,7 @@ function ParkInfoGrid({ park, amenitiesAccessibility, parkCode }: ParkInfoGridPr
 			<UpcomingEvents parkCode={parkCode} />
 			<Campgrounds parkCode={parkCode} />
 			<VisitorCenters parkCode={parkCode} />
+			<NewsSection parkCode={parkCode} />
 
 			{park.topics?.length > 0 && (
         <section>

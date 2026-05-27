@@ -115,7 +115,7 @@ export function TripContent({ tripId }: Props) {
 
 	return (
 		<div className="min-h-screen bg-park-cream dark:bg-park-bark p-8">
-			<div className="max-w-2xl mx-auto">
+			<main id="main-content" className="max-w-2xl mx-auto">
 				<div className="mb-6 flex items-center justify-between">
 					<Link href="/profile" className="text-sm text-park-forest hover:underline">
 						← My Profile
@@ -204,7 +204,7 @@ export function TripContent({ tripId }: Props) {
 						</Link>
 					</div>
 				)}
-			</div>
+			</main>
 		</div>
 	)
 }
