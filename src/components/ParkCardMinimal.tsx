@@ -4,6 +4,7 @@ import { memo } from 'react'
 import { Park } from '@/types/park'
 import { WishlistButton } from './WishlistButton'
 import { VisitedButton } from './VisitedButton'
+import { AlertBadge } from './AlertBadge'
 import { handleCardKeyDown, formatStates } from './park-card-utils'
 
 interface Props {
@@ -28,6 +29,7 @@ function ParkCardMinimal({ park, onSelect }: Props) {
 					<span className="font-semibold text-[15px] text-park-bark dark:text-park-cream truncate">
 						{park.fullName}
 					</span>
+					<AlertBadge parkCode={park.parkCode} />
 					{park.designation && (
 						<span className="shrink-0 text-[10px] font-medium bg-park-forest/10 text-park-forest px-2 py-0.5 rounded-full">
 							{park.designation}

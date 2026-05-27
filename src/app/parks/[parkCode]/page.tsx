@@ -12,6 +12,8 @@ import { VisitedButton } from "@/components/VisitedButton";
 import { AccessibilityInfo } from "@/components/AccessibilityInfo";
 import { WeatherWidget } from "@/components/WeatherWidget";
 import { DistanceBadge } from "@/components/DistanceBadge";
+import { AlertBanner } from "@/components/AlertBanner";
+import { ThingsToDo } from "@/components/ThingsToDo";
 
 const BASE_URL = "https://parkreach.app";
 
@@ -216,9 +218,10 @@ function HoursSection({ hours }: { hours: Park['operatingHours'] }) {
 interface ParkInfoGridProps {
   park: Park;
   amenitiesAccessibility: string | null;
+  parkCode: string;
 }
 
-function ParkInfoGrid({ park, amenitiesAccessibility }: ParkInfoGridProps) {
+function ParkInfoGrid({ park, amenitiesAccessibility, parkCode }: ParkInfoGridProps) {
   return (
     <div className="space-y-8">
       <section>
@@ -270,6 +273,7 @@ function ParkInfoGrid({ park, amenitiesAccessibility }: ParkInfoGridProps) {
 
       <FeesSection park={park} />
       <HoursSection hours={park.operatingHours} />
+      <ThingsToDo parkCode={parkCode} />
 
       {park.activities?.length > 0 && (
         <section>
@@ -382,10 +386,11 @@ return (
         </header>
 
         <ParkHero park={park} states={states} />
+        <AlertBanner parkCode={park.parkCode} />
         <ParkActions parkCode={park.parkCode} npsUrl={park.url} />
 
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
-          <ParkInfoGrid park={park} amenitiesAccessibility={amenitiesAccessibility} />
+          <ParkInfoGrid park={park} amenitiesAccessibility={amenitiesAccessibility} parkCode={parkCode} />
         </main>
       </div>
     </>

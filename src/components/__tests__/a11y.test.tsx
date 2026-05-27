@@ -5,12 +5,18 @@
  * but all ARIA and label-association rules are enforced.
  */
 import { render } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import axe from 'axe-core'
 import ParkCard from '../ParkCard'
 import ParkCardMinimal from '../ParkCardMinimal'
 import SearchFilter from '../SearchFilter'
 import { ViewToggle } from '../ViewToggle'
 import type { Park } from '@/types/park'
+
+const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } })
+function Wrapper({ children }: { children: React.ReactNode }) {
+	return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+}
 
 const AXE_OPTIONS: axe.RunOptions = {
 	rules: {
@@ -48,14 +54,14 @@ const mockPark: Park = {
 
 describe('Accessibility — ParkCard', () => {
 	it('has no axe violations', async () => {
-		const { container } = render(<ParkCard park={mockPark} onSelect={() => {}} />)
+		const { container } = render(<ParkCard park={mockPark} onSelect={() => {}} />, { wrapper: Wrapper })
 		expect(await getViolations(container)).toHaveLength(0)
 	})
 })
 
 describe('Accessibility — ParkCardMinimal', () => {
 	it('has no axe violations', async () => {
-		const { container } = render(<ParkCardMinimal park={mockPark} onSelect={() => {}} />)
+		const { container } = render(<ParkCardMinimal park={mockPark} onSelect={() => {}} />, { wrapper: Wrapper })
 		expect(await getViolations(container)).toHaveLength(0)
 	})
 })
