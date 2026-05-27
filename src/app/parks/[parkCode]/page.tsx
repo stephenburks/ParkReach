@@ -390,7 +390,7 @@ return (
         </div>
         <ParkActions parkCode={park.parkCode} npsUrl={park.url} />
 
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+        <main id="main-content" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
           <ParkInfoGrid park={park} amenitiesAccessibility={amenitiesAccessibility} parkCode={parkCode} />
         </main>
       </div>

@@ -22,7 +22,7 @@ function ParkRow({
 	onRemove: () => void
 }) {
 	return (
-		<div className="flex items-center justify-between p-4 bg-white dark:bg-stone-800 rounded-lg group">
+		<div className="flex items-center justify-between p-4 bg-white dark:bg-stone-800 rounded-xl border border-stone-100 dark:border-stone-700 shadow-sm group">
 			<Link
 				href={`/parks/${parkCode}`}
 				className="flex-1 min-w-0 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-park-forest rounded"

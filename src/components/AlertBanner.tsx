@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { X } from 'lucide-react'
 import { useAlerts } from '@/hooks/useAlerts'
 import type { NpsAlert } from '@/types/alert'
@@ -22,20 +22,18 @@ export function AlertBanner({ parkCode }: { parkCode: string }) {
 	const sectionRef = useRef<HTMLElement>(null)
 
 	const dismissAlert = (alertId: string) => {
-		setDismissed((prev) => {
-			const next = new Set([...prev, alertId])
-			// After state settles, focus the next alert or the section itself
-			requestAnimationFrame(() => {
-				const nextAlert = sectionRef.current?.querySelector('[role="alert"]')
-				if (nextAlert instanceof HTMLElement) {
-					;(nextAlert.querySelector('button') as HTMLElement)?.focus()
-				} else {
-					sectionRef.current?.focus()
-				}
-			})
-			return next
-		})
+		setDismissed((prev) => new Set([...prev, alertId]))
 	}
+
+	useEffect(() => {
+		if (dismissed.size === 0) return
+		const nextAlert = sectionRef.current?.querySelector('[role="alert"]')
+		if (nextAlert instanceof HTMLElement) {
+			;(nextAlert.querySelector('button') as HTMLElement)?.focus()
+		} else {
+			sectionRef.current?.focus()
+		}
+	}, [dismissed])
 
 	const visibleAlerts = alerts.filter((a) => !dismissed.has(a.id))
 	if (visibleAlerts.length === 0) return null

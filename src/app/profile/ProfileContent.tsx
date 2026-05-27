@@ -91,7 +91,7 @@ function TripsSection({ trips, tripParks }: TripsSectionProps) {
 							<Link
 								key={trip.id}
 								href={`/trips/${trip.id}`}
-								className="block p-4 bg-white dark:bg-stone-800 rounded-lg hover:bg-stone-50 dark:hover:bg-stone-700 transition-colors"
+								className="block p-4 bg-white dark:bg-stone-800 rounded-xl border border-stone-100 dark:border-stone-700 shadow-sm hover:bg-stone-50 dark:hover:bg-stone-700 transition-colors"
 							>
 								<p className="font-medium text-park-bark dark:text-park-cream leading-snug">
 									{trip.name}
@@ -164,7 +164,7 @@ export function ProfileContent() {
 						</div>
 						<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 							{Array.from({ length: 6 }).map((_value, index) => (
-								<div key={index} className="bg-white dark:bg-stone-800 rounded-2xl h-24" />
+								<div key={index} className="bg-white dark:bg-stone-800 rounded-xl h-24" />
 							))}
 						</div>
 					</div>
