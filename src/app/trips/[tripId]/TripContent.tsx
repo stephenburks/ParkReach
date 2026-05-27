@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useTrips } from '@/hooks/useTrips'
 import { useParksByCode } from '@/hooks/useParksByCode'
 import { HeaderControls } from '@/components/HeaderControls'
@@ -45,6 +46,7 @@ function ParkRow({
 }
 
 export function TripContent({ tripId }: Props) {
+	const router = useRouter()
 	const { trips, tripParks, loading, deleteTrip, removeParkFromTrip, updateTrip } = useTrips()
 	const [editing, setEditing] = useState(false)
 	const [editName, setEditName] = useState('')
@@ -101,7 +103,7 @@ export function TripContent({ tripId }: Props) {
 		if (!confirm(`Delete "${trip.name}"? This cannot be undone.`)) return
 		setDeleting(true)
 		await deleteTrip(tripId)
-		window.location.href = '/profile'
+		router.push('/profile')
 	}
 
 	return (

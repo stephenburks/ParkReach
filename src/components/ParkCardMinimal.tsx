@@ -27,9 +27,9 @@ function ParkCardMinimal({ park, onSelect }: Props) {
 		>
 			<div className="flex-1 min-w-0">
 				<div className="flex items-center gap-2 mb-0.5">
-					<span className="font-semibold text-[15px] text-park-bark dark:text-park-cream truncate">
+					<h3 className="font-semibold text-[15px] text-park-bark dark:text-park-cream truncate">
 						{park.fullName}
-					</span>
+					</h3>
 					<AlertBadge parkCode={park.parkCode} />
 					{park.designation && (
 						<span className="shrink-0 text-[10px] font-medium bg-park-forest/10 text-park-forest px-2 py-0.5 rounded-full">

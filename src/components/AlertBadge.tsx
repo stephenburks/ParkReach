@@ -4,10 +4,10 @@ import { useAlerts } from '@/hooks/useAlerts'
 import type { NpsAlert } from '@/types/alert'
 
 const categoryColor: Record<NpsAlert['category'], string> = {
-	'Park Closure': 'bg-red-600 text-white',
-	Danger: 'bg-red-600 text-white',
-	Caution: 'bg-amber-500 text-white',
-	Information: 'bg-blue-500 text-white',
+	'Park Closure': 'bg-red-600 text-white dark:bg-red-950 dark:text-red-200',
+	Danger: 'bg-red-600 text-white dark:bg-red-950 dark:text-red-200',
+	Caution: 'bg-amber-500 text-white dark:bg-amber-950 dark:text-amber-200',
+	Information: 'bg-blue-500 text-white dark:bg-blue-950 dark:text-blue-200',
 }
 
 interface AlertBadgeProps {

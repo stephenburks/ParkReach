@@ -13,7 +13,7 @@ export function ParkListView({ parks, onParkSelect }: ParkListViewProps) {
 			role="list"
 		>
 			{parks.map((park) => (
-				<li key={park.id}>
+				<li key={park.id} tabIndex={-1}>
 					<ParkCardMinimal
 						park={park}
 						onSelect={onParkSelect}

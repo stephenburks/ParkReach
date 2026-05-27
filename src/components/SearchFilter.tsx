@@ -53,7 +53,7 @@ export default function SearchFilter({
             onChange={(event) => onStateChange(event.target.value)}
             className="sm:w-52 px-3.5 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-800 text-park-bark dark:text-park-cream focus:outline-none focus:ring-2 focus:ring-park-sage focus:border-transparent text-sm shadow-sm appearance-none cursor-pointer"
           >
-            <option value="">All States &amp; Territories</option>
+            <option value="">All States & Territories</option>
             {US_STATES.map((state) => (
               <option key={state.code} value={state.code}>
                 {state.name}

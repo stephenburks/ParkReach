@@ -49,7 +49,7 @@ export default function ParkModal({ park, onClose }: Props) {
       className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4"
       role="dialog"
       aria-modal="true"
-      aria-label={park.fullName}
+      aria-labelledby="park-modal-heading"
     >
       {/* Backdrop */}
       <div
@@ -95,7 +95,7 @@ export default function ParkModal({ park, onClose }: Props) {
                 {park.designation}
               </span>
             )}
-            <h2 className="text-white text-2xl font-bold leading-tight drop-shadow-md">
+            <h2 id="park-modal-heading" className="text-white text-2xl font-bold leading-tight drop-shadow-md">
               {park.fullName}
             </h2>
             {stateList && (

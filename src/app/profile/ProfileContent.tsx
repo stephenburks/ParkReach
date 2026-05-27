@@ -26,7 +26,7 @@ function ParkRow({ parkCode, parkByCode }: ParkRowProps) {
 	return (
 		<Link
 			href={`/parks/${parkCode}`}
-			className="block p-4 bg-white dark:bg-stone-800 rounded-lg hover:bg-stone-50 dark:hover:bg-stone-700 transition-colors"
+			className="block p-4 bg-white dark:bg-stone-800 rounded-xl hover:bg-stone-50 dark:hover:bg-stone-700 transition-colors border border-stone-100 dark:border-stone-700 shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-park-forest"
 		>
 			<p className="font-medium text-park-bark dark:text-park-cream leading-snug">
 				{park?.fullName ?? parkCode}
