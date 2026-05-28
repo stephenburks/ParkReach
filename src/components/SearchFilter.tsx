@@ -27,6 +27,7 @@ interface Props {
   designations: string[];
   a11yFilters: A11yFilters;
   onA11yFilterChange: (key: keyof A11yFilters) => void;
+  availableStates?: string[];
 }
 
 const A11Y_CHECKBOXES: Array<{ key: keyof A11yFilters; label: string }> = [
@@ -46,8 +47,13 @@ export default function SearchFilter({
   designations,
   a11yFilters,
   onA11yFilterChange,
+  availableStates,
 }: Props) {
   const displayDesignations = designations.length > 1 ? designations : FALLBACK_DESIGNATIONS;
+
+  const displayStates = availableStates && availableStates.length > 0
+    ? US_STATES.filter((s) => availableStates.includes(s.code))
+    : US_STATES;
   return (
     <div className="sticky top-0 z-40 bg-park-cream/95 dark:bg-park-bark/95 backdrop-blur-md border-b border-stone-200 dark:border-stone-700">
       <div className="max-w-full lg:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-3">
@@ -82,7 +88,7 @@ export default function SearchFilter({
             className="sm:w-52 px-3.5 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-800 text-park-bark dark:text-park-cream focus:outline-none focus:ring-2 focus:ring-park-sage focus:border-transparent text-sm shadow-sm cursor-pointer"
           >
             <option value="">All States & Territories</option>
-            {US_STATES.map((state) => (
+            {displayStates.map((state) => (
               <option key={state.code} value={state.code}>
                 {state.name}
               </option>

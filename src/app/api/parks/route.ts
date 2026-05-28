@@ -201,6 +201,20 @@ export async function GET(request: NextRequest) {
 		}
 	}
 
+	// If a11y filters are active, don't fall back to NPS API.
+	// NPS API has no accessibility data, so falling back would return
+	// results that silently ignore the user's accessibility filter choices.
+	if (hasA11yFilters) {
+		return NextResponse.json({
+			total: '0',
+			limit: String(limit),
+			start: String(start),
+			data: [],
+		}, {
+			headers: { 'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=3600' },
+		})
+	}
+
 	// Fallback: NPS API
 	const apiKey = process.env.NPS_API_KEY
 	if (!apiKey) {

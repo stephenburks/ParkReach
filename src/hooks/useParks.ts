@@ -67,6 +67,19 @@ function buildDesignationList(parks: Park[]): string[] {
 	return ['All', ...unique]
 }
 
+function buildAvailableStates(parks: Park[]): string[] {
+	const codes = new Set<string>()
+	for (const park of parks) {
+		if (park.states) {
+			for (const code of park.states.split(',')) {
+				const trimmed = code.trim()
+				if (trimmed) codes.add(trimmed)
+			}
+		}
+	}
+	return Array.from(codes).sort()
+}
+
 export function useParks(
 	search: string,
 	stateCode: string,
@@ -97,6 +110,18 @@ export function useParks(
 		staleTime: 24 * 60 * 60 * 1000,
 	})
 
+	// Separate query for available states — fetches parks without the state filter
+	// so we can show which states have parks matching current a11y/search/designation filters
+	const hasNonStateFilters = search !== '' || a11yFilters.hasWheelchair || a11yFilters.hasBraille ||
+		a11yFilters.hasAsl || a11yFilters.hasAudioDescription || (designation !== '' && designation !== 'All')
+
+	const stateSourceQuery = useQuery({
+		queryKey: ['parks', 'stateSource', search, a11yFilters],
+		queryFn: () => fetchParksApi(buildParams(search, '', FULL_LIMIT, a11yFilters)),
+		enabled: hasNonStateFilters,
+		staleTime: 24 * 60 * 60 * 1000,
+	})
+
 	const activeData = fullQuery.data ?? previewQuery.data
 	const parks = activeData?.data ?? []
 	const total = parseInt(activeData?.total ?? '0', 10)
@@ -110,5 +135,11 @@ export function useParks(
 		? buildDesignationList(fullQuery.data.data)
 		: buildDesignationList(parks)
 
-	return { parks, total, isLoading, isBackgroundLoading, error, isRefetching, designations }
+	const sourceParksForStates = stateSourceQuery.data?.data ?? []
+	const designationFilteredForStates = filterByDesignation(sourceParksForStates, designation)
+	const availableStates = hasNonStateFilters
+		? buildAvailableStates(designationFilteredForStates)
+		: []
+
+	return { parks, total, isLoading, isBackgroundLoading, error, isRefetching, designations, availableStates }
 }

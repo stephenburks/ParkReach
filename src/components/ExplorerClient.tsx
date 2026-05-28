@@ -117,7 +117,7 @@ export function ExplorerClient({ defaultView = "cards" }: ExplorerClientProps) {
     [setSelectedPark],
   );
 
-  const { parks, total, isLoading, isBackgroundLoading, error, designations } = useParks(
+  const { parks, total, isLoading, isBackgroundLoading, error, designations, availableStates } = useParks(
     search,
     stateCode,
     designation,
@@ -171,6 +171,7 @@ export function ExplorerClient({ defaultView = "cards" }: ExplorerClientProps) {
           designations={designations}
           a11yFilters={a11yFilters}
           onA11yFilterChange={handleA11yFilterChange}
+          availableStates={availableStates}
         />
 
         <div className="flex items-center justify-between mb-6">
