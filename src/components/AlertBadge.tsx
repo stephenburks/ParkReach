@@ -30,7 +30,7 @@ function AlertBadgeContent({ alerts }: { alerts: NpsAlert[] }) {
 
 	return (
 		<span
-			className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${categoryColor[highest.category]}`}
+			className={`inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-semibold ${categoryColor[highest.category]}`}
 		>
 			<span className="sr-only">{alerts.length} active alert{alerts.length !== 1 ? 's' : ''}: </span>
 			{alerts.length > 1 ? `${alerts.length} alerts` : highest.category}
@@ -44,7 +44,7 @@ function AlertSummaryBadge({ summary }: { summary: AlertSummaryProps }) {
 	if (has_closure) {
 		return (
 			<span
-				className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${categoryColor['Park Closure']}`}
+				className={`inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-semibold ${categoryColor['Park Closure']}`}
 			>
 				<span className="sr-only">Park Closure alert: </span>
 				Closures
@@ -55,7 +55,7 @@ function AlertSummaryBadge({ summary }: { summary: AlertSummaryProps }) {
 	if (has_danger) {
 		return (
 			<span
-				className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${categoryColor.Danger}`}
+				className={`inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-semibold ${categoryColor.Danger}`}
 			>
 				<span className="sr-only">Danger alert: </span>
 				Danger Alert
@@ -67,7 +67,7 @@ function AlertSummaryBadge({ summary }: { summary: AlertSummaryProps }) {
 		const count = alert_count
 		return (
 			<span
-				className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${categoryColor[count > 1 ? 'Caution' : 'Information']}`}
+				className={`inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-semibold ${categoryColor[count > 1 ? 'Caution' : 'Information']}`}
 			>
 				<span className="sr-only">{count} active alert{count !== 1 ? 's' : ''}: </span>
 				{count} alert{count !== 1 ? 's' : ''}

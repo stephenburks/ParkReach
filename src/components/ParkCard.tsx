@@ -69,7 +69,7 @@ function ParkCard({ park, onSelect }: Props) {
 
 			<div className="p-5 flex flex-col flex-1">
 				<div className="flex items-start justify-between gap-2">
-					<h3 className="font-bold text-park-bark dark:text-park-cream text-base leading-snug mb-1.5 group-hover:text-park-forest transition-colors">
+					<h3 className="min-w-0 truncate font-bold text-park-bark dark:text-park-cream text-base leading-snug mb-1.5 group-hover:text-park-forest transition-colors">
 						{park.fullName}
 					</h3>
 					<AlertBadge alertSummary={alertSummary} />

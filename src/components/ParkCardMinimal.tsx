@@ -34,7 +34,7 @@ function ParkCardMinimal({ park, onSelect }: Props) {
 		>
 			<div className="flex-1 min-w-0">
 				<div className="flex items-center gap-2 mb-0.5">
-					<h3 className="font-semibold text-[15px] text-park-bark dark:text-park-cream truncate">
+					<h3 className="min-w-0 font-semibold text-[15px] text-park-bark dark:text-park-cream truncate">
 						{park.fullName}
 					</h3>
 					{park.designation && (
