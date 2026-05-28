@@ -139,7 +139,7 @@ export default function ParkModal({ park, onClose }: Props) {
                 <Clock className="h-4 w-4" aria-hidden="true" /> Operating Hours
               </h3>
               {park.operatingHours.map((hours, index) => (
-                <div key={index} className="bg-white dark:bg-stone-700 rounded-xl p-4 shadow-sm">
+                <div key={index} className="bg-white dark:bg-stone-800 rounded-xl p-4 shadow-sm">
                   {hours.name && (
                     <p className="text-sm font-semibold text-park-bark dark:text-park-cream mb-2">{hours.name}</p>
                   )}
@@ -168,7 +168,7 @@ export default function ParkModal({ park, onClose }: Props) {
               </h3>
               <div className="space-y-2">
                 {park.entranceFees.map((fee, index) => (
-                  <div key={index} className="bg-white dark:bg-stone-700 rounded-xl p-4 flex justify-between items-start shadow-sm gap-4">
+                  <div key={index} className="bg-white dark:bg-stone-800 rounded-xl p-4 flex justify-between items-start shadow-sm gap-4">
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-park-bark dark:text-park-cream">{fee.title}</p>
                       {fee.description && (

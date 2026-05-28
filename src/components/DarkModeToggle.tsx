@@ -1,11 +1,19 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useDarkMode } from "@/context/DarkModeProvider";
 import { Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function DarkModeToggle() {
   const { isDark, toggle } = useDarkMode();
+  const [mounted, setMounted] = useState(false);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) {
+    return <div className="w-9 h-9" aria-hidden="true" />;
+  }
 
   return (
     <Button

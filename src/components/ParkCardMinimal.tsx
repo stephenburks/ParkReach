@@ -4,6 +4,7 @@ import { memo } from 'react'
 import { Park } from '@/types/park'
 import { WishlistButton } from './WishlistButton'
 import { VisitedButton } from './VisitedButton'
+import { AlertBadge } from './AlertBadge'
 import { handleCardKeyDown, formatStates } from './park-card-utils'
 import { MapPin } from 'lucide-react'
 
@@ -14,6 +15,13 @@ interface Props {
 
 function ParkCardMinimal({ park, onSelect }: Props) {
 	const stateList = formatStates(park.states)
+
+	const alertSummary = {
+		alert_count: park.alert_count,
+		has_closure: park.has_closure,
+		has_danger: park.has_danger,
+		alert_level: park.alert_level,
+	}
 
 	return (
 		<div
@@ -34,6 +42,7 @@ function ParkCardMinimal({ park, onSelect }: Props) {
 							{park.designation}
 						</span>
 					)}
+					<AlertBadge alertSummary={alertSummary} />
 				</div>
 				{stateList && (
 					<p className="text-xs text-park-stone dark:text-stone-400 truncate">

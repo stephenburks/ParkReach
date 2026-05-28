@@ -1,6 +1,37 @@
 import { createClient } from '@/lib/supabase/server'
 import type { Park } from '@/types/park'
 
+interface NpsEnrichmentResponse {
+	data?: Array<{
+		activities?: Park['activities']
+		topics?: Park['topics']
+	}>
+}
+
+/**
+ * Lightweight NPS fetch for activities/topics enrichment.
+ * Only called for single-park lookups — never for listings.
+ * Returns the raw NPS JSON response or null on failure.
+ */
+export async function fetchParkEnrichment(
+	parkCode: string,
+	apiKey: string,
+): Promise<NpsEnrichmentResponse | null> {
+	try {
+		const res = await fetch(
+			`https://developer.nps.gov/api/v1/parks?parkCode=${parkCode}&fields=activities,topics`,
+			{
+				headers: { 'X-Api-Key': apiKey },
+				next: { revalidate: 3600 },
+			},
+		)
+		if (!res.ok) return null
+		return (await res.json()) as NpsEnrichmentResponse
+	} catch {
+		return null
+	}
+}
+
 function mapParkRow(row: {
 	park_code: string
 	full_name: string
@@ -57,6 +88,8 @@ function mapParkRow(row: {
 }
 
 export async function fetchPark(parkCode: string): Promise<Park | null> {
+	const apiKey = process.env.NPS_API_KEY
+
 	const supabase = await createClient()
 	if (supabase) {
 		const { data, error } = await supabase
@@ -66,11 +99,19 @@ export async function fetchPark(parkCode: string): Promise<Park | null> {
 			.single()
 
 		if (!error && data) {
-			return mapParkRow(data)
+			const park = mapParkRow(data)
+			// Enrich with activities and topics from NPS (Supabase rows omit these)
+			if (apiKey) {
+				const enrichment = await fetchParkEnrichment(parkCode, apiKey)
+				if (enrichment?.data?.[0]) {
+					park.activities = enrichment.data[0].activities ?? []
+					park.topics = enrichment.data[0].topics ?? []
+				}
+			}
+			return park
 		}
 	}
 
-	const apiKey = process.env.NPS_API_KEY
 	if (!apiKey) return null
 
 	const res = await fetch(

@@ -56,7 +56,7 @@ export function Campgrounds({ parkCode }: { parkCode: string }) {
 					return (
 						<li
 							key={cg.id}
-							className="rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 p-4"
+							className="rounded-xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 p-4 shadow-sm"
 						>
 							<div className="flex items-start gap-2">
 								<Tent className="h-5 w-5 mt-0.5 text-park-forest dark:text-park-sage flex-shrink-0" aria-hidden="true" />

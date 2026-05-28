@@ -17,7 +17,7 @@ function NewsSkeleton() {
 				{[1, 2, 3].map((i) => (
 					<div
 						key={i}
-						className="rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 p-4 motion-safe:animate-pulse"
+						className="rounded-xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 p-4 motion-safe:animate-pulse"
 					>
 						<div className="h-4 bg-stone-200 dark:bg-stone-700 rounded-full w-3/4 mb-3" />
 						<div className="h-3 bg-stone-100 dark:bg-stone-600 rounded-full w-1/3 mb-3" />
@@ -105,7 +105,7 @@ export function NewsSection({ parkCode }: { parkCode: string }) {
 					return (
 						<li
 							key={newsItem.id}
-							className="rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 p-4 hover:shadow-md transition-shadow"
+							className="rounded-xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 p-4 hover:shadow-md transition-shadow"
 						>
 							<a
 								href={newsItem.url}

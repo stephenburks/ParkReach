@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { jsonError } from '@/lib/api-response'
+import { fetchParkEnrichment } from '@/lib/nps'
+import type { Park } from '@/types/park'
 
 const NPS_BASE = 'https://developer.nps.gov/api/v1/parks'
 
@@ -27,7 +29,7 @@ interface ParkDbRow {
 	alert_level?: string | null
 }
 
-function mapParkRow(row: ParkDbRow) {
+function mapParkRow(row: ParkDbRow): Park {
 	return {
 		id: row.park_code,
 		parkCode: row.park_code,
@@ -159,6 +161,24 @@ export async function GET(request: NextRequest) {
 
 			if (!error && data && data.length > 0) {
 				const parks = data.map(mapParkRow)
+
+				// Enrich activities/topics from NPS for single-park lookups.
+				// NOTE: listings (multiple parks, search queries) skip enrichment —
+				// activities/topics are only displayed on detail pages and modals,
+				// never on listing cards. Adding an NPS call per row in a listing
+				// would be too slow and wasteful.
+				const codes = parkCode.split(',').filter(Boolean)
+				if (codes.length === 1 && parks.length === 1 && !q) {
+					const apiKey = process.env.NPS_API_KEY
+					if (apiKey) {
+						const enriched = await fetchParkEnrichment(codes[0], apiKey)
+						if (enriched?.data?.[0]) {
+							parks[0].activities = enriched.data[0].activities ?? []
+							parks[0].topics = enriched.data[0].topics ?? []
+						}
+					}
+				}
+
 				return NextResponse.json({
 					total: String(count ?? parks.length),
 					limit: String(limit),

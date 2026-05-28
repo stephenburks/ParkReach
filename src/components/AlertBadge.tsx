@@ -10,9 +10,17 @@ const categoryColor: Record<NpsAlert['category'], string> = {
 	Information: 'bg-blue-500 text-white dark:bg-blue-950 dark:text-blue-200',
 }
 
+interface AlertSummaryProps {
+	alert_count?: number
+	has_closure?: boolean
+	has_danger?: boolean
+	alert_level?: string | null
+}
+
 interface AlertBadgeProps {
 	parkCode?: string
 	alertsOverride?: NpsAlert[] | null
+	alertSummary?: AlertSummaryProps
 }
 
 function AlertBadgeContent({ alerts }: { alerts: NpsAlert[] }) {
@@ -30,9 +38,53 @@ function AlertBadgeContent({ alerts }: { alerts: NpsAlert[] }) {
 	)
 }
 
-export function AlertBadge({ parkCode, alertsOverride }: AlertBadgeProps) {
-	const shouldFetch = alertsOverride === undefined
+function AlertSummaryBadge({ summary }: { summary: AlertSummaryProps }) {
+	const { has_closure, has_danger, alert_count } = summary
+
+	if (has_closure) {
+		return (
+			<span
+				className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${categoryColor['Park Closure']}`}
+			>
+				<span className="sr-only">Park Closure alert: </span>
+				Closed
+			</span>
+		)
+	}
+
+	if (has_danger) {
+		return (
+			<span
+				className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${categoryColor.Danger}`}
+			>
+				<span className="sr-only">Danger alert: </span>
+				Danger Alert
+			</span>
+		)
+	}
+
+	if (alert_count && alert_count > 0) {
+		const count = alert_count
+		return (
+			<span
+				className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${categoryColor[count > 1 ? 'Caution' : 'Information']}`}
+			>
+				<span className="sr-only">{count} active alert{count !== 1 ? 's' : ''}: </span>
+				{count} alert{count !== 1 ? 's' : ''}
+			</span>
+		)
+	}
+
+	return null
+}
+
+export function AlertBadge({ parkCode, alertsOverride, alertSummary }: AlertBadgeProps) {
+	const shouldFetch = !alertSummary && alertsOverride === undefined
 	const { data: alerts } = useAlerts(shouldFetch ? (parkCode ?? '') : '')
+
+	if (alertSummary) {
+		return <AlertSummaryBadge summary={alertSummary} />
+	}
 
 	const resolvedAlerts = alertsOverride ?? alerts
 	if (!resolvedAlerts?.length) return null

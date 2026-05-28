@@ -26,7 +26,7 @@ export function AccessibilityInfo({ accessibility }: AccessibilityInfoProps) {
         </svg>
         Accessibility
       </h2>
-      <div className="bg-white dark:bg-stone-800 rounded-lg p-4 border border-stone-200 dark:border-stone-700">
+      <div className="bg-white dark:bg-stone-800 rounded-xl p-4 border border-stone-200 dark:border-stone-700 shadow-sm">
         <p className="text-stone-700 dark:text-stone-300 leading-relaxed whitespace-pre-line">
           {accessibility}
         </p>

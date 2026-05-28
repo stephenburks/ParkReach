@@ -164,7 +164,7 @@ function FeesSection({ park }: { park: Park }) {
         {park.entranceFees.map((fee, index) => (
           <li
             key={index}
-            className="bg-white dark:bg-stone-800 rounded-lg p-4 border border-stone-200 dark:border-stone-700"
+            className="bg-white dark:bg-stone-800 rounded-xl p-4 border border-stone-200 dark:border-stone-700 shadow-sm"
           >
             <p className="font-semibold text-park-bark dark:text-park-cream">
               {fee.title}
@@ -192,7 +192,7 @@ function HoursSection({ hours }: { hours: Park['operatingHours'] }) {
       {hours.map((entry, index) => (
         <div
           key={index}
-          className="bg-white dark:bg-stone-800 rounded-lg p-4 border border-stone-200 dark:border-stone-700 mb-2"
+          className="bg-white dark:bg-stone-800 rounded-xl p-4 border border-stone-200 dark:border-stone-700 shadow-sm mb-2"
         >
           <p className="font-semibold text-park-bark dark:text-park-cream mb-2">
             {entry.name}

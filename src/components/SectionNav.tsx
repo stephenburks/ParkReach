@@ -79,7 +79,7 @@ export function SectionNav() {
 		<nav
 			ref={navRef}
 			aria-label="Page sections"
-			className="sticky top-0 z-30 bg-park-cream/95 dark:bg-park-bark/95 backdrop-blur-sm border-b border-stone-200 dark:border-stone-700 -mx-4 sm:-mx-6 lg:-mx-8"
+			className="sticky top-0 z-30 bg-park-cream/95 dark:bg-park-bark/95 backdrop-blur-md border-b border-stone-200 dark:border-stone-700 -mx-4 sm:-mx-6 lg:-mx-8"
 		>
 			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 				<ul

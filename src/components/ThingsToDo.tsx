@@ -40,7 +40,7 @@ export function ThingsToDo({ parkCode }: { parkCode: string }) {
 				{data.map((thing) => (
 					<li
 						key={thing.id}
-						className="rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 p-4"
+						className="rounded-xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 p-4 shadow-sm"
 					>
 						<h3 className="font-medium text-park-bark dark:text-park-cream">{thing.title}</h3>
 						<p className="mt-1 text-sm text-stone-700 dark:text-stone-300">
