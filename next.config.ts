@@ -8,7 +8,6 @@ const nextConfig: NextConfig = {
         hostname: "**.nps.gov",
       },
       {
-        // Google Maps static images (Street View, satellite tiles)
         protocol: "https",
         hostname: "**.googleapis.com",
       },
@@ -41,11 +40,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-// varlock is only available locally (requires GPG/pass)
-// On Vercel, env vars come from the dashboard directly
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const finalConfig = process.env.VERCEL
-  ? nextConfig
-  : require("@varlock/nextjs-integration/plugin").varlockNextConfigPlugin()(nextConfig);
-
-export default finalConfig;
+export default nextConfig;
