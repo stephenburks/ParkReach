@@ -1,7 +1,7 @@
 #!/bin/bash
 # Vercel build: generate .env.production from Vercel environment variables.
-# varlock/pass can't resolve pass() calls on Vercel's build servers (no GPG),
-# so we write the actual values to a .env.production file that Next.js loads.
+# varlock/pass can't resolve pass() calls on Vercel's build servers (no GPG).
+# We replace .env.schema with a clean version so varlock doesn't override our values.
 
 set -e
 
@@ -26,5 +26,8 @@ node -e "
   console.log('✓ .env.production generated');
 " 2>&1
 
-echo 'Contents (masked):'
-cat .env.production | sed 's/=.*/=***/g'
+# Replace .env.schema with clean version so varlock doesn't try to resolve pass() calls.
+# The original is preserved in git — we're just neutering it for this build.
+echo '# Vercel build override' > .env.schema
+cat .env.production >> .env.schema
+echo '✓ .env.schema replaced with real values'
