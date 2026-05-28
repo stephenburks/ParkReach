@@ -34,9 +34,10 @@ export function MagicLinkForm({ onSent, inputId = 'magic-link-email', returnPath
 		setError(null)
 		setLoading(true)
 		try {
+			const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || location.origin
 			const redirectTo = returnPath
-			? `${location.origin}/api/auth/callback?next=${encodeURIComponent(returnPath)}`
-			: `${location.origin}/api/auth/callback`
+			? `${siteUrl}/api/auth/callback?next=${encodeURIComponent(returnPath)}`
+			: `${siteUrl}/api/auth/callback`
 		const { error: supabaseError } = await supabase.auth.signInWithOtp({
 			email,
 			options: {

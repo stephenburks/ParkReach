@@ -14,9 +14,10 @@ export function VerifyContent() {
 	const handleResend = async () => {
 		if (!email) return
 		if (!supabase) return
+		const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || location.origin
 		const redirectTo = next
-			? `${location.origin}/api/auth/callback?next=${encodeURIComponent(next)}`
-			: `${location.origin}/api/auth/callback`
+			? `${siteUrl}/api/auth/callback?next=${encodeURIComponent(next)}`
+			: `${siteUrl}/api/auth/callback`
 		const { error } = await supabase.auth.signInWithOtp({
 			email,
 			options: {
