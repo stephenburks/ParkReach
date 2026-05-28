@@ -1,5 +1,4 @@
 import type { NextConfig } from "next";
-import { varlockNextConfigPlugin } from "@varlock/nextjs-integration/plugin";
 
 const nextConfig: NextConfig = {
   images: {
@@ -42,6 +41,11 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default process.env.VERCEL
+// varlock is only available locally (requires GPG/pass)
+// On Vercel, env vars come from the dashboard directly
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const finalConfig = process.env.VERCEL
   ? nextConfig
-  : varlockNextConfigPlugin()(nextConfig)
+  : require("@varlock/nextjs-integration/plugin").varlockNextConfigPlugin()(nextConfig);
+
+export default finalConfig;

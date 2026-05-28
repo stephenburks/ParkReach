@@ -54,5 +54,7 @@
     "typescript": "^5",
     "vitest": "^4.1.5"
   },
-  "overrides": {}
+  "overrides": {
+    "@next/env": "npm:@varlock/nextjs-integration"
+  }
 }
