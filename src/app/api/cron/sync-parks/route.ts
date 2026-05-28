@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import { jsonError } from '@/lib/api-response'
+import type { Database } from '@/types/supabase'
 
 const NPS_BASE = 'https://developer.nps.gov/api/v1/parks'
 const BATCH_SIZE = 50
@@ -38,7 +39,7 @@ async function fetchPage(apiKey: string, start: number): Promise<NpsSyncResponse
 }
 
 async function upsertParks(
-	supabase: NonNullable<Awaited<ReturnType<typeof createClient>>>,
+	supabase: SupabaseClient<Database>,
 	parks: NpsParkItem[],
 ) {
 	const rows = parks.map((park) => ({
@@ -67,10 +68,14 @@ export async function GET(_request: NextRequest) {
 		return jsonError('NPS API key not configured.', 503)
 	}
 
-	const supabase = await createClient()
-	if (!supabase) {
-		return jsonError('Supabase not configured.', 503)
+	const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+	const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+	if (!supabaseUrl || !serviceRoleKey) {
+		return jsonError('Supabase not configured (missing URL or service role key).', 503)
 	}
+
+	const supabase = createClient<Database>(supabaseUrl, serviceRoleKey)
 
 	// Get total count from first page
 	const firstPage = await fetchPage(apiKey, 0)
