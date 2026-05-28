@@ -121,10 +121,10 @@ export async function GET(request: NextRequest) {
 	const supabase = await createClient()
 	if (supabase) {
 		try {
-			let query = supabase.from('parks').select('*', { count: 'exact' })
+			let query = supabase.from('parks').select('park_code,full_name,description,states,designation,latitude,longitude,image_url,image_alt,url,has_accessible_restrooms,has_wheelchair_access,has_braille,has_asl,has_audio_description,has_service_animal_relief,alert_count,has_closure,has_danger,alert_level', { count: 'exact' })
 
 			if (stateCode) {
-				query = query.filter('states', 'cs', `{${stateCode}}`)
+				query = query.ilike('states', `%${stateCode}%`)
 			}
 			if (parkCode) {
 				const codes = parkCode.split(',')
