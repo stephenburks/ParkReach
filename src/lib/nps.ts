@@ -5,21 +5,25 @@ interface NpsEnrichmentResponse {
 	data?: Array<{
 		activities?: Park['activities']
 		topics?: Park['topics']
+		operatingHours?: Park['operatingHours']
+		entranceFees?: Park['entranceFees']
+		entrancePasses?: Park['entrancePasses']
+		weatherInfo?: string
 	}>
 }
 
 /**
- * Lightweight NPS fetch for activities/topics enrichment.
+ * Lightweight NPS fetch for park detail enrichment.
  * Only called for single-park lookups — never for listings.
- * Returns the raw NPS JSON response or null on failure.
  */
 export async function fetchParkEnrichment(
 	parkCode: string,
 	apiKey: string,
 ): Promise<NpsEnrichmentResponse | null> {
 	try {
+		const fields = 'activities,topics,operatingHours,entranceFees,entrancePasses,weatherInfo'
 		const res = await fetch(
-			`https://developer.nps.gov/api/v1/parks?parkCode=${parkCode}&fields=activities,topics`,
+			`https://developer.nps.gov/api/v1/parks?parkCode=${parkCode}&fields=${fields}`,
 			{
 				headers: { 'X-Api-Key': apiKey },
 				next: { revalidate: 3600 },
@@ -100,12 +104,17 @@ export async function fetchPark(parkCode: string): Promise<Park | null> {
 
 		if (!error && data) {
 			const park = mapParkRow(data)
-			// Enrich with activities and topics from NPS (Supabase rows omit these)
+			// Enrich with detail fields from NPS (Supabase rows omit these)
 			if (apiKey) {
 				const enrichment = await fetchParkEnrichment(parkCode, apiKey)
 				if (enrichment?.data?.[0]) {
-					park.activities = enrichment.data[0].activities ?? []
-					park.topics = enrichment.data[0].topics ?? []
+					const ed = enrichment.data[0]
+					park.activities = ed.activities ?? []
+					park.topics = ed.topics ?? []
+					park.operatingHours = ed.operatingHours ?? []
+					park.entranceFees = ed.entranceFees ?? []
+					park.entrancePasses = ed.entrancePasses ?? []
+					park.weatherInfo = ed.weatherInfo ?? ''
 				}
 			}
 			return park

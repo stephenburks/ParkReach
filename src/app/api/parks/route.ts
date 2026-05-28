@@ -173,8 +173,13 @@ export async function GET(request: NextRequest) {
 					if (apiKey) {
 						const enriched = await fetchParkEnrichment(codes[0], apiKey)
 						if (enriched?.data?.[0]) {
-							parks[0].activities = enriched.data[0].activities ?? []
-							parks[0].topics = enriched.data[0].topics ?? []
+							const ed = enriched.data[0]
+							parks[0].activities = ed.activities ?? []
+							parks[0].topics = ed.topics ?? []
+							parks[0].operatingHours = ed.operatingHours ?? []
+							parks[0].entranceFees = ed.entranceFees ?? []
+							parks[0].entrancePasses = ed.entrancePasses ?? []
+							parks[0].weatherInfo = ed.weatherInfo ?? ''
 						}
 					}
 				}
