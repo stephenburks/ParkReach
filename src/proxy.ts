@@ -1,11 +1,13 @@
 import { type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 
-function buildCsp(nonce: string): string {
+function buildCsp(): string {
 	const evalDirective = process.env.NODE_ENV === 'development' ? " 'unsafe-eval'" : ''
 	const directives = [
 		`default-src 'self'`,
-		`script-src 'self' 'nonce-${nonce}' 'unsafe-inline'${evalDirective} https://maps.googleapis.com`,
+		// 'self' covers _next/static chunks; 'unsafe-inline' covers Next.js inline scripts.
+		// No nonce — Next.js doesn't reliably propagate x-nonce to inline scripts on Vercel.
+		`script-src 'self' 'unsafe-inline'${evalDirective} https://maps.googleapis.com https://*.gstatic.com`,
 		`style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`,
 		`font-src 'self' data: https://fonts.gstatic.com`,
 		`img-src 'self' data: blob: https://*.nps.gov https://*.googleapis.com https://*.gstatic.com`,
@@ -18,14 +20,8 @@ function buildCsp(nonce: string): string {
 }
 
 export async function proxy(request: NextRequest) {
-	const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
-	const csp = buildCsp(nonce);
-
-	// x-nonce in request headers: Next.js App Router reads this and stamps the
-	// nonce onto its own generated inline scripts.
-	const response = await updateSession(request, { "x-nonce": nonce });
-	response.headers.set("Content-Security-Policy", csp);
-
+	const response = await updateSession(request);
+	response.headers.set("Content-Security-Policy", buildCsp());
 	return response;
 }
 
