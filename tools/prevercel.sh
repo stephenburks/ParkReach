@@ -1,12 +1,10 @@
 #!/bin/bash
-# Vercel build: generate .env.production from Vercel environment variables.
-# varlock/pass can't resolve pass() calls on Vercel's build servers (no GPG).
-# We replace .env.schema with a clean version so varlock doesn't override our values.
+# Vercel build: export env vars from Vercel environment to override varlock/pass.
+# Sourced (not exec'd) so exports propagate to next build.
 
-set -e
+echo '⚡ Setting up environment for Vercel build...'
 
-echo '⚡ Generating .env.production from Vercel environment variables...'
-
+# Node writes .env.production file
 node -e "
   const fs = require('fs');
   const keys = [
@@ -22,12 +20,17 @@ node -e "
     lines.push(key + '=' + val);
   }
   fs.writeFileSync('.env.production', lines.join('\n') + '\n');
-  console.log('Keys found: ' + keys.filter(k => process.env[k]).join(', '));
-  console.log('✓ .env.production generated');
-" 2>&1
+  const found = keys.filter(k => process.env[k]);
+  if (found.length < keys.length) {
+    console.error('ERROR: missing env vars: ' + keys.filter(k => !process.env[k]).join(', '));
+    process.exit(1);
+  }
+  console.log('✓ All ' + keys.length + ' env keys found');
+" || exit 1
 
-# Replace .env.schema with clean version so varlock doesn't try to resolve pass() calls.
-# The original is preserved in git — we're just neutering it for this build.
+# Overwrite .env.schema so varlock doesn't try to resolve pass() calls
 echo '# Vercel build override' > .env.schema
 cat .env.production >> .env.schema
-echo '✓ .env.schema replaced with real values'
+
+echo "NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL:0:30}..."
+echo '✓ Build environment ready'
