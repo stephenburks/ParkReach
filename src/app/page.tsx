@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { ParkOfTheDay } from "@/components/ParkOfTheDay";
 import { ExplorerClient } from "@/components/ExplorerClient";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
@@ -46,7 +47,9 @@ export default async function Home() {
       <ParkOfTheDay />
 
       <ErrorBoundary>
-        <ExplorerClient defaultView={defaultView} />
+        <Suspense>
+          <ExplorerClient defaultView={defaultView} />
+        </Suspense>
       </ErrorBoundary>
     </div>
   );
