@@ -4,7 +4,7 @@ import { jsonError } from '@/lib/api-response'
 
 const NPS_BASE = 'https://developer.nps.gov/api/v1/parks'
 
-function mapParkRow(row: {
+interface ParkDbRow {
 	park_code: string
 	full_name: string
 	description: string | null
@@ -15,7 +15,19 @@ function mapParkRow(row: {
 	image_url: string | null
 	image_alt: string | null
 	url: string | null
-}) {
+	has_accessible_restrooms?: boolean | null
+	has_wheelchair_access?: boolean | null
+	has_braille?: boolean | null
+	has_asl?: boolean | null
+	has_audio_description?: boolean | null
+	has_service_animal_relief?: boolean | null
+	alert_count?: number | null
+	has_closure?: boolean | null
+	has_danger?: boolean | null
+	alert_level?: string | null
+}
+
+function mapParkRow(row: ParkDbRow) {
 	return {
 		id: row.park_code,
 		parkCode: row.park_code,
@@ -36,7 +48,23 @@ function mapParkRow(row: {
 		weatherInfo: '',
 		directionsInfo: '',
 		directionsUrl: '',
+		has_accessible_restrooms: row.has_accessible_restrooms ?? false,
+		has_wheelchair_access: row.has_wheelchair_access ?? false,
+		has_braille: row.has_braille ?? false,
+		has_asl: row.has_asl ?? false,
+		has_audio_description: row.has_audio_description ?? false,
+		has_service_animal_relief: row.has_service_animal_relief ?? false,
+		alert_count: row.alert_count ?? 0,
+		has_closure: row.has_closure ?? false,
+		has_danger: row.has_danger ?? false,
+		alert_level: row.alert_level ?? null,
 	}
+}
+
+function parseBoolParam(param: string | null): boolean | undefined {
+	if (param === 'true' || param === '1') return true
+	if (param === 'false' || param === '0') return false
+	return undefined
 }
 
 export async function GET(request: NextRequest) {
@@ -47,8 +75,18 @@ export async function GET(request: NextRequest) {
 	const limit = Math.min(600, Math.max(1, parseInt(sp.get('limit') || '20', 10) || 20))
 	const start = Math.max(0, parseInt(sp.get('start') || '0', 10) || 0)
 
+	// Accessibility filter params
+	const hasWheelchair = parseBoolParam(sp.get('hasWheelchair'))
+	const hasBraille = parseBoolParam(sp.get('hasBraille'))
+	const hasAsl = parseBoolParam(sp.get('hasAsl'))
+	const hasAudioDescription = parseBoolParam(sp.get('hasAudioDescription'))
+	const hasA11yFilters = hasWheelchair !== undefined || hasBraille !== undefined ||
+		hasAsl !== undefined || hasAudioDescription !== undefined
+
 	// Search queries go to NPS API (Supabase doesn't have full-text search yet)
-	if (q) {
+	// NOTE: a11y filters only work with Supabase — when a search query is present,
+	// a11y filtering is not applied (NPS API doesn't support these filters)
+	if (q && !hasA11yFilters) {
 		const apiKey = process.env.NPS_API_KEY
 		if (!apiKey) {
 			return jsonError('NPS API key not configured.', 503)
@@ -77,7 +115,7 @@ export async function GET(request: NextRequest) {
 		}
 	}
 
-	// Non-search requests: try Supabase first
+	// Non-search requests (or a11y-filtered requests): try Supabase first
 	const supabase = await createClient()
 	if (supabase) {
 		try {
@@ -93,6 +131,26 @@ export async function GET(request: NextRequest) {
 				} else {
 					query = query.in('park_code', codes)
 				}
+			}
+
+			// Accessibility filters (server-side, exact boolean match)
+			if (hasWheelchair !== undefined) {
+				query = query.eq('has_wheelchair_access', hasWheelchair)
+			}
+			if (hasBraille !== undefined) {
+				query = query.eq('has_braille', hasBraille)
+			}
+			if (hasAsl !== undefined) {
+				query = query.eq('has_asl', hasAsl)
+			}
+			if (hasAudioDescription !== undefined) {
+				query = query.eq('has_audio_description', hasAudioDescription)
+			}
+
+			// When a11y filters + search query are both present, also filter
+			// by search term client-side via a post-filter on full_name
+			if (q && hasA11yFilters) {
+				query = query.ilike('full_name', `%${q}%`)
 			}
 
 			query = query.range(start, start + limit - 1).order('full_name')

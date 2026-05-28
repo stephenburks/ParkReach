@@ -5,9 +5,11 @@ import {
   useQueryState,
   parseAsString,
   parseAsStringLiteral,
+  parseAsBoolean,
   debounce,
 } from "nuqs";
 import type { Park } from "@/types/park";
+import type { A11yFilters } from "@/components/SearchFilter";
 import ParkModal from "@/components/ParkModal";
 import { SiteFooter } from "@/components/SiteFooter";
 import { KeyboardHelp } from "@/components/KeyboardHelp";
@@ -52,6 +54,42 @@ export function ExplorerClient({ defaultView = "cards" }: ExplorerClientProps) {
     parseAsString.withDefault("All"),
   );
 
+  // Accessibility filters (booleans, synced to URL)
+  const [hasWheelchair, setHasWheelchair] = useQueryState(
+    "wheelchair",
+    parseAsBoolean.withDefault(false),
+  );
+  const [hasBraille, setHasBraille] = useQueryState(
+    "braille",
+    parseAsBoolean.withDefault(false),
+  );
+  const [hasAsl, setHasAsl] = useQueryState(
+    "asl",
+    parseAsBoolean.withDefault(false),
+  );
+  const [hasAudioDescription, setHasAudioDescription] = useQueryState(
+    "audiodesc",
+    parseAsBoolean.withDefault(false),
+  );
+
+  const a11yFilters: A11yFilters = useMemo(() => ({
+    hasWheelchair,
+    hasBraille,
+    hasAsl,
+    hasAudioDescription,
+  }), [hasWheelchair, hasBraille, hasAsl, hasAudioDescription]);
+
+  const handleA11yFilterChange = useCallback((key: keyof A11yFilters) => {
+    const setters: Record<keyof A11yFilters, (v: boolean) => void> = {
+      hasWheelchair: setHasWheelchair,
+      hasBraille: setHasBraille,
+      hasAsl: setHasAsl,
+      hasAudioDescription: setHasAudioDescription,
+    };
+    const current = a11yFilters[key];
+    setters[key](!current);
+  }, [a11yFilters, setHasWheelchair, setHasBraille, setHasAsl, setHasAudioDescription]);
+
   const safeDefault: ViewOption = VIEW_OPTIONS.includes(defaultView as ViewOption)
     ? (defaultView as ViewOption)
     : "cards";
@@ -83,6 +121,7 @@ export function ExplorerClient({ defaultView = "cards" }: ExplorerClientProps) {
     search,
     stateCode,
     designation,
+    a11yFilters,
   );
 
   const selectedParkData = selectedPark
@@ -103,7 +142,8 @@ export function ExplorerClient({ defaultView = "cards" }: ExplorerClientProps) {
     ? `Showing ${parks.length} parks in ${viewLabel} view`
     : ''
 
-  const hasFilters = Boolean(search || stateCode || designation !== "All")
+  const hasFilters = Boolean(search || stateCode || designation !== "All"
+    || hasWheelchair || hasBraille || hasAsl || hasAudioDescription)
 
   const countText =
     total > 0
@@ -129,6 +169,8 @@ export function ExplorerClient({ defaultView = "cards" }: ExplorerClientProps) {
           designation={designation}
           onDesignationChange={setDesignation}
           designations={designations}
+          a11yFilters={a11yFilters}
+          onA11yFilterChange={handleA11yFilterChange}
         />
 
         <div className="flex items-center justify-between mb-6">
@@ -170,6 +212,10 @@ export function ExplorerClient({ defaultView = "cards" }: ExplorerClientProps) {
               setSearch("")
               setStateCode("")
               setDesignation("All")
+              setHasWheelchair(false)
+              setHasBraille(false)
+              setHasAsl(false)
+              setHasAudioDescription(false)
             }}
           />
         ) : null}

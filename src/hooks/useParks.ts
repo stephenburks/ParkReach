@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import type { NpsApiResponse, Park } from '@/types/park'
+import type { A11yFilters } from '@/components/SearchFilter'
 
 const PREVIEW_LIMIT = 24
 const FULL_LIMIT = 600
@@ -15,10 +16,19 @@ async function fetchParksApi(params: URLSearchParams): Promise<NpsApiResponse> {
 	return res.json()
 }
 
-function buildParams(q: string, stateCode: string, limit: number): URLSearchParams {
+function buildParams(
+	q: string,
+	stateCode: string,
+	limit: number,
+	a11yFilters: A11yFilters,
+): URLSearchParams {
 	const params = new URLSearchParams({ limit: String(limit), start: '0' })
 	if (q) params.set('q', q)
 	if (stateCode) params.set('stateCode', stateCode)
+	if (a11yFilters.hasWheelchair) params.set('hasWheelchair', 'true')
+	if (a11yFilters.hasBraille) params.set('hasBraille', 'true')
+	if (a11yFilters.hasAsl) params.set('hasAsl', 'true')
+	if (a11yFilters.hasAudioDescription) params.set('hasAudioDescription', 'true')
 	return params
 }
 
@@ -43,18 +53,23 @@ function buildDesignationList(parks: Park[]): string[] {
 	return ['All', ...unique]
 }
 
-export function useParks(search: string, stateCode: string, designation: string) {
+export function useParks(
+	search: string,
+	stateCode: string,
+	designation: string,
+	a11yFilters: A11yFilters = { hasWheelchair: false, hasBraille: false, hasAsl: false, hasAudioDescription: false },
+) {
 	const apiDesignation = toApiDesignation(designation)
 
 	const previewQuery = useQuery({
-		queryKey: ['parks', 'preview', search, stateCode, apiDesignation],
+		queryKey: ['parks', 'preview', search, stateCode, apiDesignation, a11yFilters],
 		queryFn: async () => {
 			if (apiDesignation) {
-				const data = await fetchParksApi(buildParams(search, stateCode, FULL_LIMIT))
+				const data = await fetchParksApi(buildParams(search, stateCode, FULL_LIMIT, a11yFilters))
 				const filtered = filterByDesignation(data.data, apiDesignation)
 				return { ...data, data: filtered, total: String(filtered.length) }
 			}
-			return fetchParksApi(buildParams(search, stateCode, PREVIEW_LIMIT))
+			return fetchParksApi(buildParams(search, stateCode, PREVIEW_LIMIT, a11yFilters))
 		},
 		staleTime: 24 * 60 * 60 * 1000,
 	})
@@ -62,8 +77,8 @@ export function useParks(search: string, stateCode: string, designation: string)
 	const needsFullLoad = !apiDesignation
 
 	const fullQuery = useQuery({
-		queryKey: ['parks', 'full', search, stateCode, apiDesignation],
-		queryFn: () => fetchParksApi(buildParams(search, stateCode, FULL_LIMIT)),
+		queryKey: ['parks', 'full', search, stateCode, apiDesignation, a11yFilters],
+		queryFn: () => fetchParksApi(buildParams(search, stateCode, FULL_LIMIT, a11yFilters)),
 		enabled: needsFullLoad && previewQuery.isSuccess,
 		staleTime: 24 * 60 * 60 * 1000,
 	})

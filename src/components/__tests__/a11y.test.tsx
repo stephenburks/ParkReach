@@ -182,6 +182,8 @@ describe('Accessibility — SearchFilter', () => {
 		designation: 'All',
 		onDesignationChange: () => {},
 		designations: ['All', 'National Park'],
+		a11yFilters: { hasWheelchair: false, hasBraille: false, hasAsl: false, hasAudioDescription: false },
+		onA11yFilterChange: () => {},
 	}
 
 	it('has no axe violations with default state', async () => {

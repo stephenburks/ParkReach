@@ -8,7 +8,7 @@ export function AccessibilityInfo({ accessibility }: AccessibilityInfoProps) {
   }
 
   return (
-    <section>
+    <section id="accessibility">
       <h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3 flex items-center gap-2">
         <svg
           className="w-5 h-5 text-park-forest"

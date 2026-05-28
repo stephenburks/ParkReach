@@ -13,7 +13,7 @@ export function ParkGridView({ parks, onParkSelect }: ParkGridViewProps) {
 			role="list"
 		>
 			{parks.map((park) => (
-				<li key={park.id} tabIndex={-1}>
+				<li key={park.id} tabIndex={-1} className="h-full">
 					<ParkCard park={park} onSelect={onParkSelect} />
 				</li>
 			))}

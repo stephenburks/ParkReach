@@ -61,7 +61,7 @@ export function NewsSection({ parkCode }: { parkCode: string }) {
 
 	if (isLoading) {
 		return (
-			<section aria-labelledby={HEADING_ID}>
+			<section id="news" aria-labelledby={HEADING_ID}>
 				<div className="flex items-center gap-2 mb-4">
 					<Newspaper
 						className="h-5 w-5 text-park-forest dark:text-park-sage"
@@ -82,7 +82,7 @@ export function NewsSection({ parkCode }: { parkCode: string }) {
 	if (isError || !data?.length) return null;
 
 	return (
-		<section aria-labelledby={HEADING_ID}>
+		<section id="news" aria-labelledby={HEADING_ID}>
 			<div className="flex items-center gap-2 mb-4">
 				<Newspaper
 					className="h-5 w-5 text-park-forest dark:text-park-sage"

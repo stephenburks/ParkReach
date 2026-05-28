@@ -23,6 +23,28 @@ interface NpsSyncResponse {
 	data: NpsParkItem[]
 }
 
+function transformImageUrl(url: string): string {
+	if (!url) return url
+	const gridMatch = url.match(/\/grid_small\/([^/?#]+\.(?:jpg|jpeg|png|webp))/i)
+	if (gridMatch) {
+		return `https://www.nps.gov/common/uploads/structured_data/${gridMatch[1]}`
+	}
+	try {
+		const parsed = new URL(url)
+		let changed = false
+		if (parsed.searchParams.has('width')) {
+			parsed.searchParams.delete('width')
+			changed = true
+		}
+		if (parsed.searchParams.has('quality')) {
+			parsed.searchParams.delete('quality')
+			changed = true
+		}
+		if (changed) return parsed.toString()
+	} catch { /* return as-is */ }
+	return url
+}
+
 async function fetchPage(apiKey: string, start: number): Promise<NpsSyncResponse> {
 	const params = new URLSearchParams({
 		limit: String(BATCH_SIZE),
@@ -51,7 +73,9 @@ async function upsertParks(
 		designation: park.designation,
 		latitude: park.latitude,
 		longitude: park.longitude,
-		image_url: park.images?.[0]?.url ?? null,
+		image_url: park.images?.[0]?.url
+			? transformImageUrl(park.images[0].url)
+			: null,
 		image_alt: park.images?.[0]?.altText ?? null,
 		url: park.url,
 		updated_at: new Date().toISOString(),

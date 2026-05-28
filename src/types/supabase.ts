@@ -124,6 +124,16 @@ export type Database = {
           image_alt: string | null
           url: string | null
           updated_at: string
+          has_accessible_restrooms: boolean
+          has_wheelchair_access: boolean
+          has_braille: boolean
+          has_asl: boolean
+          has_audio_description: boolean
+          has_service_animal_relief: boolean
+          alert_count: number
+          has_closure: boolean
+          has_danger: boolean
+          alert_level: string | null
         }
         Insert: {
           park_code: string
@@ -137,6 +147,16 @@ export type Database = {
           image_alt?: string | null
           url?: string | null
           updated_at?: string
+          has_accessible_restrooms?: boolean
+          has_wheelchair_access?: boolean
+          has_braille?: boolean
+          has_asl?: boolean
+          has_audio_description?: boolean
+          has_service_animal_relief?: boolean
+          alert_count?: number
+          has_closure?: boolean
+          has_danger?: boolean
+          alert_level?: string | null
         }
         Update: {
           park_code?: string
@@ -150,6 +170,16 @@ export type Database = {
           image_alt?: string | null
           url?: string | null
           updated_at?: string
+          has_accessible_restrooms?: boolean
+          has_wheelchair_access?: boolean
+          has_braille?: boolean
+          has_asl?: boolean
+          has_audio_description?: boolean
+          has_service_animal_relief?: boolean
+          alert_count?: number
+          has_closure?: boolean
+          has_danger?: boolean
+          alert_level?: string | null
         }
         Relationships: []
       }

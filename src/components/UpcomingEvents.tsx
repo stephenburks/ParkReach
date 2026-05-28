@@ -3,6 +3,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { Calendar, Clock, DollarSign, Tag } from 'lucide-react'
 import type { NpsEvent } from '@/types/event'
+import { stripHtmlTags } from '@/lib/utils'
 
 function UpcomingEventsSkeleton() {
 	return (
@@ -58,7 +59,7 @@ export function UpcomingEvents({ parkCode }: { parkCode: string }) {
 	if (!data?.length) return null
 
 	return (
-		<section aria-labelledby="upcoming-events-heading">
+		<section id="events" aria-labelledby="upcoming-events-heading">
 			<h2 id="upcoming-events-heading" className="text-xl font-bold text-park-bark dark:text-park-cream mb-4">
 				Upcoming Events
 			</h2>
@@ -79,7 +80,7 @@ export function UpcomingEvents({ parkCode }: { parkCode: string }) {
 									</h3>
 									{event.description && (
 										<p className="mt-1 text-sm text-stone-700 dark:text-stone-300 line-clamp-2">
-											{event.description}
+											{stripHtmlTags(event.description)}
 										</p>
 									)}
 								</div>

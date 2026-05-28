@@ -1,8 +1,9 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
-import { Clock, DollarSign, User } from 'lucide-react'
+import { Clock, DollarSign, User, ExternalLink } from 'lucide-react'
 import type { NpsThingToDo } from '@/types/thingsToDo'
+import { stripHtmlTags } from '@/lib/utils'
 
 function ThingsToDoSkeleton() {
 	return (
@@ -31,7 +32,7 @@ export function ThingsToDo({ parkCode }: { parkCode: string }) {
 	if (!data?.length) return null
 
 	return (
-		<section aria-labelledby="things-to-do-heading">
+		<section id="things-to-do" aria-labelledby="things-to-do-heading">
 			<h2 id="things-to-do-heading" className="text-xl font-bold text-park-bark dark:text-park-cream mb-4">
 				Things To Do
 			</h2>
@@ -43,7 +44,7 @@ export function ThingsToDo({ parkCode }: { parkCode: string }) {
 					>
 						<h3 className="font-medium text-park-bark dark:text-park-cream">{thing.title}</h3>
 						<p className="mt-1 text-sm text-stone-700 dark:text-stone-300">
-							{thing.shortDescription}
+							{stripHtmlTags(thing.shortDescription)}
 						</p>
 						<div className="mt-3 flex flex-wrap gap-3 text-xs text-stone-500 dark:text-stone-400">
 							{thing.duration && (
@@ -69,6 +70,11 @@ export function ThingsToDo({ parkCode }: { parkCode: string }) {
 							<p className="mt-2 text-xs text-park-forest dark:text-park-sage">
 								{thing.accessibilityInformation}
 							</p>
+						)}
+						{thing.url && (
+							<a href={thing.url} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex items-center gap-1 text-xs text-park-forest hover:underline">
+								<ExternalLink className="h-3 w-3" aria-hidden="true" /> View on NPS.gov
+							</a>
 						)}
 					</li>
 				))}

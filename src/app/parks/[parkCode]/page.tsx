@@ -19,6 +19,7 @@ import { VisitorCenters } from "@/components/VisitorCenters";
 import { HeaderControls } from "@/components/HeaderControls";
 import { NewsSection } from "@/components/NewsSection";
 import { SiteFooter } from "@/components/SiteFooter";
+import { SectionNav } from "@/components/SectionNav";
 import { Mountain } from "lucide-react";
 
 const BASE_URL = "https://parkreach.app";
@@ -146,7 +147,7 @@ function ParkActions({ parkCode, npsUrl }: ParkActionsProps) {
 function FeesSection({ park }: { park: Park }) {
   if (!park.entranceFees?.length) {
     return (
-      <section>
+      <section id="fees">
         <h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">
           Entrance Fees
         </h2>
@@ -155,7 +156,7 @@ function FeesSection({ park }: { park: Park }) {
     );
   }
   return (
-    <section>
+    <section id="fees">
       <h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">
         Entrance Fees
       </h2>
@@ -184,7 +185,7 @@ function FeesSection({ park }: { park: Park }) {
 function HoursSection({ hours }: { hours: Park['operatingHours'] }) {
   if (!hours?.length) return null;
   return (
-    <section>
+    <section id="hours">
       <h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">
         Hours
       </h2>
@@ -227,8 +228,8 @@ interface ParkInfoGridProps {
 
 function ParkInfoGrid({ park, amenitiesAccessibility, parkCode }: ParkInfoGridProps) {
   return (
-    <div className="space-y-8">
-      <section>
+    <div className="space-y-8" id="park-info-grid">
+      <section id="about">
         <h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">
           About
         </h2>
@@ -237,7 +238,7 @@ function ParkInfoGrid({ park, amenitiesAccessibility, parkCode }: ParkInfoGridPr
         </p>
       </section>
 
-      <div className="flex flex-col sm:flex-row gap-4">
+      <div id="weather" className="flex flex-col sm:flex-row gap-4">
         <div className="flex-1">
           <WeatherWidget parkCode={park.parkCode} />
         </div>
@@ -255,7 +256,7 @@ function ParkInfoGrid({ park, amenitiesAccessibility, parkCode }: ParkInfoGridPr
       )}
 
       {park.directionsInfo && (
-        <section>
+        <section id="directions">
           <h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">
             Getting There
           </h2>
@@ -280,7 +281,7 @@ function ParkInfoGrid({ park, amenitiesAccessibility, parkCode }: ParkInfoGridPr
 		<ThingsToDo parkCode={parkCode} />
 
 			{park.activities?.length > 0 && (
-				<section>
+				<section id="activities">
 					<h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">
 						Activities
 					</h2>
@@ -303,7 +304,7 @@ function ParkInfoGrid({ park, amenitiesAccessibility, parkCode }: ParkInfoGridPr
 			<NewsSection parkCode={parkCode} />
 
 			{park.topics?.length > 0 && (
-        <section>
+        <section id="topics">
           <h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">
             Topics
           </h2>
@@ -377,9 +378,9 @@ return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
       />
-      <div className="min-h-screen bg-park-cream dark:bg-park-bark">
+      <div className="flex flex-col min-h-screen bg-park-cream dark:bg-park-bark">
         <header className="bg-park-forest text-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center justify-between">
@@ -399,6 +400,8 @@ return (
           <AlertBanner parkCode={park.parkCode} />
         </div>
         <ParkActions parkCode={park.parkCode} npsUrl={park.url} />
+
+        <SectionNav />
 
         <main id="main-content" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
           <ParkInfoGrid park={park} amenitiesAccessibility={amenitiesAccessibility} parkCode={parkCode} />

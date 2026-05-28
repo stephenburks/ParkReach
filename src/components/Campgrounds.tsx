@@ -3,6 +3,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { Tent, ExternalLink } from 'lucide-react'
 import type { NpsCampground } from '@/types/campground'
+import { stripHtmlTags } from '@/lib/utils'
 
 function CampgroundsSkeleton() {
 	return (
@@ -41,7 +42,7 @@ export function Campgrounds({ parkCode }: { parkCode: string }) {
 	if (!data?.length) return null
 
 	return (
-		<section aria-labelledby="campgrounds-heading">
+		<section id="campgrounds" aria-labelledby="campgrounds-heading">
 			<h2 id="campgrounds-heading" className="text-xl font-bold text-park-bark dark:text-park-cream mb-4">
 				Campgrounds
 			</h2>
@@ -65,7 +66,7 @@ export function Campgrounds({ parkCode }: { parkCode: string }) {
 									</h3>
 									{cg.description && (
 										<p className="mt-1 text-sm text-stone-700 dark:text-stone-300 line-clamp-2">
-											{cg.description}
+											{stripHtmlTags(cg.description)}
 										</p>
 									)}
 								</div>
@@ -83,6 +84,18 @@ export function Campgrounds({ parkCode }: { parkCode: string }) {
 									{cg.accessibility?.wheelchairAccess && cg.accessibility?.additionalInfo ? ' — ' : ''}
 									{cg.accessibility?.additionalInfo}
 								</p>
+							)}
+
+							{cg.url && (
+								<a
+									href={cg.url}
+									target="_blank"
+									rel="noopener noreferrer"
+									className="mt-2 inline-flex items-center gap-1 text-xs text-park-forest hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-park-forest rounded"
+								>
+									<ExternalLink className="h-3 w-3" aria-hidden="true" />
+									View on NPS.gov
+								</a>
 							)}
 
 							{cg.reservationUrl && (

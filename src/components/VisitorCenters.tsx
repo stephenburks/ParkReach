@@ -3,6 +3,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { Building2, Clock } from 'lucide-react'
 import type { NpsVisitorCenter } from '@/types/visitorCenter'
+import { stripHtmlTags } from '@/lib/utils'
 
 function VisitorCentersSkeleton() {
 	return (
@@ -48,7 +49,7 @@ export function VisitorCenters({ parkCode }: { parkCode: string }) {
 	if (!data?.length) return null
 
 	return (
-		<section aria-labelledby="visitor-centers-heading">
+		<section id="visitor-centers" aria-labelledby="visitor-centers-heading">
 			<h2 id="visitor-centers-heading" className="text-xl font-bold text-park-bark dark:text-park-cream mb-4">
 				Visitor Centers
 			</h2>
@@ -69,7 +70,7 @@ export function VisitorCenters({ parkCode }: { parkCode: string }) {
 									</h3>
 									{center.description && (
 										<p className="mt-1 text-sm text-stone-700 dark:text-stone-300 line-clamp-2">
-											{center.description}
+											{stripHtmlTags(center.description)}
 										</p>
 									)}
 								</div>

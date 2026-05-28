@@ -55,6 +55,16 @@ export interface Park {
   directionsInfo: string;
   directionsUrl: string;
   accessibility?: string;
+  has_accessible_restrooms?: boolean;
+  has_wheelchair_access?: boolean;
+  has_braille?: boolean;
+  has_asl?: boolean;
+  has_audio_description?: boolean;
+  has_service_animal_relief?: boolean;
+  alert_count?: number;
+  has_closure?: boolean;
+  has_danger?: boolean;
+  alert_level?: string | null;
 }
 
 export interface NpsApiResponse {

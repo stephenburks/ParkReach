@@ -44,7 +44,7 @@ export default async function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-park-cream dark:bg-park-bark">
+    <div className="flex flex-col min-h-screen bg-park-cream dark:bg-park-bark">
       <SiteHeader />
 
       <ParkOfTheDay />

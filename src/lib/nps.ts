@@ -12,6 +12,16 @@ function mapParkRow(row: {
 	image_url: string | null
 	image_alt: string | null
 	url: string | null
+	has_accessible_restrooms?: boolean | null
+	has_wheelchair_access?: boolean | null
+	has_braille?: boolean | null
+	has_asl?: boolean | null
+	has_audio_description?: boolean | null
+	has_service_animal_relief?: boolean | null
+	alert_count?: number | null
+	has_closure?: boolean | null
+	has_danger?: boolean | null
+	alert_level?: string | null
 }): Park {
 	return {
 		id: row.park_code,
@@ -33,6 +43,16 @@ function mapParkRow(row: {
 		weatherInfo: '',
 		directionsInfo: '',
 		directionsUrl: '',
+		has_accessible_restrooms: row.has_accessible_restrooms ?? false,
+		has_wheelchair_access: row.has_wheelchair_access ?? false,
+		has_braille: row.has_braille ?? false,
+		has_asl: row.has_asl ?? false,
+		has_audio_description: row.has_audio_description ?? false,
+		has_service_animal_relief: row.has_service_animal_relief ?? false,
+		alert_count: row.alert_count ?? 0,
+		has_closure: row.has_closure ?? false,
+		has_danger: row.has_danger ?? false,
+		alert_level: row.alert_level ?? null,
 	}
 }
 
