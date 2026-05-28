@@ -40,4 +40,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+# AI agent configuration
+.opencode/
+AGENTS.md
+CLAUDE.md
 .squad-archive.zip
+.vscode/
+docs/adr/
+resume.json

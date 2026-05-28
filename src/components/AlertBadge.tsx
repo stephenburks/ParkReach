@@ -6,7 +6,7 @@ import type { NpsAlert } from '@/types/alert'
 const categoryColor: Record<NpsAlert['category'], string> = {
 	'Park Closure': 'bg-red-600 text-white dark:bg-red-950 dark:text-red-200',
 	Danger: 'bg-red-600 text-white dark:bg-red-950 dark:text-red-200',
-	Caution: 'bg-amber-600 text-white dark:bg-amber-950 dark:text-amber-200',
+	Caution: 'bg-amber-700 text-white dark:bg-amber-950 dark:text-amber-200',
 	Information: 'bg-blue-600 text-white dark:bg-blue-950 dark:text-blue-200',
 }
 

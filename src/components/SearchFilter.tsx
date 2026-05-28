@@ -123,7 +123,6 @@ export default function SearchFilter({
                 <Checkbox
                   checked={a11yFilters[key]}
                   onCheckedChange={() => onA11yFilterChange(key)}
-                  aria-label={label}
                 />
                 {label}
               </label>

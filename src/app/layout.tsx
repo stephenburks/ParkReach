@@ -7,6 +7,7 @@ import { QueryProvider } from '@/components/QueryProvider';
 import { DarkModeProvider } from '@/context/DarkModeProvider';
 import { Toaster } from '@/components/ui/sonner';
 import { SkipLink } from '@/components/SkipLink';
+import { BackToTop } from '@/components/BackToTop';
 import { NuqsAdapter } from '@/nuqs';
 
 const geistSans = Geist({
@@ -39,6 +40,7 @@ export default function RootLayout({
               <DarkModeProvider>
                 <SavesProvider>{children}</SavesProvider>
                 <Toaster />
+                <BackToTop />
               </DarkModeProvider>
             </AuthProvider>
           </QueryProvider>

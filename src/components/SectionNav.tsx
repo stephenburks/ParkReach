@@ -135,6 +135,7 @@ export function SectionNav({ sections }: SectionNavProps) {
 								<a
 									href={`#${section.id}`}
 									onClick={handleClick}
+									aria-current={isActive ? 'true' : undefined}
 									className={`block px-3 py-1.5 rounded-full text-xs font-medium transition-colors whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-park-forest focus-visible:ring-offset-2 dark:focus-visible:ring-offset-park-bark ${
 										isActive
 											? 'bg-park-forest text-white'

@@ -4,10 +4,8 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import type { User } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/client'
 
-type AuthClient = NonNullable<ReturnType<typeof createClient>>
-
 type AuthContextType = {
-  supabase: AuthClient | null
+  supabase: ReturnType<typeof createClient>
   user: User | null
   signOut: () => Promise<void>
   loading: boolean
