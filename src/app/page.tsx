@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+
+export const dynamic = "force-dynamic";
+
 import { ParkOfTheDay } from "@/components/ParkOfTheDay";
 import { ExplorerClient } from "@/components/ExplorerClient";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
