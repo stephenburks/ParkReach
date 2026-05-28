@@ -84,7 +84,23 @@ async function getTodaysPark(): Promise<Park | null> {
 		})
 		if (!parkRes.ok) return null
 		const data = await parkRes.json()
-		return data.data?.[0] ?? null
+		const park = data.data?.[0] ?? null
+		if (park?.images?.[0]?.url) {
+			// Transform legacy /grid_small/ URLs to the /structured_data/ path that the
+			// NPS CDN actually serves (the grid_small endpoint is often 404).
+			const url = park.images[0].url
+			const gridMatch = url.match(/\/grid_small\/([^/?#]+\.(?:jpg|jpeg|png|webp))/i)
+			if (gridMatch) {
+				park.images[0].url = `https://www.nps.gov/common/uploads/structured_data/${gridMatch[1]}`
+			}
+			// Strip legacy low-res query params (the render adds NPS CDN sizing params
+			// via ?width=1200&quality=90 instead).
+			if (park.images[0].url.includes('?')) {
+				const [base] = park.images[0].url.split('?')
+				park.images[0].url = base
+			}
+		}
+		return park
 	} catch {
 		return null
 	}
@@ -107,7 +123,6 @@ export async function ParkOfTheDay() {
 						fill
 						className="object-cover"
 						priority
-						sizes="100vw"
 					/>
 				)}
 				<div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />

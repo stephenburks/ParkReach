@@ -6,8 +6,8 @@ import type { NpsAlert } from '@/types/alert'
 const categoryColor: Record<NpsAlert['category'], string> = {
 	'Park Closure': 'bg-red-600 text-white dark:bg-red-950 dark:text-red-200',
 	Danger: 'bg-red-600 text-white dark:bg-red-950 dark:text-red-200',
-	Caution: 'bg-amber-500 text-white dark:bg-amber-950 dark:text-amber-200',
-	Information: 'bg-blue-500 text-white dark:bg-blue-950 dark:text-blue-200',
+	Caution: 'bg-amber-600 text-white dark:bg-amber-950 dark:text-amber-200',
+	Information: 'bg-blue-600 text-white dark:bg-blue-950 dark:text-blue-200',
 }
 
 interface AlertSummaryProps {
@@ -47,7 +47,7 @@ function AlertSummaryBadge({ summary }: { summary: AlertSummaryProps }) {
 				className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${categoryColor['Park Closure']}`}
 			>
 				<span className="sr-only">Park Closure alert: </span>
-				Closed
+				Closures
 			</span>
 		)
 	}

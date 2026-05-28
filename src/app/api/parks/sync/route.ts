@@ -70,6 +70,10 @@ function transformImageUrl(url: string): string {
 			parsed.searchParams.delete('quality')
 			changed = true
 		}
+		if (parsed.searchParams.has('size')) {
+			parsed.searchParams.delete('size')
+			changed = true
+		}
 		if (changed) return parsed.toString()
 	} catch {
 		// If URL parsing fails, return as-is

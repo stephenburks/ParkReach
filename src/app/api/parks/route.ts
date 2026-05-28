@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { jsonError } from '@/lib/api-response'
-import { fetchParkEnrichment } from '@/lib/nps'
+import { fetchParkEnrichment, formatNpsAccessibility } from '@/lib/nps'
 import type { Park } from '@/types/park'
 
 const NPS_BASE = 'https://developer.nps.gov/api/v1/parks'
@@ -180,6 +180,9 @@ export async function GET(request: NextRequest) {
 							parks[0].entranceFees = ed.entranceFees ?? []
 							parks[0].entrancePasses = ed.entrancePasses ?? []
 							parks[0].weatherInfo = ed.weatherInfo ?? ''
+							parks[0].directionsUrl = ed.directionsUrl ?? ''
+							parks[0].directionsInfo = ed.directionsInfo ?? ''
+							parks[0].accessibility = formatNpsAccessibility(ed.accessibility)
 						}
 					}
 				}

@@ -7,7 +7,7 @@ export default function ParkDetailLoading() {
 			{/* Hero image */}
 			<div className="h-72 sm:h-96 bg-stone-300 dark:bg-stone-700" />
 
-			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+			<div className="max-w-full lg:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
 				{/* Main content */}
 				<div className="lg:col-span-2 space-y-6">
 					<div className="space-y-3">

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import type { Park } from "@/types/park";
-import { fetchPark } from "@/lib/nps";
+import { fetchPark, fetchParkAccessibility } from "@/lib/nps";
 import { formatStates } from "@/components/park-card-utils";
 
 import { WishlistButton } from "@/components/WishlistButton";
@@ -28,55 +28,7 @@ interface Props {
   params: Promise<{ parkCode: string }>;
 }
 
-async function getAmenities(parkCode: string): Promise<string | null> {
-  const apiKey = process.env.NPS_API_KEY;
-  if (!apiKey) return null;
 
-  try {
-    const res = await fetch(
-      `https://developer.nps.gov/api/v1/amenities/parksplaces?parkCode=${parkCode}&limit=100`,
-      { headers: { "X-Api-Key": apiKey }, next: { revalidate: 3600 } },
-    );
-
-    if (!res.ok) return null;
-    const data = await res.json();
-
-    // NPS parksplaces returns: { data: [{name, categories, parks}, ...] }
-    const amenities: Array<{
-      name: string;
-      categories: string[];
-      parks: Array<{ parkCode: string; places: Array<{ title: string }> }>;
-    }> = data.data ?? [];
-
-    const accessibilityAmenities: string[] = [];
-
-    for (const amenity of amenities) {
-      const name = amenity.name ?? "";
-      const categories = amenity.categories ?? [];
-      const parks = amenity.parks ?? [];
-
-      const isAccessibilityRelated =
-        name.toLowerCase().includes("accessible") ||
-        categories.includes("Accessibility");
-
-      if (isAccessibilityRelated) {
-        const parkData = parks.find((park) => park.parkCode === parkCode);
-        if (parkData?.places && parkData.places.length > 0) {
-          const placeNames = parkData.places.map((place) => place.title).join(", ");
-          accessibilityAmenities.push(`${name}: ${placeNames}`);
-        } else if (parks.length > 0) {
-          accessibilityAmenities.push(name);
-        }
-      }
-    }
-
-    return accessibilityAmenities.length > 0
-      ? accessibilityAmenities.join("\n\n")
-      : null;
-  } catch {
-    return null;
-  }
-}
 
 interface ParkHeroProps {
   park: Park;
@@ -125,8 +77,8 @@ interface ParkActionsProps {
 
 function ParkActions({ parkCode, npsUrl }: ParkActionsProps) {
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-      <div className="flex flex-wrap items-center gap-3">
+    <div className="max-w-full lg:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="flex flex-wrap items-start justify-start gap-3">
         <WishlistButton parkCode={parkCode} />
         <VisitedButton parkCode={parkCode} />
         {npsUrl && (
@@ -147,7 +99,7 @@ function ParkActions({ parkCode, npsUrl }: ParkActionsProps) {
 function FeesSection({ park }: { park: Park }) {
   if (!park.entranceFees?.length) {
     return (
-      <section id="fees">
+      <section id="fees" className="scroll-mt-24">
         <h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">
           Entrance Fees
         </h2>
@@ -156,7 +108,7 @@ function FeesSection({ park }: { park: Park }) {
     );
   }
   return (
-    <section id="fees">
+    <section id="fees" className="scroll-mt-24">
       <h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">
         Entrance Fees
       </h2>
@@ -185,7 +137,7 @@ function FeesSection({ park }: { park: Park }) {
 function HoursSection({ hours }: { hours: Park['operatingHours'] }) {
   if (!hours?.length) return null;
   return (
-    <section id="hours">
+    <section id="hours" className="scroll-mt-24">
       <h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">
         Hours
       </h2>
@@ -229,7 +181,7 @@ interface ParkInfoGridProps {
 function ParkInfoGrid({ park, amenitiesAccessibility, parkCode }: ParkInfoGridProps) {
   return (
     <div className="space-y-8" id="park-info-grid">
-      <section id="about">
+      <section id="about" className="scroll-mt-24">
         <h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">
           About
         </h2>
@@ -238,7 +190,7 @@ function ParkInfoGrid({ park, amenitiesAccessibility, parkCode }: ParkInfoGridPr
         </p>
       </section>
 
-      <div id="weather" className="flex flex-col sm:flex-row gap-4">
+      <div id="weather" className="flex flex-col sm:flex-row gap-4 scroll-mt-24">
         <div className="flex-1">
           <WeatherWidget parkCode={park.parkCode} />
         </div>
@@ -249,14 +201,15 @@ function ParkInfoGrid({ park, amenitiesAccessibility, parkCode }: ParkInfoGridPr
         />
       </div>
 
-      {(amenitiesAccessibility || park.accessibility) && (
+      {(amenitiesAccessibility || park.accessibility || park.has_wheelchair_access || park.has_braille || park.has_asl || park.has_audio_description) && (
         <AccessibilityInfo
           accessibility={amenitiesAccessibility || park.accessibility}
+          park={park}
         />
       )}
 
       {park.directionsInfo && (
-        <section id="directions">
+        <section id="directions" className="scroll-mt-24">
           <h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">
             Getting There
           </h2>
@@ -281,7 +234,7 @@ function ParkInfoGrid({ park, amenitiesAccessibility, parkCode }: ParkInfoGridPr
 		<ThingsToDo parkCode={parkCode} />
 
 			{park.activities?.length > 0 && (
-				<section id="activities">
+				<section id="activities" className="scroll-mt-24">
 					<h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">
 						Activities
 					</h2>
@@ -304,7 +257,7 @@ function ParkInfoGrid({ park, amenitiesAccessibility, parkCode }: ParkInfoGridPr
 			<NewsSection parkCode={parkCode} />
 
 			{park.topics?.length > 0 && (
-        <section id="topics">
+        <section id="topics" className="scroll-mt-24">
           <h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">
             Topics
           </h2>
@@ -357,7 +310,22 @@ export default async function ParkDetailPage({ params }: Props) {
   if (!park) notFound();
 
   const states = formatStates(park.states);
-  const amenitiesAccessibility = await getAmenities(parkCode);
+  const apiKey = process.env.NPS_API_KEY ?? '';
+  const amenitiesAccessibility = apiKey ? await fetchParkAccessibility(parkCode, apiKey) : null;
+
+  // Compute section IDs for SectionNav — only include sections we know exist server-side.
+  // Data-dependent sections (things-to-do, events, campgrounds, visitor-centers, news)
+  // are detected dynamically by SectionNav when their content loads client-side.
+  const sectionIds: string[] = [
+    'about',
+    'weather',
+    'fees',
+  ];
+  if (amenitiesAccessibility || park.accessibility || park.has_wheelchair_access || park.has_braille || park.has_asl || park.has_audio_description) sectionIds.push('accessibility');
+  if (park.directionsInfo) sectionIds.push('directions');
+  if (park.operatingHours?.length) sectionIds.push('hours');
+  if (park.activities?.length > 0) sectionIds.push('activities');
+  if (park.topics?.length > 0) sectionIds.push('topics');
 
   // JSON-LD structured data for Google rich results
   const jsonLd = {
@@ -380,9 +348,9 @@ return (
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
       />
-      <div className="flex flex-col min-h-screen bg-park-cream dark:bg-park-bark">
+       <div className="flex flex-col min-h-screen bg-park-cream dark:bg-park-bark overflow-x-hidden">
         <header className="bg-park-forest text-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="max-w-full lg:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center justify-between">
               <Link
                 href="/"
@@ -396,14 +364,14 @@ return (
         </header>
 
         <ParkHero park={park} states={states} />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-full lg:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AlertBanner parkCode={park.parkCode} />
         </div>
         <ParkActions parkCode={park.parkCode} npsUrl={park.url} />
 
-        <SectionNav />
+        <SectionNav sections={sectionIds} />
 
-        <main id="main-content" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+        <main id="main-content" className="max-w-full lg:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12">
           <ParkInfoGrid park={park} amenitiesAccessibility={amenitiesAccessibility} parkCode={parkCode} />
         </main>
 

@@ -14,7 +14,7 @@ export default function AccessibilityPage() {
 	return (
 		<div className="min-h-screen bg-park-cream dark:bg-park-bark">
 			<header className="bg-park-forest text-white">
-				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+				<div className="max-w-full lg:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 					<Link
 						href="/"
 						className="text-park-cream hover:text-white font-semibold"

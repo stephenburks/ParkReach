@@ -42,7 +42,7 @@ export function Campgrounds({ parkCode }: { parkCode: string }) {
 	if (!data?.length) return null
 
 	return (
-		<section id="campgrounds" aria-labelledby="campgrounds-heading">
+		<section id="campgrounds" aria-labelledby="campgrounds-heading" className="scroll-mt-24">
 			<h2 id="campgrounds-heading" className="text-xl font-bold text-park-bark dark:text-park-cream mb-4">
 				Campgrounds
 			</h2>

@@ -3,6 +3,7 @@
 import { Search, X } from 'lucide-react';
 import { US_STATES } from '@/lib/constants/geography';
 import { FALLBACK_DESIGNATIONS } from '@/lib/constants/designations';
+import { Checkbox } from '@/components/ui/checkbox';
 
 function formatDesignationLabel(desig: string): string {
   if (desig === 'All') return 'All';
@@ -49,7 +50,7 @@ export default function SearchFilter({
   const displayDesignations = designations.length > 1 ? designations : FALLBACK_DESIGNATIONS;
   return (
     <div className="sticky top-0 z-40 bg-park-cream/95 dark:bg-park-bark/95 backdrop-blur-md border-b border-stone-200 dark:border-stone-700">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-3">
+      <div className="max-w-full lg:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-3">
         {/* Search + State row */}
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
@@ -117,13 +118,12 @@ export default function SearchFilter({
             {A11Y_CHECKBOXES.map(({ key, label }) => (
               <label
                 key={key}
-                className="flex items-center gap-1.5 text-xs text-park-stone dark:text-stone-400 cursor-pointer select-none"
+                className="flex items-center gap-2 text-xs text-park-stone dark:text-stone-400 cursor-pointer select-none"
               >
-                <input
-                  type="checkbox"
+                <Checkbox
                   checked={a11yFilters[key]}
-                  onChange={() => onA11yFilterChange(key)}
-                  className="h-3.5 w-3.5 rounded border-stone-300 dark:border-stone-600 text-park-forest focus:ring-2 focus:ring-park-sage focus:ring-offset-0 cursor-pointer"
+                  onCheckedChange={() => onA11yFilterChange(key)}
+                  aria-label={label}
                 />
                 {label}
               </label>

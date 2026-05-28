@@ -8,7 +8,7 @@ import { Trees } from 'lucide-react'
 import Link from 'next/link'
 
 export default function LoginPage() {
-	const { signIn } = useAuth()
+	useAuth()
 	const [magicLinkSent, setMagicLinkSent] = useState(false)
 	const [sentEmail, setSentEmail] = useState('')
 
@@ -52,28 +52,8 @@ export default function LoginPage() {
 						</Button>
 					</div>
 				) : (
-					<>
-						<Button onClick={signIn} size="lg" className="w-full">
-							Continue with Google
-						</Button>
+					<MagicLinkForm onSent={handleSent} inputId="login-email" />
 
-						<div className="relative">
-							<div className="absolute inset-0 flex items-center">
-								<span className="w-full border-t border-stone-200 dark:border-stone-700" />
-							</div>
-							<div className="relative flex justify-center text-xs">
-								<span className="bg-background px-2 text-muted-foreground">
-									or sign in with email
-								</span>
-							</div>
-						</div>
-
-						<MagicLinkForm onSent={handleSent} inputId="login-email" />
-
-						<p className="text-center text-sm text-muted-foreground">
-							{"Don't have an account? It'll be created automatically"}
-						</p>
-					</>
 				)}
 			</div>
 		</div>

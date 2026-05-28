@@ -1,13 +1,13 @@
 'use client'
 
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react'
 
 interface SectionLink {
 	label: string
 	id: string
 }
 
-const SECTIONS: SectionLink[] = [
+const ALL_SECTIONS: SectionLink[] = [
 	{ label: 'About', id: 'about' },
 	{ label: 'Weather', id: 'weather' },
 	{ label: 'Accessibility', id: 'accessibility' },
@@ -23,13 +23,55 @@ const SECTIONS: SectionLink[] = [
 	{ label: 'Topics', id: 'topics' },
 ]
 
-export function SectionNav() {
+interface SectionNavProps {
+	sections?: string[]
+}
+
+function getExistingSectionIds(): string[] {
+	return ALL_SECTIONS
+		.filter((s) => document.getElementById(s.id))
+		.map((s) => s.id)
+}
+
+export function SectionNav({ sections }: SectionNavProps) {
+	const [dynamicIds, setDynamicIds] = useState<string[]>([])
 	const [activeId, setActiveId] = useState<string | null>(null)
 	const navRef = useRef<HTMLElement>(null)
 	const observerRef = useRef<IntersectionObserver | null>(null)
 
+	const visibleSections = useMemo(() => {
+		const all = new Set(sections ?? [])
+		for (const id of dynamicIds) all.add(id)
+		return ALL_SECTIONS.filter((s) => all.has(s.id))
+	}, [sections, dynamicIds])
+
+	// Detect sections that appear in the DOM (client-side data loads)
+	useEffect(() => {
+		const container = document.getElementById('park-info-grid')
+		if (!container) return
+
+		const check = () => {
+			const existing = getExistingSectionIds()
+			setDynamicIds((prev) => {
+				if (existing.every((id) => prev.includes(id)) && prev.every((id) => existing.includes(id))) return prev
+				return existing
+			})
+		}
+
+		// Initial check after client components have mounted
+		check()
+		const timer = setTimeout(check, 1000)
+
+		const observer = new MutationObserver(check)
+		observer.observe(container, { childList: true, subtree: true })
+
+		return () => {
+			clearTimeout(timer)
+			observer.disconnect()
+		}
+	}, [])
+
 	const handleIntersection = useCallback((entries: IntersectionObserverEntry[]) => {
-		// Find the first section whose top is in the upper portion of the viewport
 		for (const entry of entries) {
 			if (entry.isIntersecting) {
 				setActiveId(entry.target.id)
@@ -46,7 +88,7 @@ export function SectionNav() {
 
 		const elements: Element[] = []
 
-		for (const section of SECTIONS) {
+		for (const section of visibleSections) {
 			const el = document.getElementById(section.id)
 			if (el) {
 				observerRef.current.observe(el)
@@ -57,7 +99,7 @@ export function SectionNav() {
 		return () => {
 			observerRef.current?.disconnect()
 		}
-	}, [handleIntersection])
+	}, [handleIntersection, visibleSections])
 
 	const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
 		e.preventDefault()
@@ -67,26 +109,26 @@ export function SectionNav() {
 		const el = document.getElementById(id)
 		if (el) {
 			el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-			// Set focus to the section for keyboard users
 			el.setAttribute('tabindex', '-1')
 			el.focus({ preventScroll: true })
-			// Update active immediately for click
 			setActiveId(id)
 		}
 	}
+
+	if (visibleSections.length === 0) return null
 
 	return (
 		<nav
 			ref={navRef}
 			aria-label="Page sections"
-			className="sticky top-0 z-30 bg-park-cream/95 dark:bg-park-bark/95 backdrop-blur-md border-b border-stone-200 dark:border-stone-700 -mx-4 sm:-mx-6 lg:-mx-8"
+			className="sticky top-0 z-30 bg-park-cream/95 dark:bg-park-bark/95 backdrop-blur-md"
 		>
 			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 				<ul
 					className="flex gap-0.5 overflow-x-auto scrollbar-hide py-2"
 					role="list"
 				>
-					{SECTIONS.map((section) => {
+					{visibleSections.map((section) => {
 						const isActive = activeId === section.id
 						return (
 							<li key={section.id} className="shrink-0">

@@ -49,7 +49,7 @@ export function VisitorCenters({ parkCode }: { parkCode: string }) {
 	if (!data?.length) return null
 
 	return (
-		<section id="visitor-centers" aria-labelledby="visitor-centers-heading">
+		<section id="visitor-centers" aria-labelledby="visitor-centers-heading" className="scroll-mt-24">
 			<h2 id="visitor-centers-heading" className="text-xl font-bold text-park-bark dark:text-park-cream mb-4">
 				Visitor Centers
 			</h2>

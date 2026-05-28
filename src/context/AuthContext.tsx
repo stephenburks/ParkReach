@@ -9,7 +9,6 @@ type AuthClient = NonNullable<ReturnType<typeof createClient>>
 type AuthContextType = {
   supabase: AuthClient | null
   user: User | null
-  signIn: () => void
   signOut: () => Promise<void>
   loading: boolean
 }
@@ -17,7 +16,6 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType>({
   supabase: null,
   user: null,
-  signIn: () => {},
   signOut: async () => {},
   loading: true,
 })
@@ -27,41 +25,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(() => supabase !== null)
 
-  useEffect(() => {
-    if (!supabase) return
+	useEffect(() => {
+		if (!supabase) return
 
-    const getUser = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser()
-        setUser(user)
-      } catch {
-        // Supabase unreachable (paused project, DNS failure, network issue)
-      } finally {
-        setLoading(false)
-      }
-    }
+		let isMounted = true
 
-    getUser()
+		const getUser = async () => {
+			try {
+				const { data: { user } } = await supabase.auth.getUser()
+				if (isMounted) setUser(user)
+			} catch {
+				// Supabase unreachable (paused project, DNS failure, network issue)
+			} finally {
+				if (isMounted) setLoading(false)
+			}
+		}
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
-      setLoading(false)
-    })
+		getUser()
 
-    return () => subscription.unsubscribe()
-  }, [supabase])
+		// onAuthStateChange updates the user on sign-in/sign-out events, but
+		// does NOT touch loading — that's managed exclusively by getUser().
+		// This prevents hydration mismatches when detectSessionInUrl fires
+		// during client initialization.
+		const {
+			data: { subscription },
+		} = supabase.auth.onAuthStateChange((_event, session) => {
+			if (isMounted) setUser(session?.user ?? null)
+		})
 
-  const signIn = useCallback(() => {
-    if (!supabase) return
-    supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${location.origin}/api/auth/callback`,
-      },
-    })
-  }, [supabase])
+		return () => {
+			isMounted = false
+			subscription.unsubscribe()
+		}
+	}, [supabase])
 
   const signOut = useCallback(async () => {
     if (!supabase) return
@@ -69,8 +65,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [supabase])
 
   const value = useMemo(
-    () => ({ supabase, user, signIn, signOut, loading }),
-    [supabase, user, signIn, signOut, loading]
+    () => ({ supabase, user, signOut, loading }),
+    [supabase, user, signOut, loading]
   )
 
   return (

@@ -133,7 +133,7 @@ describe('AlertBadge', () => {
 
 	// --- alertSummary prop (inline, no API call) ---
 
-	it('shows "Closed" badge when alertSummary has has_closure: true', () => {
+	it('shows "Closures" badge when alertSummary has has_closure: true', () => {
 		render(
 			<AlertBadge
 				alertSummary={{
@@ -144,7 +144,7 @@ describe('AlertBadge', () => {
 				}}
 			/>
 		)
-		expect(screen.getByText('Closed')).toBeInTheDocument()
+		expect(screen.getByText('Closures')).toBeInTheDocument()
 		expect(screen.getByText('Park Closure alert:')).toBeInTheDocument()
 	})
 
@@ -174,7 +174,7 @@ describe('AlertBadge', () => {
 				}}
 			/>
 		)
-		expect(screen.getByText('Closed')).toBeInTheDocument()
+		expect(screen.getByText('Closures')).toBeInTheDocument()
 		expect(screen.queryByText('Danger Alert')).not.toBeInTheDocument()
 	})
 

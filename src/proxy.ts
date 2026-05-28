@@ -10,7 +10,7 @@ function buildCsp(): string {
 		`script-src 'self' 'unsafe-inline'${evalDirective} https://maps.googleapis.com https://*.gstatic.com`,
 		`style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`,
 		`font-src 'self' data: https://fonts.gstatic.com`,
-		`img-src 'self' data: blob: https://*.nps.gov https://*.googleapis.com https://*.gstatic.com`,
+		`img-src 'self' data: blob: https://*.nps.gov https://*.googleapis.com https://*.gstatic.com https://*.supabase.co`,
 		`connect-src 'self' https://*.supabase.co https://developer.nps.gov https://api.weather.gov https://maps.googleapis.com`,
 		`frame-src 'none'`,
 		`object-src 'none'`,

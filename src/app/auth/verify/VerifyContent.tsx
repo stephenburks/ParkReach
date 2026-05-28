@@ -9,11 +9,20 @@ export function VerifyContent() {
 	const { supabase } = useAuth()
 	const searchParams = useSearchParams()
 	const email = searchParams.get('email')
+	const next = searchParams.get('next')
 
 	const handleResend = async () => {
 		if (!email) return
 		if (!supabase) return
-		const { error } = await supabase.auth.signInWithOtp({ email })
+		const redirectTo = next
+			? `${location.origin}/api/auth/callback?next=${encodeURIComponent(next)}`
+			: `${location.origin}/api/auth/callback`
+		const { error } = await supabase.auth.signInWithOtp({
+			email,
+			options: {
+				emailRedirectTo: redirectTo,
+			},
+		})
 		if (error) {
 			toast.error('Failed to resend — please try again.')
 		} else {

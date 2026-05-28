@@ -1,6 +1,39 @@
 import { createClient } from '@/lib/supabase/server'
 import type { Park } from '@/types/park'
 
+export function formatNpsAccessibility(accessibility: unknown): string {
+	if (!accessibility) return ''
+	if (typeof accessibility === 'string') return accessibility
+	if (typeof accessibility === 'object') {
+		const a = accessibility as Record<string, unknown>
+		const lines: string[] = []
+
+		if (a.wheelchairAccess && a.wheelchairAccess !== 'No') {
+			lines.push(`Wheelchair access: ${a.wheelchairAccess}`)
+		}
+		if (a.internetInfo) lines.push(`Internet: ${a.internetInfo}`)
+		if (a.cellPhoneInfo) lines.push(`Cell phone: ${a.cellPhoneInfo}`)
+		if (a.fireStovePolicy) lines.push(`Fire/stove policy: ${a.fireStovePolicy}`)
+		if (a.rvAllowed && a.rvAllowed !== 'No') {
+			const rvItems = [a.rvAllowed]
+			if (a.rvInfo) rvItems.push(a.rvInfo)
+			if (a.rvMaxLength) rvItems.push(`Max length: ${a.rvMaxLength}`)
+			lines.push(`RV access: ${rvItems.join(' — ')}`)
+		}
+		if (Array.isArray(a.classifications) && a.classifications.length > 0) {
+			lines.push(`Classification: ${a.classifications.join(', ')}`)
+		}
+		if (Array.isArray(a.areasAccessible) && a.areasAccessible.length > 0) {
+			lines.push(`Accessible areas: ${a.areasAccessible.join(', ')}`)
+		}
+		if (a.additionalInfo) lines.push(String(a.additionalInfo))
+		if (a.entranceFeeException) lines.push(String(a.entranceFeeException))
+
+		return lines.join('\n\n')
+	}
+	return ''
+}
+
 interface NpsEnrichmentResponse {
 	data?: Array<{
 		activities?: Park['activities']
@@ -9,6 +42,9 @@ interface NpsEnrichmentResponse {
 		entranceFees?: Park['entranceFees']
 		entrancePasses?: Park['entrancePasses']
 		weatherInfo?: string
+		directionsUrl?: string
+		directionsInfo?: string
+		accessibility?: unknown
 	}>
 }
 
@@ -21,7 +57,7 @@ export async function fetchParkEnrichment(
 	apiKey: string,
 ): Promise<NpsEnrichmentResponse | null> {
 	try {
-		const fields = 'activities,topics,operatingHours,entranceFees,entrancePasses,weatherInfo'
+		const fields = 'activities,topics,operatingHours,entranceFees,entrancePasses,weatherInfo,directionsUrl,directionsInfo,accessibility'
 		const res = await fetch(
 			`https://developer.nps.gov/api/v1/parks?parkCode=${parkCode}&fields=${fields}`,
 			{
@@ -31,6 +67,41 @@ export async function fetchParkEnrichment(
 		)
 		if (!res.ok) return null
 		return (await res.json()) as NpsEnrichmentResponse
+	} catch {
+		return null
+	}
+}
+
+/**
+ * Fetches accessibility amenity names for a park from the NPS amenities endpoint.
+ * Returns a formatted text string or null if no accessibility amenities found.
+ */
+export async function fetchParkAccessibility(
+	parkCode: string,
+	apiKey: string,
+): Promise<string | null> {
+	try {
+		const res = await fetch(
+			`https://developer.nps.gov/api/v1/amenities?parkCode=${parkCode}&limit=200`,
+			{
+				headers: { 'X-Api-Key': apiKey },
+				next: { revalidate: 3600 },
+			},
+		)
+		if (!res.ok) return null
+		const data = await res.json()
+		const amenities: Array<{ name: string; categories: string[] }> = data.data ?? []
+
+		const accessibilityAmenities = amenities
+			.filter((a) => {
+				const name = a.name?.toLowerCase() ?? ''
+				const categories = a.categories ?? []
+				return name.includes('accessible') || categories.includes('Accessibility')
+			})
+			.map((a) => a.name)
+			.filter(Boolean)
+
+		return accessibilityAmenities.length > 0 ? accessibilityAmenities.join('\n\n') : null
 	} catch {
 		return null
 	}
@@ -115,6 +186,9 @@ export async function fetchPark(parkCode: string): Promise<Park | null> {
 					park.entranceFees = ed.entranceFees ?? []
 					park.entrancePasses = ed.entrancePasses ?? []
 					park.weatherInfo = ed.weatherInfo ?? ''
+					park.directionsUrl = ed.directionsUrl ?? ''
+					park.directionsInfo = ed.directionsInfo ?? ''
+					park.accessibility = formatNpsAccessibility(ed.accessibility)
 				}
 			}
 			return park

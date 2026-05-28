@@ -8,9 +8,10 @@ import { Button } from '@/components/ui/button'
 interface MagicLinkFormProps {
 	onSent: (email: string) => void
 	inputId?: string
+	returnPath?: string
 }
 
-export function MagicLinkForm({ onSent, inputId = 'magic-link-email' }: MagicLinkFormProps) {
+export function MagicLinkForm({ onSent, inputId = 'magic-link-email', returnPath }: MagicLinkFormProps) {
 	const [email, setEmail] = useState('')
 	const [loading, setLoading] = useState(false)
 	const [error, setError] = useState<string | null>(null)
@@ -33,7 +34,15 @@ export function MagicLinkForm({ onSent, inputId = 'magic-link-email' }: MagicLin
 		setError(null)
 		setLoading(true)
 		try {
-			const { error: supabaseError } = await supabase.auth.signInWithOtp({ email })
+			const redirectTo = returnPath
+			? `${location.origin}/api/auth/callback?next=${encodeURIComponent(returnPath)}`
+			: `${location.origin}/api/auth/callback`
+		const { error: supabaseError } = await supabase.auth.signInWithOtp({
+			email,
+			options: {
+				emailRedirectTo: redirectTo,
+			},
+		})
 			if (supabaseError) {
 				setError('Failed to send email — please try again.')
 				return

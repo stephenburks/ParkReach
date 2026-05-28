@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useRef, useState, useCallback } from 'react'
-import { useAuth } from '@/context/AuthContext'
 import { X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { MagicLinkForm } from '@/components/MagicLinkForm'
@@ -13,10 +12,10 @@ interface AuthModalProps {
 }
 
 export function AuthModal({ isOpen, onClose }: AuthModalProps) {
-  const { signIn } = useAuth()
   const [sentEmail, setSentEmail] = useState('')
   const [magicLinkSent, setMagicLinkSent] = useState(false)
   const closeButtonRef = useRef<HTMLButtonElement>(null)
+  const backButtonRef = useRef<HTMLButtonElement>(null)
   const modalRef = useRef<HTMLDivElement>(null)
   const triggerRef = useRef<HTMLElement | null>(null)
 
@@ -27,6 +26,12 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
   }, [onClose])
 
   useFocusTrap(modalRef, isOpen)
+
+  useEffect(() => {
+    if (magicLinkSent) {
+      backButtonRef.current?.focus()
+    }
+  }, [magicLinkSent])
 
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
@@ -100,6 +105,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                 </p>
               </div>
               <Button
+                ref={backButtonRef}
                 variant="outline"
                 onClick={() => setMagicLinkSent(false)}
                 className="w-full"
@@ -108,28 +114,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
               </Button>
             </div>
           ) : (
-            <>
-              <div className="space-y-3">
-                <Button onClick={signIn} size="lg" className="w-full">
-                  Continue with Google
-                </Button>
-
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t border-stone-200 dark:border-stone-600" />
-                  </div>
-                  <div className="relative flex justify-center text-xs">
-                    <span className="bg-white dark:bg-stone-800 px-2 text-stone-500">or sign in with email</span>
-                  </div>
-                </div>
-
-                <MagicLinkForm onSent={handleSent} inputId="auth-modal-email" />
-              </div>
-
-              <p className="text-xs text-stone-500 dark:text-stone-400 mt-6">
-                {"Don't have an account? It'll be created automatically"}
-              </p>
-            </>
+            <MagicLinkForm onSent={handleSent} inputId="auth-modal-email" />
           )}
         </div>
       </div>

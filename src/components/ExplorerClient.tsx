@@ -158,7 +158,7 @@ export function ExplorerClient({ defaultView = "cards" }: ExplorerClientProps) {
     <>
       <main
         id="main-content"
-        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+        className="max-w-full lg:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
         ref={resultsRef}
       >
         <SearchFilter

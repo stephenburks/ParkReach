@@ -2,6 +2,20 @@ import { useQuery } from '@tanstack/react-query'
 import type { NpsApiResponse, Park } from '@/types/park'
 import type { A11yFilters } from '@/components/SearchFilter'
 
+export function useParkEnrichment(parkCode: string) {
+	return useQuery<Park | null>({
+		queryKey: ['park', 'enrichment', parkCode],
+		queryFn: async () => {
+			const res = await fetch(`/api/parks?parkCode=${parkCode}&limit=1`)
+			if (!res.ok) throw new Error('Failed to fetch park')
+			const data = await res.json()
+			return data.data?.[0] ?? null
+		},
+		staleTime: 60 * 60 * 1000,
+		enabled: Boolean(parkCode),
+	})
+}
+
 const PREVIEW_LIMIT = 24
 const FULL_LIMIT = 600
 

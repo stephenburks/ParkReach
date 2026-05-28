@@ -32,7 +32,7 @@ export function ThingsToDo({ parkCode }: { parkCode: string }) {
 	if (!data?.length) return null
 
 	return (
-		<section id="things-to-do" aria-labelledby="things-to-do-heading">
+		<section id="things-to-do" aria-labelledby="things-to-do-heading" className="scroll-mt-24">
 			<h2 id="things-to-do-heading" className="text-xl font-bold text-park-bark dark:text-park-cream mb-4">
 				Things To Do
 			</h2>

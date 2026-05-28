@@ -40,7 +40,7 @@ export function HeaderControls() {
 			{/* Mobile drawer */}
 			{menuOpen && (
 				<div className="absolute top-full left-0 right-0 bg-park-forest border-t border-white/10 shadow-lg z-50 sm:hidden">
-					<nav className="max-w-7xl mx-auto px-4 py-3 flex flex-col gap-1">
+					<nav className="max-w-full lg:max-w-7xl mx-auto px-4 py-3 flex flex-col gap-1">
 						{user ? (
 							<>
 								<Link
