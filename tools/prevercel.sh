@@ -7,12 +7,24 @@ set -e
 
 echo '⚡ Generating .env.production from Vercel environment variables...'
 
-cat > .env.production << EOF
-NPS_API_KEY=$NPS_API_KEY
-NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL
-NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY
-GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_API_KEY
-NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=$NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
-EOF
+node -e "
+  const fs = require('fs');
+  const keys = [
+    'NPS_API_KEY',
+    'NEXT_PUBLIC_SUPABASE_URL',
+    'NEXT_PUBLIC_SUPABASE_ANON_KEY',
+    'GOOGLE_MAPS_API_KEY',
+    'NEXT_PUBLIC_GOOGLE_MAPS_API_KEY',
+  ];
+  const lines = [];
+  for (const key of keys) {
+    const val = process.env[key] || '';
+    lines.push(key + '=' + val);
+  }
+  fs.writeFileSync('.env.production', lines.join('\n') + '\n');
+  console.log('Keys found: ' + keys.filter(k => process.env[k]).join(', '));
+  console.log('✓ .env.production generated');
+" 2>&1
 
-echo '✓ .env.production generated'
+echo 'Contents (masked):'
+cat .env.production | sed 's/=.*/=***/g'
