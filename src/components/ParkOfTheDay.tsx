@@ -22,7 +22,7 @@ async function getTodaysPark(): Promise<Park | null> {
 	if (supabase) {
 		const { count, error } = await supabase
 			.from('parks')
-			.select('*', { count: 'exact', head: true })
+			.select('park_code', { count: 'exact', head: true })
 
 		if (!error && count) {
 			const today = new Date().toISOString().slice(0, 10)
@@ -30,8 +30,9 @@ async function getTodaysPark(): Promise<Park | null> {
 
 			const { data, error: fetchError } = await supabase
 				.from('parks')
-				.select('*')
+				.select('park_code, full_name, description, states, designation, latitude, longitude, image_url, image_alt, url')
 				.range(index, index)
+				.limit(1)
 				.single()
 
 			if (!fetchError && data) {
