@@ -31,6 +31,7 @@ async function getTodaysPark(): Promise<Park | null> {
 			const { data, error: fetchError } = await supabase
 				.from('parks')
 				.select('park_code, full_name, description, states, designation, latitude, longitude, image_url, image_alt, url')
+				.order('park_code')
 				.range(index, index)
 				.limit(1)
 				.single()
