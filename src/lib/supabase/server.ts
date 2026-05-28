@@ -8,23 +8,28 @@ export async function createClient() {
 	const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
 	if (!url || !anonKey) return null
+	if (!url.startsWith('http')) return null
 
 	const cookieStore = await cookies()
 
-	return createServerClient<Database>(
-		url,
-		anonKey,
-		{
-			cookies: {
-				getAll() {
-					return cookieStore.getAll()
+	try {
+		return createServerClient<Database>(
+			url,
+			anonKey,
+			{
+				cookies: {
+					getAll() {
+						return cookieStore.getAll()
+					},
+					setAll(cookiesToSet) {
+						cookiesToSet.forEach(({ name, value, options }) => {
+							cookieStore.set(name, value, options)
+						})
+					},
 				},
-				setAll(cookiesToSet) {
-					cookiesToSet.forEach(({ name, value, options }) => {
-						cookieStore.set(name, value, options)
-					})
-				},
-			},
-		}
-	)
+			}
+		)
+	} catch {
+		return null
+	}
 }
