@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "bash tools/predev.sh && next dev",
     "build": "bash tools/predev.sh && next build",
+    "vercel-build": "next build",
     "start": "next start",
     "lint": "eslint",
     "test": "vitest",
