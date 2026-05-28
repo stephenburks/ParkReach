@@ -21,7 +21,7 @@ const FULL_LIMIT = 600
 
 function toApiDesignation(display: string): string {
 	if (!display || display === 'All') return ''
-	return display.replace(/s$/, '')
+	return display
 }
 
 async function fetchParksApi(params: URLSearchParams): Promise<NpsApiResponse> {
@@ -52,7 +52,7 @@ function normalizeDesignation(str: string): string {
 
 function filterByDesignation(parks: Park[], designation: string): Park[] {
 	if (!designation || designation === 'All') return parks
-	const normalized = normalizeDesignation(designation).replace(/s$/, '')
+	const normalized = normalizeDesignation(designation)
 	return parks.filter((park) => {
 		const parkDesignation = normalizeDesignation(park.designation ?? '')
 		return parkDesignation === normalized
@@ -98,7 +98,7 @@ export function useParks(
 			}
 			return fetchParksApi(buildParams(search, stateCode, PREVIEW_LIMIT, a11yFilters))
 		},
-		staleTime: 24 * 60 * 60 * 1000,
+		staleTime: 60 * 60 * 1000,
 	})
 
 	const needsFullLoad = !apiDesignation
@@ -107,7 +107,7 @@ export function useParks(
 		queryKey: ['parks', 'full', search, stateCode, apiDesignation, a11yFilters],
 		queryFn: () => fetchParksApi(buildParams(search, stateCode, FULL_LIMIT, a11yFilters)),
 		enabled: needsFullLoad && previewQuery.isSuccess,
-		staleTime: 24 * 60 * 60 * 1000,
+		staleTime: 60 * 60 * 1000,
 	})
 
 	// Separate query for available states — fetches parks without the state filter
@@ -119,7 +119,7 @@ export function useParks(
 		queryKey: ['parks', 'stateSource', search, a11yFilters],
 		queryFn: () => fetchParksApi(buildParams(search, '', FULL_LIMIT, a11yFilters)),
 		enabled: hasNonStateFilters,
-		staleTime: 24 * 60 * 60 * 1000,
+		staleTime: 60 * 60 * 1000,
 	})
 
 	const activeData = fullQuery.data ?? previewQuery.data

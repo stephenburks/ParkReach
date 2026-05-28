@@ -18,7 +18,7 @@ export async function GET(
 
   const headersList = await headers();
   const ip = headersList.get('x-forwarded-for') ?? 'unknown';
-  const { allowed } = checkRateLimit(ip, 30, 60_000);
+	const { allowed } = await checkRateLimit(ip, 30, 60_000);
   if (!allowed) {
     return jsonError('Too many requests — please wait a moment.', 429);
   }

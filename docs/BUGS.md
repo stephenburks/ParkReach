@@ -29,186 +29,129 @@ Description of the issue.
 
 ### [Bug] Auth modal - Google sign in throws error
 
-**Status:** open
+**Status:** closed — removed from UI
 **Phase:** Phase 2
 **Priority:** high
 
-Clicking "Continue with Google" throws a JSON error page instead of redirecting.
-
-**Steps to reproduce:**
-1. Click "Sign in" button in header
-2. Click "Continue with Google"
-3. Error page appears
-
-**Proposed fix:**
-- Check AuthContext signIn function redirect URL
-- Verify Supabase Google provider is configured in dashboard
+Google OAuth button was removed from AuthModal as of May 2026. Magic link is the
+sole auth method. Revisit for Phase 9 when OAuth is re-prioritized.
 
 ---
 
 ### [Bug] Auth button shows "Loading..." for too long
 
-**Status:** open
+**Status:** done
 **Phase:** Phase 2
 **Priority:** high
 
-The Sign in button shows "Loading..." state before determining if user is authenticated.
-
-**Proposed fix:**
-- Add timeout or skeleton state instead of "Loading..."
-- Show button immediately, update after auth check
+Fixed — now shows `animate-pulse` skeleton instead of "Loading..." text.
 
 ---
 
 ### [Improvement] Auth modal - Add error handling
 
-**Status:** open
+**Status:** done
 **Phase:** Phase 2
 **Priority:** medium
 
-Magic link sign in has no error handling if it fails.
-
-**Proposed fix:**
-- Add try/catch with user-facing error message
-- Show "Failed to send magic link" with retry option
+Fixed — try/catch with user-facing error message added to MagicLinkForm.
 
 ---
 
 ### [Improvement] Magic link copy improvement
 
-**Status:** open
+**Status:** done
 **Phase:** Phase 2
 **Priority:** low
 
-"magic link" is unfamiliar terminology. Change to "one-time code" or "email code".
-
-**Proposed fix:**
-- Update button text to "Send Email Code"
-- Update success message to reference the code
+Fixed — button now reads "Send Email Code".
 
 ---
 
 ### [Improvement] Email format validation
 
-**Status:** open
+**Status:** done
 **Phase:** Phase 2
 **Priority:** low
 
-Email input should validate format before submitting.
-
-**Proposed fix:**
-- Add HTML5 validation or custom validation message
-- Show inline error for invalid email
+Fixed — `isValidEmail()` validation added to MagicLinkForm.
 
 ---
 
 ### [Improvement] Add profile URL link
 
-**Status:** open
+**Status:** done
 **Phase:** Phase 3
 **Priority:** low
 
-When signed in, user name/avatar should link to /profile page.
-
-**Proposed fix:**
-- Add link to profile in header when authenticated
+Fixed — `Link href="/profile"` with User icon in AuthButton.
 
 ---
 
 ### [Bug] Filtering returns inconsistent number of results
 
-**Status:** open
+**Status:** in-progress
 **Phase:** Phase 3
 **Priority:** high
 
-When filtering by designation (e.g., "National Parks"), the results may include other similar designations (e.g., "National Historic Parks", parks) or return fewer/more results than expected.
-
-**Steps to reproduce:**
-1. Select "National Parks" from designation filter
-2. Note the count of results
-3. Refresh or navigate away and return
-4. Count may differ
-
-**Proposed fix:**
-- Add logging to see what designations NPS API returns
-- Consider creating a local designation map for more reliable filtering
-- Alternatively, fetch all parks once and filter client-side with full designation matching
+Designation filter now fetches all parks and filters client-side with `buildDesignationList()`
+built dynamically from loaded data. Normalization simplified to exact match (removed brittle
+`replace(/s$/, '')`). Both tab values and park designations come from the same Supabase
+source. Monitor after next data sync.
 
 ---
 
 ### [Improvement] Optimize NPS API usage with caching or local database
 
-**Status:** open
-**Phase:** General
+**Status:** done — Supabase is now primary data source
+**Phase:** Phase 4
 **Priority:** high
 
-NPS API has rate limits and costs. Currently fetching from API on each request. Need to optimize to avoid hitting limits and reduce latency.
-
-**Proposed fix:**
-- **Option A: Server-side caching** — Implement Redis or similar cache with TTL (e.g., 1 hour) to cache API responses
-- **Option B: Local database** — Create a cron job to sync parks to local PostgreSQL/Supabase table daily
-- **Option C: Static generation** — Use ISR to build parks weekly, regenerate periodically
-- Consider first: Add caching layer (fastify-cache or similar)
+Parks data is synced from NPS to Supabase `parks` table via `/api/parks/sync` (cron, daily).
+Explorer queries Supabase first; NPS API only used for detail page enrichment and
+detail-page sub-endpoints (alerts, thingstodo, campgrounds, etc.). All routes cached with
+`s-maxage` headers.
 
 ---
 
 ### [Bug] Map view is buggy
 
-**Status:** open
-**Phase:** Phase 4
+**Status:** deferred
+**Phase:** Phase 9
 **Priority:** high
 
-Map view using react-leaflet is buggy - markers don't load, icons missing, or blank map in Next.js.
-
-**Proposed fix:**
-- Replace with simple interactive map using Google Maps or static map images
-- Map should show park locations as selectable markers/layers
-- Users can click markers to view park details
-- Keep it simple: one map with clickable dots, not full-leaflet implementation
+Map view was removed entirely and `ParkMap.tsx` deleted. `react-leaflet` was dropped.
+Pending Google Maps reimplementation using `@vis.gl/react-google-maps` (already installed).
 
 ---
 
 ### [Improvement] Add minimal list view
 
-**Status:** open
+**Status:** done
 **Phase:** Phase 4
 **Priority:** medium
 
-Add a minimal/card list view option for the explorer - shows parks in a more compact format.
-
-**Proposed fix:**
-- Implement ParkCardMinimal component
-- Show in list format (compact rows with name, state, designation)
-- Toggle between card and list view
-- Use existing ParkCardMinimal component already created
+Done — `ParkCardMinimal` + `ParkListView` shipped. View toggle between cards/minimal works.
 
 ---
 
 ### [Improvement] Add accessibility filter
 
-**Status:** open
+**Status:** done — real boolean filter, requires data sync
 **Phase:** Phase 4
 **Priority:** medium
 
-Add accessibility filter dropdown to SearchFilter (UI exists but NPS API doesn't expose accessibility data in parks endpoint).
-
-**Proposed fix:**
-- Requires NPS API to add accessibility fields, or
-- Scrape accessibility data from park detail pages, or
-- Manual curation in local database
-- Alternative: Show "Accessibility info available on detail page" badge on cards
+Accessibility filter rebuilt on real Supabase boolean fields (has_wheelchair_access, has_braille,
+has_asl, has_audio_description). Filter works once `/api/parks/sync` cron populates the columns
+with data from NPS `/amenities` endpoint.
 
 ---
 
-### [Improvement] Add News tab
+### [Improvement] Add News section
 
-**Status:** open
-**Phase:** Future
+**Status:** done
+**Phase:** Phase 5
 **Priority:** medium
 
-Add a "News" tab to show national parks news and information.
-
-**Proposed fix:**
-- Use NPS API `/news` endpoint
-- Add news as a separate tab or section alongside designation tabs
-- Display park-related news articles
+Done — `NewsSection` component wired to park detail page, fetching from `/api/news`
+(NPS `/newsreleases` endpoint).

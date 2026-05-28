@@ -238,7 +238,12 @@ async function fetchAlertsForPark(
 // Sync handler
 // ---------------------------------------------------------------------------
 
-export async function GET(_request: NextRequest) {
+export async function GET(request: NextRequest) {
+	const authHeader = request.headers.get('authorization')
+	if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+		return jsonError('Unauthorized', 401)
+	}
+
 	const key = process.env.NPS_API_KEY
 	if (!key) {
 		return jsonError('NPS API key not configured.', 503)

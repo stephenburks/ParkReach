@@ -22,7 +22,7 @@ export async function GET(
   const { parkCode } = await params;
   const headersList = await headers();
   const ip = headersList.get('x-forwarded-for') ?? 'unknown';
-  const { allowed } = checkRateLimit(ip, 20, 60_000);
+	const { allowed } = await checkRateLimit(ip, 20, 60_000);
   if (!allowed) {
     return jsonError('Too many requests — please wait a moment.', 429);
   }

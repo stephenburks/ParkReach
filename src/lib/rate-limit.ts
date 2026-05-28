@@ -1,37 +1,23 @@
-const requests = new Map<string, { count: number; resetAt: number }>()
+import { Redis } from '@upstash/redis'
 
-const CLEANUP_INTERVAL = 5 * 60 * 1000
-let cleanupTimer: ReturnType<typeof setInterval> | null = null
+const redis = new Redis({
+	url: process.env.KV_REST_API_URL!,
+	token: process.env.KV_REST_API_TOKEN!,
+})
 
-function startCleanup() {
-	if (cleanupTimer) return
-	cleanupTimer = setInterval(() => {
-		const now = Date.now()
-		for (const [key, record] of requests) {
-			if (now > record.resetAt) requests.delete(key)
-		}
-	}, CLEANUP_INTERVAL)
-}
-
-export function checkRateLimit(
+export async function checkRateLimit(
 	ip: string,
 	limit: number = 10,
 	windowMs: number = 60_000
-): { allowed: boolean; remaining: number } {
-	startCleanup()
+): Promise<{ allowed: boolean; remaining: number }> {
+	const key = `rl:${ip}`
+	const windowSecs = Math.ceil(windowMs / 1000)
 
-	const now = Date.now()
-	const record = requests.get(ip)
-
-	if (!record || now > record.resetAt) {
-		requests.set(ip, { count: 1, resetAt: now + windowMs })
-		return { allowed: true, remaining: limit - 1 }
+	const count = await redis.incr(key)
+	if (count === 1) {
+		await redis.expire(key, windowSecs)
 	}
 
-	if (record.count >= limit) {
-		return { allowed: false, remaining: 0 }
-	}
-
-	record.count++
-	return { allowed: true, remaining: limit - record.count }
+	const remaining = Math.max(0, limit - count)
+	return { allowed: count <= limit, remaining }
 }

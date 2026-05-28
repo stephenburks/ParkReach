@@ -109,7 +109,7 @@ describe('useParks', () => {
 		expect(result.current.parks[0].parkCode).toBe('yose')
 	})
 
-	it('filters by designation with plural input (strips trailing s)', async () => {
+	it('filters by designation with exact match', async () => {
 		const nationalPark = makePark({ parkCode: 'yose', designation: 'National Park' })
 		const nationalHistoric = makePark({
 			parkCode: 'frst',
@@ -122,7 +122,7 @@ describe('useParks', () => {
 			json: async () => npsResponse([nationalPark, nationalHistoric], 2),
 		})
 
-		const { result } = renderHook(() => useParks('', '', 'National Parks'), {
+		const { result } = renderHook(() => useParks('', '', 'National Park'), {
 			wrapper: createWrapper(),
 		})
 
