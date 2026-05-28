@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { Sun, MapPin } from 'lucide-react'
 import type { Park } from '@/types/park'
 import { formatStates } from '@/components/park-card-utils'
+import { createClient } from '@/lib/supabase/server'
 
 const NPS_BASE = 'https://developer.nps.gov/api/v1/parks'
 
@@ -16,6 +17,50 @@ function dateToIndex(dateStr: string, total: number): number {
 }
 
 async function getTodaysPark(): Promise<Park | null> {
+	const supabase = await createClient()
+
+	if (supabase) {
+		const { count, error } = await supabase
+			.from('parks')
+			.select('*', { count: 'exact', head: true })
+
+		if (!error && count) {
+			const today = new Date().toISOString().slice(0, 10)
+			const index = dateToIndex(today, count)
+
+			const { data, error: fetchError } = await supabase
+				.from('parks')
+				.select('*')
+				.range(index, index)
+				.single()
+
+			if (!fetchError && data) {
+				return {
+					id: data.park_code,
+					parkCode: data.park_code,
+					fullName: data.full_name,
+					description: data.description ?? '',
+					states: data.states,
+					designation: data.designation ?? '',
+					latitude: data.latitude ?? '',
+					longitude: data.longitude ?? '',
+					images: data.image_url ? [{ url: data.image_url, altText: data.image_alt ?? '', title: '', credit: '', caption: '' }] : [],
+					url: data.url ?? '',
+					name: data.full_name,
+					activities: [],
+					topics: [],
+					entranceFees: [],
+					entrancePasses: [],
+					operatingHours: [],
+					weatherInfo: '',
+					directionsInfo: '',
+					directionsUrl: '',
+				}
+			}
+		}
+	}
+
+	// Fallback to NPS API
 	const apiKey = process.env.NPS_API_KEY
 	if (!apiKey) return null
 
