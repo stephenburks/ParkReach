@@ -75,7 +75,7 @@ interface ParkActionsProps {
 
 function ParkActions({ parkCode, npsUrl }: ParkActionsProps) {
   return (
-    <div className="max-w-full lg:max-w-7xl sm:mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div className="max-w-full px-4 sm:px-6 lg:px-8 py-6">
       <div className="flex flex-wrap items-start justify-start gap-3">
         <WishlistButton parkCode={parkCode} />
         <VisitedButton parkCode={parkCode} />
