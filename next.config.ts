@@ -21,6 +21,18 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
+        // Homepage has a Park of the Day that must change every calendar day.
+        // force-dynamic alone doesn't reliably prevent CDN caching on Vercel,
+        // so we set an explicit no-store header on the exact route.
+        source: "/",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "no-store, must-revalidate",
+          },
+        ],
+      },
+      {
         source: "/(.*)",
         headers: [
           {

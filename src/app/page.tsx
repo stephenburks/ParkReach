@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 import { ParkOfTheDay } from "@/components/ParkOfTheDay";
 import { ExplorerClient } from "@/components/ExplorerClient";

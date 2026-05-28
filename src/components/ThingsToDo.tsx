@@ -31,7 +31,7 @@ export function ThingsToDo({ parkCode }: { parkCode: string }) {
 	if (isLoading) return <ThingsToDoSkeleton />
 	if (!data?.length) return null
 
-	return (
+		return (
 		<section id="things-to-do" aria-labelledby="things-to-do-heading" className="scroll-mt-24">
 			<h2 id="things-to-do-heading" className="text-xl font-bold text-park-bark dark:text-park-cream mb-4">
 				Things To Do
@@ -40,10 +40,10 @@ export function ThingsToDo({ parkCode }: { parkCode: string }) {
 				{data.map((thing) => (
 					<li
 						key={thing.id}
-						className="rounded-xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 p-4 shadow-sm"
+						className="rounded-xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 p-4 shadow-sm min-w-0 overflow-hidden"
 					>
-						<h3 className="font-medium text-park-bark dark:text-park-cream">{thing.title}</h3>
-						<p className="mt-1 text-sm text-stone-700 dark:text-stone-300">
+						<h3 className="font-medium text-park-bark dark:text-park-cream break-words">{thing.title}</h3>
+						<p className="mt-1 text-sm text-stone-700 dark:text-stone-300 break-words line-clamp-3">
 							{stripHtmlTags(thing.shortDescription)}
 						</p>
 						<div className="mt-3 flex flex-wrap gap-3 text-xs text-stone-500 dark:text-stone-400">
@@ -67,13 +67,13 @@ export function ThingsToDo({ parkCode }: { parkCode: string }) {
 							)}
 						</div>
 						{thing.accessibilityInformation && (
-							<p className="mt-2 text-xs text-park-forest dark:text-park-sage">
+							<p className="mt-2 text-xs text-park-forest dark:text-park-sage break-words">
 								{thing.accessibilityInformation}
 							</p>
 						)}
 						{thing.url && (
-							<a href={thing.url} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex items-center gap-1 text-xs text-park-forest hover:underline">
-								<ExternalLink className="h-3 w-3" aria-hidden="true" /> View on NPS.gov
+							<a href={thing.url} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex items-center gap-1 text-xs text-park-forest hover:underline break-all">
+								<ExternalLink className="h-3 w-3 flex-shrink-0" aria-hidden="true" /> View on NPS.gov
 							</a>
 						)}
 					</li>

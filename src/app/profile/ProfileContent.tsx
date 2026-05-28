@@ -193,7 +193,7 @@ export function ProfileContent() {
 
   return (
     <div className="min-h-screen bg-park-cream dark:bg-park-bark p-8">
-      <header className="max-w-4xl mx-auto mb-6 flex items-center justify-between">
+      <header className="max-w-4xl mx-auto mb-6 flex items-center justify-between relative">
         <Link href="/" className="text-park-forest hover:underline text-sm font-medium">
           ← Back to Parks
         </Link>

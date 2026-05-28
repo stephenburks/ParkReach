@@ -118,7 +118,7 @@ export function TripContent({ tripId }: Props) {
 	return (
 		<div className="min-h-screen bg-park-cream dark:bg-park-bark p-8">
 			<main id="main-content" className="max-w-2xl mx-auto">
-				<div className="mb-6 flex items-center justify-between">
+				<div className="mb-6 flex items-center justify-between relative">
 					<Link href="/profile" className="text-sm text-park-forest hover:underline">
 						← My Profile
 					</Link>
