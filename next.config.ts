@@ -42,4 +42,6 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default varlockNextConfigPlugin()(nextConfig);
+export default process.env.VERCEL
+  ? nextConfig
+  : varlockNextConfigPlugin()(nextConfig)
