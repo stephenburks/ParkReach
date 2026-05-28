@@ -23,11 +23,14 @@ export async function GET(request: NextRequest) {
 	if (designation) params.set('designation', designation)
 	if (parkCode) params.set('parkCode', parkCode)
 
-	try {
-		const res = await fetch(`${NPS_BASE}?${params.toString().replace(/%2C/g, ',')}`, {
-			headers: { 'X-Api-Key': apiKey },
-			next: { revalidate: 3600 },
-		})
+  try {
+    const fetchOptions: RequestInit = {
+      headers: { 'X-Api-Key': apiKey },
+    }
+    if (limit <= 50) {
+      fetchOptions.next = { revalidate: 3600 }
+    }
+    const res = await fetch(`${NPS_BASE}?${params.toString().replace(/%2C/g, ',')}`, fetchOptions)
 
 		if (!res.ok) {
 			return jsonError('NPS API error', res.status)

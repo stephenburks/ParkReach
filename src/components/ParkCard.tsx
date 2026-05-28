@@ -5,7 +5,6 @@ import Image from 'next/image';
 import { Park } from '@/types/park';
 import { WishlistButton } from './WishlistButton';
 import { VisitedButton } from './VisitedButton';
-import { AlertBadge } from './AlertBadge';
 import { handleCardKeyDown, formatStates } from './park-card-utils';
 import { Mountain, MapPin } from 'lucide-react';
 
@@ -61,12 +60,9 @@ function ParkCard({ park, onSelect }: Props) {
       </div>
 
       <div className="p-5 flex flex-col flex-1">
-        <div className="flex items-start justify-between gap-2 mb-1.5">
-          <h3 className="font-bold text-park-bark dark:text-park-cream text-base leading-snug group-hover:text-park-forest transition-colors">
-            {park.fullName}
-          </h3>
-          <AlertBadge parkCode={park.parkCode} />
-        </div>
+        <h3 className="font-bold text-park-bark dark:text-park-cream text-base leading-snug mb-1.5 group-hover:text-park-forest transition-colors">
+          {park.fullName}
+        </h3>
         {stateList && (
           <p className="text-xs text-park-stone dark:text-stone-400 mb-3 flex items-center gap-1">
             <MapPin className="h-3.5 w-3.5" aria-hidden="true" />
