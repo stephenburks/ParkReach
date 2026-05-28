@@ -4,7 +4,7 @@ An accessibility-first National Parks explorer. Discover, filter, save, and plan
 US national parks with live weather, driving distances, and rich park data — all in a
 clean, fast interface designed to be usable by everyone.
 
-**[parkreach.app](https://parkreach.app)**
+**[parkreach.app](https://parkreach.vercel.app)**
 
 ---
 
@@ -27,18 +27,18 @@ clean, fast interface designed to be usable by everyone.
 
 ## Stack
 
-| Layer | Technology |
-|---|---|
-| Framework | Next.js 16 (App Router) |
-| Language | TypeScript (strict) |
-| Styling | Tailwind CSS v4 + ShadCN (base-nova) |
-| Database & Auth | Supabase |
-| Parks Data | National Park Service API |
-| Weather | National Weather Service API (free, no key) |
-| Maps | Google Maps JavaScript API + Distance Matrix |
-| State | nuqs (URL-driven) + TanStack Query |
-| Secrets | varlock + pass (GPG-backed) |
-| Testing | Vitest + React Testing Library + Playwright |
+| Layer           | Technology                                   |
+| --------------- | -------------------------------------------- |
+| Framework       | Next.js 16 (App Router)                      |
+| Language        | TypeScript (strict)                          |
+| Styling         | Tailwind CSS v4 + ShadCN (base-nova)         |
+| Database & Auth | Supabase                                     |
+| Parks Data      | National Park Service API                    |
+| Weather         | National Weather Service API (free, no key)  |
+| Maps            | Google Maps JavaScript API + Distance Matrix |
+| State           | nuqs (URL-driven) + TanStack Query           |
+| Secrets         | varlock + pass (GPG-backed)                  |
+| Testing         | Vitest + React Testing Library + Playwright  |
 
 ## Getting Started
 
