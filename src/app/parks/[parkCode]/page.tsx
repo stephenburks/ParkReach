@@ -28,8 +28,6 @@ interface Props {
   params: Promise<{ parkCode: string }>;
 }
 
-
-
 interface ParkHeroProps {
   park: Park;
   states: string;
@@ -77,7 +75,7 @@ interface ParkActionsProps {
 
 function ParkActions({ parkCode, npsUrl }: ParkActionsProps) {
   return (
-    <div className="max-w-full lg:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div className="max-w-full lg:max-w-7xl sm:mx-auto px-4 sm:px-6 lg:px-8 py-6">
       <div className="flex flex-wrap items-start justify-start gap-3">
         <WishlistButton parkCode={parkCode} />
         <VisitedButton parkCode={parkCode} />
@@ -124,9 +122,7 @@ function FeesSection({ park }: { park: Park }) {
             <p className="text-stone-700 dark:text-stone-300">
               {fee.description}
             </p>
-            <p className="text-park-forest font-semibold mt-1">
-              {fee.cost}
-            </p>
+            <p className="text-park-forest font-semibold mt-1">{fee.cost}</p>
           </li>
         ))}
       </ul>
@@ -134,7 +130,7 @@ function FeesSection({ park }: { park: Park }) {
   );
 }
 
-function HoursSection({ hours }: { hours: Park['operatingHours'] }) {
+function HoursSection({ hours }: { hours: Park["operatingHours"] }) {
   if (!hours?.length) return null;
   return (
     <section id="hours" className="scroll-mt-24">
@@ -178,7 +174,11 @@ interface ParkInfoGridProps {
   parkCode: string;
 }
 
-function ParkInfoGrid({ park, amenitiesAccessibility, parkCode }: ParkInfoGridProps) {
+function ParkInfoGrid({
+  park,
+  amenitiesAccessibility,
+  parkCode,
+}: ParkInfoGridProps) {
   return (
     <div className="space-y-8" id="park-info-grid">
       <section id="about" className="scroll-mt-24">
@@ -190,7 +190,10 @@ function ParkInfoGrid({ park, amenitiesAccessibility, parkCode }: ParkInfoGridPr
         </p>
       </section>
 
-      <div id="weather" className="flex flex-col sm:flex-row gap-4 scroll-mt-24">
+      <div
+        id="weather"
+        className="flex flex-col sm:flex-row gap-4 scroll-mt-24"
+      >
         <div className="flex-1">
           <WeatherWidget parkCode={park.parkCode} />
         </div>
@@ -201,7 +204,12 @@ function ParkInfoGrid({ park, amenitiesAccessibility, parkCode }: ParkInfoGridPr
         />
       </div>
 
-      {(amenitiesAccessibility || park.accessibility || park.has_wheelchair_access || park.has_braille || park.has_asl || park.has_audio_description) && (
+      {(amenitiesAccessibility ||
+        park.accessibility ||
+        park.has_wheelchair_access ||
+        park.has_braille ||
+        park.has_asl ||
+        park.has_audio_description) && (
         <AccessibilityInfo
           accessibility={amenitiesAccessibility || park.accessibility}
           park={park}
@@ -231,32 +239,32 @@ function ParkInfoGrid({ park, amenitiesAccessibility, parkCode }: ParkInfoGridPr
 
       <FeesSection park={park} />
       <HoursSection hours={park.operatingHours} />
-		<ThingsToDo parkCode={parkCode} />
+      <ThingsToDo parkCode={parkCode} />
 
-			{park.activities?.length > 0 && (
-				<section id="activities" className="scroll-mt-24">
-					<h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">
-						Activities
-					</h2>
-					<div className="flex flex-wrap gap-2">
-						{park.activities.map((activity) => (
-							<span
-								key={activity.id}
-								className="bg-park-sage/20 text-park-bark dark:text-park-cream px-3 py-1 rounded-full text-sm"
-							>
-								{activity.name}
-							</span>
-						))}
-					</div>
-				</section>
-			)}
+      {park.activities?.length > 0 && (
+        <section id="activities" className="scroll-mt-24">
+          <h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">
+            Activities
+          </h2>
+          <div className="flex flex-wrap gap-2">
+            {park.activities.map((activity) => (
+              <span
+                key={activity.id}
+                className="bg-park-sage/20 text-park-bark dark:text-park-cream px-3 py-1 rounded-full text-sm"
+              >
+                {activity.name}
+              </span>
+            ))}
+          </div>
+        </section>
+      )}
 
-			<UpcomingEvents parkCode={parkCode} />
-			<Campgrounds parkCode={parkCode} />
-			<VisitorCenters parkCode={parkCode} />
-			<NewsSection parkCode={parkCode} />
+      <UpcomingEvents parkCode={parkCode} />
+      <Campgrounds parkCode={parkCode} />
+      <VisitorCenters parkCode={parkCode} />
+      <NewsSection parkCode={parkCode} />
 
-			{park.topics?.length > 0 && (
+      {park.topics?.length > 0 && (
         <section id="topics" className="scroll-mt-24">
           <h2 className="text-xl font-bold text-park-bark dark:text-park-cream mb-3">
             Topics
@@ -310,22 +318,28 @@ export default async function ParkDetailPage({ params }: Props) {
   if (!park) notFound();
 
   const states = formatStates(park.states);
-  const apiKey = process.env.NPS_API_KEY ?? '';
-  const amenitiesAccessibility = apiKey ? await fetchParkAccessibility(parkCode, apiKey) : null;
+  const apiKey = process.env.NPS_API_KEY ?? "";
+  const amenitiesAccessibility = apiKey
+    ? await fetchParkAccessibility(parkCode, apiKey)
+    : null;
 
   // Compute section IDs for SectionNav — only include sections we know exist server-side.
   // Data-dependent sections (things-to-do, events, campgrounds, visitor-centers, news)
   // are detected dynamically by SectionNav when their content loads client-side.
-  const sectionIds: string[] = [
-    'about',
-    'weather',
-    'fees',
-  ];
-  if (amenitiesAccessibility || park.accessibility || park.has_wheelchair_access || park.has_braille || park.has_asl || park.has_audio_description) sectionIds.push('accessibility');
-  if (park.directionsInfo) sectionIds.push('directions');
-  if (park.operatingHours?.length) sectionIds.push('hours');
-  if (park.activities?.length > 0) sectionIds.push('activities');
-  if (park.topics?.length > 0) sectionIds.push('topics');
+  const sectionIds: string[] = ["about", "weather", "fees"];
+  if (
+    amenitiesAccessibility ||
+    park.accessibility ||
+    park.has_wheelchair_access ||
+    park.has_braille ||
+    park.has_asl ||
+    park.has_audio_description
+  )
+    sectionIds.push("accessibility");
+  if (park.directionsInfo) sectionIds.push("directions");
+  if (park.operatingHours?.length) sectionIds.push("hours");
+  if (park.activities?.length > 0) sectionIds.push("activities");
+  if (park.topics?.length > 0) sectionIds.push("topics");
 
   // JSON-LD structured data for Google rich results
   const jsonLd = {
@@ -342,14 +356,16 @@ export default async function ParkDetailPage({ params }: Props) {
     },
   };
 
-return (
+  return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+        }}
       />
-       <div className="flex flex-col min-h-screen bg-park-cream dark:bg-park-bark overflow-x-hidden">
-         <header className="bg-park-forest text-white relative">
+      <div className="flex flex-col min-h-screen bg-park-cream dark:bg-park-bark overflow-x-hidden">
+        <header className="bg-park-forest text-white relative">
           <div className="max-w-full lg:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center justify-between">
               <Link
@@ -371,8 +387,15 @@ return (
 
         <SectionNav sections={sectionIds} />
 
-        <main id="main-content" className="max-w-full lg:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12">
-          <ParkInfoGrid park={park} amenitiesAccessibility={amenitiesAccessibility} parkCode={parkCode} />
+        <main
+          id="main-content"
+          className="max-w-full lg:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12"
+        >
+          <ParkInfoGrid
+            park={park}
+            amenitiesAccessibility={amenitiesAccessibility}
+            parkCode={parkCode}
+          />
         </main>
 
         <SiteFooter />
